@@ -3035,6 +3035,12 @@ body.menu-open .site-header .brand-nox-logo {
   height:100%;
   will-change:filter;
 }
+/* Hero text (dátum, popis, tlačidlá) zarovnaný dole namiesto hore. */
+.nox-art-site .hero > .stack-inner{
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+}
 /* Diela môžu mať veľa kariet – táto karta v reťazci dostáva vlastný
    vnútorný posuvník namiesto pevnej výšky, aby sa žiadna nestratila.
    Prehliadač prirodzene najprv doscrolluje tento vnútorný obsah a až
