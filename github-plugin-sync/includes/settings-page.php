@@ -31,7 +31,10 @@ function ghps_handle_save_settings() {
             ? sanitize_title($row['slug'])
             : sanitize_title(preg_replace('#^.*/#', '', $repo_name));
 
-        $id = isset($row['id']) && $row['id'] !== '' ? sanitize_key($row['id']) : wp_generate_password(10, false);
+        // sanitize_key() zmení text na malé písmená – ID generujeme rovno v tomto
+        // tvare, aby sa neskôr pri porovnávaní (napr. v manuálnom syncu) nikdy
+        // nerozišlo od hodnoty, ktorá prejde cez sanitize_key() z URL parametra.
+        $id = isset($row['id']) && $row['id'] !== '' ? sanitize_key($row['id']) : sanitize_key(wp_generate_password(12, false));
 
         $entry = [
             'id' => $id,
@@ -44,7 +47,7 @@ function ghps_handle_save_settings() {
 
         // Zachovaj históriu posledného syncu, ak riadok už existoval.
         foreach ($settings['repos'] as $old) {
-            if ($old['id'] === $id) {
+            if (sanitize_key($old['id']) === $id) {
                 $entry['last_sync'] = $old['last_sync'] ?? '';
                 $entry['last_result'] = $old['last_result'] ?? '';
                 $entry['last_message'] = $old['last_message'] ?? '';
@@ -85,7 +88,9 @@ function ghps_handle_manual_sync() {
     $settings = ghps_get_settings();
     $found = null;
     foreach ($settings['repos'] as $r) {
-        if ($r['id'] === $repo_id) { $found = $r; break; }
+        // sanitize_key() na oboch stranách – ošetruje aj staršie záznamy, ktorých
+        // ID bolo uložené ešte pred normalizáciou na malé písmená.
+        if (sanitize_key($r['id']) === $repo_id) { $found = $r; break; }
     }
 
     $notice = 'synced';
