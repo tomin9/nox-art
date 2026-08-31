@@ -241,11 +241,13 @@
     panels: [...group.querySelectorAll(':scope > .stack-panel')],
   }));
 
-  // Skorší panel v skupine musí byť pri odpočiatku navrchu (vyšší z-index),
-  // aby prekrýval tie za ním, kým sa sám nevysunie preč.
-  state.forEach(({ panels }) => {
-    panels.forEach((panel, i) => { panel.style.zIndex = String(panels.length - i); });
-  });
+  // Skorší panel musí byť navrchu (vyšší z-index), aby prekrýval tie za ním,
+  // kým sa sám nevysunie preč – číslovanie musí byť naprieč CELOU stránkou
+  // (nie reset v každej skupine zvlášť), inak by prvý panel druhej skupiny
+  // mal rovnaký z-index ako prvý panel prvej skupiny a keďže je v HTML
+  // neskôr, prekrýval by od začiatku úplne všetko pred ním.
+  const allPanels = state.flatMap(({ panels }) => panels);
+  allPanels.forEach((panel, i) => { panel.style.zIndex = String(allPanels.length - i); });
 
   const update = () => {
     const vh = window.innerHeight;
