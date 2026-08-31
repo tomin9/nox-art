@@ -385,7 +385,13 @@
          pixela, aby sa filter neprepočítaval pri každom snímku. */
       let blur = 0;
       if (i === activeIdx + 1) {
-        const revealProgress = Math.min(Math.max(scrolled / vh - activeIdx, 0), 1);
+        const raw = Math.min(Math.max(scrolled / vh - activeIdx, 0), 1);
+        /* Rampu stláčame do prvej polovice prechodu. Cena rozostrenia rastie
+           s plochou, ktorú musí GPU prekresliť – a tá sa s odchodom vrchnej
+           karty zväčšuje. Preto rozostrenie dobehne do nuly ešte kým je
+           odkrytý pruh malý; v druhej polovici prechodu už GPU rieši len
+           posun vrstvy, kde sekanie začínalo. */
+        const revealProgress = Math.min(raw / 0.5, 1);
         // Kroky po 2px (6 → 4 → 2 → 0): rozmazanie celoobrazovkovej vrstvy je
         // pre GPU najdrahšia operácia na stránke a musí sa prepočítať pri
         // KAŽDEJ zmene hodnoty. Pri jemných krokoch to bolo ~12 prepočtov na
