@@ -3024,6 +3024,7 @@ body.menu-open .site-header .brand-nox-logo {
 }
 .nox-art-site .stack-panel.about,
 .nox-art-site .stack-panel.program,
+.nox-art-site .stack-panel.installations,
 .nox-art-site .stack-panel.partners,
 .nox-art-site .stack-panel.newsletter{background:var(--paper)}
 /* Rozostrenie ide na vnútorný obsah, nie na samotný panel – vďaka tomu
@@ -3031,4 +3032,13 @@ body.menu-open .site-header .brand-nox-logo {
 .nox-art-site .stack-inner{
   height:100%;
   will-change:filter;
+}
+/* Diela môžu mať veľa kariet – táto karta v reťazci dostáva vlastný
+   vnútorný posuvník namiesto pevnej výšky, aby sa žiadna nestratila.
+   Prehliadač prirodzene najprv doscrolluje tento vnútorný obsah a až
+   potom pustí scroll ďalej na stránku (karta teda "počká", kým si ju
+   človek celú neprejde). */
+.nox-art-site .stack-panel-scroll .stack-inner{
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
 }

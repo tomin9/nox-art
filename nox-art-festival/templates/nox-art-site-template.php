@@ -47,7 +47,7 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
 </header>
 
 <main>
-<div class="stack-group" data-stack-group style="--panels:3">
+<div class="stack-group" data-stack-group style="--panels:7">
 <section class="hero stack-panel" id="top">
 <div class="stack-inner">
   <div class="hero-copy reveal">
@@ -136,9 +136,9 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
   <?php endif; ?>
 </div>
 </section>
-</div>
 
-<section class="section installations" id="instalacie" aria-labelledby="installations-title">
+<section class="section installations stack-panel stack-panel-scroll" id="instalacie" aria-labelledby="installations-title">
+<div class="stack-inner">
   <div class="section-label reveal"><span>03</span> Inštalácie</div>
   <div class="installations-head reveal">
     <h2 id="installations-title">Približne <?php echo (int) $dielaCount; ?> diel rozsvieti sídlisko Píly.</h2>
@@ -164,9 +164,9 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
     </article>
     <?php endforeach; ?>
   </div>
+</div>
 </section>
 
-<div class="stack-group" data-stack-group style="--panels:3">
 <section class="section info stack-panel" id="info" aria-labelledby="info-title">
 <div class="stack-inner">
   <div class="section-label reveal"><span>04</span> Mapa a praktické info</div>
