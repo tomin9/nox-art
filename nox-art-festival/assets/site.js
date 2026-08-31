@@ -258,7 +258,7 @@
   // spodný okraj ďalšieho panela – ako rozložený balíček kariet. Úplne
   // posledný panel na stránke je bez tohto odsadenia aj bez zaoblenia
   // (je to "spodná karta" celej skladačky).
-  const STEP = 50;
+  const STEP = 30;
   const applyCascade = () => {
     const n = allPanels.length;
     allPanels.forEach((panel, i) => {
