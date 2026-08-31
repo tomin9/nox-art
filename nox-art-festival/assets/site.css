@@ -1966,7 +1966,7 @@ section[id] {
   z-index: -2;
   background-image: url("site/pozadie-1.jpg");
   background-repeat: no-repeat;
-  background-position: center center;
+  background-position: center 75%;
   background-size: cover;
 }
 
@@ -2419,7 +2419,7 @@ section[id] {
   }
 
   .hero::before {
-    background-position: 58% center;
+    background-position: 58% 75%;
   }
 
   .hero::after {
@@ -2476,7 +2476,7 @@ section[id] {
   }
 
   .hero::before {
-    background-position: 61% center;
+    background-position: 61% 75%;
     background-size: auto 100%;
   }
 
@@ -2731,7 +2731,7 @@ body.menu-open .site-header .brand-nox-logo {
 }
 
 .hero {
-  min-height: clamp(735px, 86svh, 880px);
+  min-height: clamp(820px, 96svh, 1000px);
   padding-top: calc(var(--header-h) + clamp(34px, 5.4vh, 62px));
   padding-bottom: clamp(34px, 5vh, 54px);
 }
