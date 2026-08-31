@@ -54,6 +54,7 @@ function nox_art_data_diela() {
             'foto' => get_the_post_thumbnail_url($p->ID, 'large') ?: '',
             'umelecId' => (int) get_post_meta($p->ID, '_nox_umelec_id', true) ?: null,
             'miestoId' => (int) get_post_meta($p->ID, '_nox_miesto_id', true) ?: null,
+            'typ' => get_post_meta($p->ID, '_nox_typ', true) ?: '',
         ];
     }, $posts);
 }

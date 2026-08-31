@@ -61,6 +61,7 @@ function nox_art_render_dielo_metabox($post) {
     wp_nonce_field('nox_art_save_dielo', 'nox_art_dielo_nonce');
     $miesto_id = get_post_meta($post->ID, '_nox_miesto_id', true);
     $umelec_id = get_post_meta($post->ID, '_nox_umelec_id', true);
+    $typ = get_post_meta($post->ID, '_nox_typ', true);
 
     $miesta = get_posts(['post_type' => 'nox_miesto', 'post_status' => 'publish', 'numberposts' => -1, 'orderby' => 'title', 'order' => 'ASC']);
     $umelci = get_posts(['post_type' => 'nox_umelec', 'post_status' => 'publish', 'numberposts' => -1, 'orderby' => 'title', 'order' => 'ASC']);
@@ -85,6 +86,11 @@ function nox_art_render_dielo_metabox($post) {
         </select>
         <?php if (!$umelci): ?><span class="description">Zatiaľ nemáš vytvoreného žiadneho umelca.</span><?php endif; ?>
     </p>
+    <p>
+        <label for="nox_typ"><strong>Typ diela</strong></label><br>
+        <input type="text" id="nox_typ" name="nox_typ" class="widefat" value="<?php echo esc_attr($typ); ?>" placeholder="napr. Projekcia / fasáda">
+        <span class="description">Voľný text, zobrazí sa ako štítok na karte diela (nepovinné).</span>
+    </p>
     <?php
 }
 
@@ -95,6 +101,7 @@ function nox_art_save_dielo($post_id) {
 
     update_post_meta($post_id, '_nox_miesto_id', isset($_POST['nox_miesto_id']) ? absint($_POST['nox_miesto_id']) : 0);
     update_post_meta($post_id, '_nox_umelec_id', isset($_POST['nox_umelec_id']) ? absint($_POST['nox_umelec_id']) : 0);
+    update_post_meta($post_id, '_nox_typ', isset($_POST['nox_typ']) ? sanitize_text_field($_POST['nox_typ']) : '');
 }
 add_action('save_post_nox_dielo', 'nox_art_save_dielo');
 
