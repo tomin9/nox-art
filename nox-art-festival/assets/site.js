@@ -27,18 +27,45 @@
     if (event.key === 'Escape') closeMenu();
   });
 
-  const updateScrollUI = () => {
-    const top = window.scrollY || document.documentElement.scrollTop;
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    const value = max > 0 ? (top / max) * 100 : 0;
+  // Maximálny scroll sa mení len pri zmene veľkosti okna – čítať ho pri
+  // každom scrolle by nútilo prehliadač prepočítať layout v každom snímku.
+  let maxScrollUI = 0;
+  let lastProgress = -1;
+  let lastScrolled = null;
 
-    if (progressBar) progressBar.style.width = `${value}%`;
-    header?.classList.toggle('is-scrolled', top > 18);
+  const measureScrollUI = () => {
+    maxScrollUI = document.documentElement.scrollHeight - window.innerHeight;
   };
 
+  const updateScrollUI = () => {
+    const top = window.scrollY || document.documentElement.scrollTop;
+    const value = maxScrollUI > 0 ? (top / maxScrollUI) * 100 : 0;
+
+    // Zapisovať do štýlu len keď sa hodnota naozaj zmenila (inak zbytočné
+    // prekresľovanie pri každom snímku).
+    const rounded = Math.round(value * 10) / 10;
+    if (progressBar && rounded !== lastProgress) {
+      progressBar.style.width = `${rounded}%`;
+      lastProgress = rounded;
+    }
+    const scrolledState = top > 18;
+    if (header && scrolledState !== lastScrolled) {
+      header.classList.toggle('is-scrolled', scrolledState);
+      lastScrolled = scrolledState;
+    }
+  };
+
+  measureScrollUI();
   updateScrollUI();
-  window.addEventListener('scroll', updateScrollUI, { passive: true });
-  window.addEventListener('resize', updateScrollUI);
+
+  let scrollUITicking = false;
+  window.addEventListener('scroll', () => {
+    if (scrollUITicking) return;
+    scrollUITicking = true;
+    requestAnimationFrame(() => { updateScrollUI(); scrollUITicking = false; });
+  }, { passive: true });
+  window.addEventListener('resize', () => { measureScrollUI(); updateScrollUI(); });
+  window.addEventListener('load', measureScrollUI);
 
   const revealItems = document.querySelectorAll('.reveal');
   if (reduceMotion || !('IntersectionObserver' in window)) {
@@ -101,11 +128,29 @@
   const hero = document.querySelector('.hero');
 
   if (parallax && hero && !reduceMotion && window.matchMedia('(pointer: fine)').matches) {
+    // Rozmery hero sekcie čítame len pri vstupe kurzora a pri zmene okna –
+    // nie pri každom pohybe myši (to by nútilo prepočet layoutu stovky-krát
+    // za sekundu). Samotné posunutie sa zapisuje raz za snímok cez rAF.
+    let heroRect = null;
+    let pending = null;
+    let parallaxTicking = false;
+
+    const refreshHeroRect = () => { heroRect = hero.getBoundingClientRect(); };
+
+    hero.addEventListener('pointerenter', refreshHeroRect);
+    window.addEventListener('resize', () => { heroRect = null; });
+
     hero.addEventListener('pointermove', (event) => {
-      const rect = hero.getBoundingClientRect();
-      const x = (event.clientX - rect.left) / rect.width - 0.5;
-      const y = (event.clientY - rect.top) / rect.height - 0.5;
-      parallax.style.transform = `translate3d(${x * 17}px, ${y * 13}px, 0)`;
+      if (!heroRect) refreshHeroRect();
+      pending = event;
+      if (parallaxTicking) return;
+      parallaxTicking = true;
+      requestAnimationFrame(() => {
+        const x = (pending.clientX - heroRect.left) / heroRect.width - 0.5;
+        const y = (pending.clientY - heroRect.top) / heroRect.height - 0.5;
+        parallax.style.transform = `translate3d(${(x * 17).toFixed(1)}px, ${(y * 13).toFixed(1)}px, 0)`;
+        parallaxTicking = false;
+      });
     });
 
     hero.addEventListener('pointerleave', () => {
@@ -230,102 +275,170 @@
    normálne odscrolloval preč spolu so zvyškom stránky.
    ========================================================================= */
 (() => {
-  const groups = [...document.querySelectorAll('[data-stack-group]')];
-  if (!groups.length) return;
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const group = document.querySelector('[data-stack-group]');
+  if (!group) return;
+  const panels = [...group.querySelectorAll(':scope > .stack-panel')];
+  if (!panels.length) return;
 
-  const MAX_BLUR = 10;
+  const inners = panels.map((panel) => panel.querySelector(':scope > .stack-inner') || panel);
+  const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-  const state = groups.map((group) => ({
-    group,
-    panels: [...group.querySelectorAll(':scope > .stack-panel')],
-  }));
+  const STEP = 30;      // kaskádovité odsadenie spodných hrán kariet
+  const MAX_BLUR = 6;   // rozostrenie karty, ktorá sa práve odkrýva
 
-  // Skorší panel musí byť navrchu (vyšší z-index), aby prekrýval tie za ním,
-  // kým sa sám nevysunie preč – číslovanie musí byť naprieč CELOU stránkou
-  // (nie reset v každej skupine zvlášť), inak by prvý panel druhej skupiny
-  // mal rovnaký z-index ako prvý panel prvej skupiny a keďže je v HTML
-  // neskôr, prekrýval by od začiatku úplne všetko pred ním.
-  const allPanels = state.flatMap(({ panels }) => panels);
-  allPanels.forEach((panel, i) => { panel.style.zIndex = String(allPanels.length - i); });
+  // Posledné zapísané hodnoty – do štýlov zapisujeme len pri skutočnej zmene.
+  // Bez toho by sme pri každom snímku prepisovali 7 transformov a 7 filtrov,
+  // čo prehliadač núti stále znova prekresľovať.
+  const prev = panels.map(() => ({ transform: null, blur: null, released: null, hint: null }));
 
-  // Rozostrenie sa aplikuje na vnútorný obsah panela, nie na panel samotný –
-  // inak by bol rozmazaný aj jeho ostrý zaoblený okraj.
-  const innerOf = new Map(allPanels.map((panel) => [panel, panel.querySelector(':scope > .stack-inner') || panel]));
+  let groupTop = 0;
+  let vh = 0;
+  let maxScroll = 0;
+  let enabled = false;
 
-  // Panely bližšie k začiatku zásobníka končia o kúsok skôr nad spodkom
-  // obrazovky (kaskádovito po 50px), takže spod nich vždy vykúka zaoblený
-  // spodný okraj ďalšieho panela – ako rozložený balíček kariet. Úplne
-  // posledný panel na stránke je bez tohto odsadenia aj bez zaoblenia
-  // (je to "spodná karta" celej skladačky).
-  const STEP = 30;
-  const applyCascade = () => {
-    const n = allPanels.length;
-    allPanels.forEach((panel, i) => {
+  /* Vypnutý režim: karty sa vrátia do normálneho toku stránky (žiadne
+     position:fixed, žiadne rozostrenie). Používa sa pri "prefers-reduced-
+     motion", kde by zamrznuté karty inak znemožnili dostať sa k obsahu. */
+  const disable = () => {
+    enabled = false;
+    group.classList.add('stack-off');
+    group.style.height = '';
+    panels.forEach((panel, i) => {
+      panel.style.height = '';
+      panel.style.transform = '';
+      panel.style.borderRadius = '';
+      panel.style.zIndex = '';
+      panel.style.willChange = '';
+      panel.classList.remove('is-released');
+      inners[i].style.filter = '';
+      inners[i].style.willChange = '';
+      inners[i].classList.remove('can-scroll');
+      prev[i].transform = prev[i].blur = prev[i].released = prev[i].hint = null;
+    });
+  };
+
+  /* Rozmery čítame len pri štarte a pri zmene okna – nikdy nie počas
+     scrollovania. Výšku skupiny aj kariet nastavujeme v pixeloch z
+     window.innerHeight, aby CSS aj výpočty v JS vychádzali z tej istej
+     hodnoty (predtým bolo CSS v jednotkách svh, JS v innerHeight – na
+     mobiloch sa tie dve čísla líšia a posledná karta sa uvoľňovala
+     v nesprávnom bode). */
+  const measure = () => {
+    enabled = true;
+    group.classList.remove('stack-off');
+
+    vh = window.innerHeight;
+    groupTop = group.getBoundingClientRect().top + window.scrollY;
+    group.style.height = `${(panels.length + 1) * vh}px`;
+    maxScroll = panels.length * vh;
+
+    const n = panels.length;
+    panels.forEach((panel, i) => {
       const fromEnd = n - 1 - i;
-      panel.style.height = fromEnd === 0 ? '' : `calc(100svh - ${fromEnd * STEP}px)`;
+      panel.style.zIndex = String(n - i);
+      panel.style.height = `${vh - fromEnd * STEP}px`;
       panel.style.borderRadius = fromEnd === 0 ? '0' : '';
     });
-  };
-  applyCascade();
-  window.addEventListener('resize', applyCascade);
 
-  const update = () => {
-    const vh = window.innerHeight;
-
-    state.forEach(({ group, panels }) => {
-      if (!panels.length) return;
-      const rect = group.getBoundingClientRect();
-
-      // Panely sú position:fixed, takže bez tohto by boli "vidno" (súperili
-      // by o rovnaké miesto na obrazovke) aj skôr, než sa k ich skupine
-      // vôbec doscrolluje – napr. tmavá "Mapa a info" by presvitala hneď od
-      // začiatku stránky. Skupina je "aktívna" až keď sa k nej scrollovaním
-      // reálne dostalo (jej horný okraj dosiahol/presiahol vrch obrazovky);
-      // predtým nech sú jej panely neviditeľné.
-      // Tolerancia 100px: keď je používateľ prihlásený, WP admin lišta
-      // posunie celú stránku o pár desiatok px nižšie, takže aj úplne prvá
-      // skupina má na začiatku rect.top mierne nad nulou – bez tolerancie
-      // by to "0" pravidlo schovalo aj ju hneď od začiatku.
-      const reached = rect.top <= 100;
-      panels.forEach((panel) => { panel.style.visibility = reached ? '' : 'hidden'; });
-      if (!reached) return;
-
-      // +1vh navyše: priestor na to, aby posledný panel v skupine chvíľu
-      // pokojne postál (bez odchodu), kým sa uvoľní ďalšiemu obsahu –
-      // inak by sa uvoľnil hneď v momente, keď sa vôbec objaví.
-      const total = (panels.length + 1) * vh;
-      const scrolled = Math.min(Math.max(-rect.top, 0), total - vh);
-
-      panels.forEach((panel, i) => {
-        const isLast = i === panels.length - 1;
-        const departProgress = isLast ? 0 : Math.min(Math.max((scrolled - i * vh) / vh, 0), 1);
-
-        panel.style.transform = reduceMotion ? '' : `translateY(${-departProgress * 100}%)`;
-
-        // Rozostrenie tohto panela riadi to, ako ďaleko odišiel PREDCHÁDZAJÚCI (panel i-1).
-        const inner = innerOf.get(panel);
-        if (i === 0) {
-          inner.style.filter = '';
-        } else {
-          const prevDepart = Math.min(Math.max((scrolled - (i - 1) * vh) / vh, 0), 1);
-          const blur = reduceMotion ? 0 : (1 - prevDepart) * MAX_BLUR;
-          inner.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : '';
-        }
-
-        // Po prejdení celej skupiny sa posledný panel uvoľní z position:fixed,
-        // aby normálne odscrolloval preč a nezakrýval nasledujúci obsah.
-        if (isLast) panel.classList.toggle('is-released', scrolled >= total - vh);
-      });
+    // Vnútorné scrollovanie zapneme len kartám, ktorých obsah sa naozaj
+    // nezmestí (tolerancia 8px kvôli zaokrúhľovaniu) – inak by koliesko
+    // myši ostávalo "uväznené" v karte namiesto posúvania stránky.
+    inners.forEach((inner) => {
+      inner.classList.toggle('can-scroll', inner.scrollHeight - inner.clientHeight > 8);
     });
   };
 
-  update();
+  const render = () => {
+    if (!enabled) return;
+
+    const scrolled = Math.min(Math.max(window.scrollY - groupTop, 0), maxScroll);
+    // Index karty, ktorá je práve "na rade" odísť.
+    const activeIdx = Math.min(Math.floor(scrolled / vh), panels.length - 1);
+
+    for (let i = 0; i < panels.length; i++) {
+      const isLast = i === panels.length - 1;
+      const state = prev[i];
+
+      const depart = isLast ? 0 : Math.min(Math.max((scrolled - i * vh) / vh, 0), 1);
+      const transform = depart > 0 ? `translate3d(0,${(-depart * 100).toFixed(2)}%,0)` : '';
+      if (transform !== state.transform) {
+        panels[i].style.transform = transform;
+        state.transform = transform;
+      }
+
+      // GPU vrstvu si vopred pripravíme len pri kartách okolo tej aktívnej –
+      // držať ju pre všetkých 7 naraz je zbytočne pamäťovo náročné.
+      const hint = (i === activeIdx || i === activeIdx + 1) ? 'transform' : '';
+      if (hint !== state.hint) {
+        panels[i].style.willChange = hint;
+        state.hint = hint;
+      }
+
+      /* Rozostrenie dostáva VÝHRADNE karta, ktorá sa práve odkrýva spod tej
+         odchádzajúcej. Predtým boli rozostrené naraz všetky karty pod vrchnou
+         (pri štarte stránky 6 rozmazaných celoobrazovkových vrstiev naraz) –
+         to je pre prehliadač extrémne drahé a bola to hlavná príčina sekania.
+         Z ostatných kariet aj tak vidno len ~30px prúžok, kde rozostrenie
+         nemá žiadny vizuálny prínos. Hodnotu navyše zaokrúhľujeme na pol
+         pixela, aby sa filter neprepočítaval pri každom snímku. */
+      let blur = 0;
+      if (i === activeIdx + 1) {
+        const revealProgress = Math.min(Math.max(scrolled / vh - activeIdx, 0), 1);
+        blur = Math.round((1 - revealProgress) * MAX_BLUR * 2) / 2;
+      }
+      if (blur !== state.blur) {
+        inners[i].style.filter = blur > 0 ? `blur(${blur}px)` : '';
+        // will-change zapíname len na tú jednu kartu, ktorá sa práve mení.
+        inners[i].style.willChange = blur > 0 ? 'filter' : '';
+        state.blur = blur;
+      }
+
+      if (isLast) {
+        const released = scrolled >= maxScroll - 0.5;
+        if (released !== state.released) {
+          panels[i].classList.toggle('is-released', released);
+          state.released = released;
+        }
+      }
+    }
+  };
+
+  const setup = () => {
+    if (motionQuery.matches) { disable(); return; }
+    measure();
+    render();
+  };
+
+  setup();
+
   let ticking = false;
   window.addEventListener('scroll', () => {
     if (ticking) return;
     ticking = true;
-    requestAnimationFrame(() => { update(); ticking = false; });
+    requestAnimationFrame(() => { render(); ticking = false; });
   }, { passive: true });
-  window.addEventListener('resize', update);
+
+  /* Na mobiloch mení skrývanie/zobrazovanie adresného riadku výšku okna a
+     spúšťa resize aj počas bežného scrollovania. Prepočítavať pri tom celý
+     zásobník by trhalo scroll, preto reagujeme len na skutočné zmeny
+     (iná šírka, alebo zmena výšky väčšia než typický adresný riadok). */
+  let resizeTimer = null;
+  let lastW = window.innerWidth;
+  let lastH = window.innerHeight;
+  window.addEventListener('resize', () => {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    if (w === lastW && Math.abs(h - lastH) < 120) return;
+    lastW = w;
+    lastH = h;
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => { setup(); }, 150);
+  });
+
+  if (typeof motionQuery.addEventListener === 'function') {
+    motionQuery.addEventListener('change', setup);
+  }
+
+  // Po načítaní obrázkov/fontov sa môže zmeniť pozícia skupiny.
+  window.addEventListener('load', () => { if (!motionQuery.matches) { measure(); render(); } });
 })();

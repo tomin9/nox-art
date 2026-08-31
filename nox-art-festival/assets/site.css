@@ -3005,6 +3005,8 @@ body.menu-open .site-header .brand-nox-logo {
    ========================================================================= */
 .nox-art-site .stack-group{
   position:relative;
+  /* Skutočnú výšku nastavuje JS v pixeloch (rovnaká hodnota, s akou počíta
+     aj scroll) – toto je len záložná hodnota, kým sa JS nespustí. */
   height:calc((var(--panels, 1) + 1) * 100svh);
 }
 .nox-art-site .stack-panel{
@@ -3018,7 +3020,11 @@ body.menu-open .site-header .brand-nox-logo {
   border-radius:0 0 var(--radius-xl) var(--radius-xl);
   overflow:hidden;
   box-shadow:0 8px 16px -8px rgba(0,0,0,.4), 0 1px 0 0 rgba(128,128,128,.5);
-  will-change:transform;
+  /* Prehliadaču hovorí, že prekresľovanie sa nikdy nemusí šíriť mimo karty. */
+  contain:paint;
+  /* will-change zámerne NIE je natrvalo na všetkých kartách – 7 celo-
+     obrazovkových GPU vrstiev naraz zbytočne žerie pamäť (na 4K displeji
+     stovky MB). JS ho zapína len kartám okolo práve aktívnej. */
 }
 .nox-art-site .stack-panel.is-released{
   position:absolute;
@@ -3031,23 +3037,50 @@ body.menu-open .site-header .brand-nox-logo {
 .nox-art-site .stack-panel.partners,
 .nox-art-site .stack-panel.newsletter{background:var(--paper)}
 /* Rozostrenie ide na vnútorný obsah, nie na samotný panel – vďaka tomu
-   zostáva zaoblený okraj karty vždy ostrý, rozmazáva sa len to vnútri. */
+   zostáva zaoblený okraj karty vždy ostrý, rozmazáva sa len to vnútri.
+   (will-change:filter nastavuje JS len tej jednej karte, ktorá sa práve
+   odkrýva – mať ho natrvalo na všetkých je zbytočne pamäťovo drahé.) */
+/* Pozor: overflow tu zámerne NEobmedzujeme – v hero sekcii sú absolútne
+   umiestnené prvky (AP odznak, bočný text, šípka nadol), ktoré presahujú
+   vnútorný obal a orezali by sa. Karta samotná ich aj tak oreže na svojom
+   zaoblenom okraji. */
 .nox-art-site .stack-inner{
   height:100%;
-  will-change:filter;
 }
-/* Hero text (dátum, popis, tlačidlá) zarovnaný dole namiesto hore. */
+/* Vnútorné scrollovanie sa zapne len tam, kde sa obsah naozaj nezmestí
+   (triedu pridáva JS po zmeraní). Keby bolo overflow-y:auto zapnuté vždy,
+   stačil by 1px pretečenia a koliesko myši by sa "zaseklo" vnútri karty
+   namiesto posúvania stránky. */
+.nox-art-site .stack-inner.can-scroll{
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+/* Hero text (dátum, popis, tlačidlá) zarovnaný dole namiesto hore.
+   margin-top:auto namiesto justify-content:flex-end – pri
+   justify-content by sa vrchná časť obsahu nedala doscrollovať, keby sa
+   raz nezmestil do výšky okna. */
 .nox-art-site .hero > .stack-inner{
   display:flex;
   flex-direction:column;
-  justify-content:flex-end;
 }
-/* Diela môžu mať veľa kariet – táto karta v reťazci dostáva vlastný
-   vnútorný posuvník namiesto pevnej výšky, aby sa žiadna nestratila.
-   Prehliadač prirodzene najprv doscrolluje tento vnútorný obsah a až
-   potom pustí scroll ďalej na stránku (karta teda "počká", kým si ju
-   človek celú neprejde). */
-.nox-art-site .stack-panel-scroll .stack-inner{
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
+.nox-art-site .hero > .stack-inner > .hero-copy{
+  margin-top:auto;
+}
+
+/* Záložný režim, keď má používateľ v systéme zapnuté obmedzenie animácií
+   (prefers-reduced-motion): karty sa vrátia do normálneho toku stránky.
+   Bez tohto by zostali navrstvené na sebe a k obsahu by sa nedalo dostať. */
+.nox-art-site .stack-group.stack-off{
+  height:auto !important;
+}
+.nox-art-site .stack-group.stack-off .stack-panel{
+  position:static;
+  height:auto;
+  contain:none;
+  will-change:auto;
+}
+.nox-art-site .stack-group.stack-off .stack-inner{
+  height:auto;
+  overflow:visible;
 }
