@@ -62,8 +62,20 @@ function ghps_sync_repo($repo, $commit = '') {
     }
 
     if (!function_exists('WP_Filesystem')) require_once ABSPATH . 'wp-admin/includes/file.php';
-    WP_Filesystem();
+    $fs_ready = WP_Filesystem();
     global $wp_filesystem;
+    if (!$fs_ready || !$wp_filesystem) {
+        @unlink($tmp_file);
+        $msg = 'Nepodarilo sa pripojiť k súborovému systému';
+        if ($wp_filesystem && !empty($wp_filesystem->errors) && is_wp_error($wp_filesystem->errors) && $wp_filesystem->errors->has_errors()) {
+            $msg .= ': ' . $wp_filesystem->errors->get_error_message();
+        } else {
+            $msg .= ' (server pravdepodobne vyžaduje FTP/SSH prístupové údaje pre priamy zápis súborov namiesto "direct" metódy).';
+        }
+        $err = new WP_Error('ghps_no_filesystem', $msg);
+        ghps_record_status($repo['id'], 'error', $err->get_error_message());
+        return $err;
+    }
 
     $work_dir = trailingslashit(get_temp_dir()) . 'ghps-' . $slug . '-' . wp_generate_password(6, false);
     $unzipped = unzip_file($tmp_file, $work_dir);

@@ -218,11 +218,14 @@ function ghps_render_repo_row($repo, $index) {
         <td style="text-align:center"><input type="checkbox" name="ghps_repos[<?php echo esc_attr($index); ?>][activate]" <?php checked(!empty($repo['activate'])); ?>></td>
         <td>
             <?php if (!empty($repo['id']) && !empty($repo['last_sync'])): ?>
-                <span title="<?php echo esc_attr($repo['last_message'] ?? ''); ?>">
+                <div>
                     <?php echo $repo['last_result'] === 'ok' ? '✅' : '⚠️'; ?>
                     <?php echo esc_html($repo['last_sync']); ?>
                     <?php if (!empty($repo['last_commit'])): ?> (<code><?php echo esc_html($repo['last_commit']); ?></code>)<?php endif; ?>
-                </span>
+                </div>
+                <?php if (!empty($repo['last_message'])): ?>
+                    <div style="max-width:320px;color:<?php echo $repo['last_result'] === 'ok' ? '#555' : '#a00'; ?>"><?php echo esc_html($repo['last_message']); ?></div>
+                <?php endif; ?>
             <?php else: ?>
                 <span class="description">zatiaľ nesynchronizované</span>
             <?php endif; ?>
