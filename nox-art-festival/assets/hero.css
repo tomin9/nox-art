@@ -1,0 +1,82 @@
+.nox-art-hero{
+  --h-ink:#17140f;
+  --h-ink-2:#5c574a;
+  --h-paper:#eee8d9;
+  --h-line:#dcd4bd;
+  --h-sans:"Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  --h-mono:"IBM Plex Mono", ui-monospace, monospace;
+  position:relative;overflow:hidden;background:var(--h-paper);color:var(--h-ink);
+  font-family:var(--h-sans);border:1px solid var(--h-line);
+  -webkit-font-smoothing:antialiased;
+}
+.nox-art-hero, .nox-art-hero *{box-sizing:border-box}
+.nox-art-hero a{color:inherit;text-decoration:none}
+
+.nox-art-hero .nh-nav{
+  position:relative;z-index:2;display:flex;align-items:center;gap:24px;flex-wrap:wrap;
+  padding:20px 28px;
+}
+.nox-art-hero .nh-logo{display:flex;align-items:baseline;gap:8px}
+.nox-art-hero .nh-logo-main{font-weight:700;font-size:22px;letter-spacing:.01em;text-transform:uppercase}
+.nox-art-hero .nh-logo-sub{font-weight:600;font-size:13px;text-transform:uppercase;color:var(--h-ink-2)}
+.nox-art-hero .nh-menu{list-style:none;margin:0 0 0 auto;padding:0;display:flex;gap:26px;flex-wrap:wrap}
+.nox-art-hero .nh-menu a{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.nox-art-hero .nh-menu a:hover{color:var(--h-ink-2)}
+.nox-art-hero .nh-follow{
+  display:inline-flex;align-items:center;gap:8px;background:var(--h-ink);color:var(--h-paper);
+  border-radius:999px;padding:9px 16px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+}
+.nox-art-hero .nh-arrow{display:inline-block}
+
+.nox-art-hero .nh-stage{position:relative;min-height:600px;padding:36px 28px 60px}
+.nox-art-hero .nh-shapes{position:absolute;top:-8%;right:-10%;width:58%;height:120%;z-index:0;pointer-events:none}
+.nox-art-hero .nh-badge{
+  position:absolute;top:96px;right:130px;z-index:2;width:60px;height:60px;border-radius:50%;
+  background:var(--h-ink);color:var(--h-paper);display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:var(--h-sans);font-weight:700;font-size:13px;line-height:1.1;
+}
+.nox-art-hero .nh-content{position:relative;z-index:1;max-width:560px}
+.nox-art-hero .nh-title{
+  margin:0;font-weight:700;line-height:.85;letter-spacing:-.01em;text-transform:uppercase;
+  font-size:clamp(48px, 9vw, 118px);
+}
+.nox-art-hero .nh-subtitle{
+  margin:10px 0 0;font-weight:700;text-transform:uppercase;letter-spacing:.01em;
+  font-size:clamp(16px, 2vw, 22px);line-height:1.2;max-width:420px;
+}
+.nox-art-hero .nh-eyebrow{
+  margin:34px 0 0;font-size:13px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--h-ink-2);
+}
+.nox-art-hero .nh-dates{
+  margin:4px 0 0;font-weight:700;line-height:1.02;text-transform:uppercase;
+  font-size:clamp(30px, 5vw, 52px);
+}
+.nox-art-hero .nh-desc{
+  margin:22px 0 0;font-family:var(--h-sans);font-size:14px;line-height:1.5;color:var(--h-ink);max-width:280px;
+}
+.nox-art-hero .nh-cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:28px}
+.nox-art-hero .nh-btn{
+  display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:14px 22px;
+  font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+}
+.nox-art-hero .nh-btn-solid{background:var(--h-ink);color:var(--h-paper)}
+.nox-art-hero .nh-btn-solid:hover{opacity:.85}
+.nox-art-hero .nh-btn-outline{background:none;border:1px solid var(--h-ink);color:var(--h-ink)}
+.nox-art-hero .nh-btn-outline:hover{background:var(--h-ink);color:var(--h-paper)}
+
+.nox-art-hero .nh-side-label{
+  position:absolute;right:18px;top:50%;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl;
+  font-family:var(--h-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--h-ink-2);z-index:1;
+}
+.nox-art-hero .nh-tag{
+  position:absolute;right:18px;bottom:18px;text-align:right;font-family:var(--h-mono);font-size:11px;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--h-ink-2);z-index:1;
+}
+.nox-art-hero .nh-tag-arrow{display:block;margin-top:4px}
+
+@media (max-width:900px){
+  .nox-art-hero .nh-menu{display:none}
+  .nox-art-hero .nh-shapes{width:80%;right:-30%;opacity:.7}
+  .nox-art-hero .nh-badge{top:auto;bottom:18px;left:18px;right:auto}
+  .nox-art-hero .nh-side-label{display:none}
+}

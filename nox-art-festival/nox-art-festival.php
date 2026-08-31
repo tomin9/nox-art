@@ -27,6 +27,7 @@ require_once NOX_ART_DIR . 'includes/admin-columns.php';
 require_once NOX_ART_DIR . 'includes/map-settings.php';
 require_once NOX_ART_DIR . 'includes/data.php';
 require_once NOX_ART_DIR . 'includes/shortcode.php';
+require_once NOX_ART_DIR . 'includes/hero.php';
 
 /**
  * Pri prvej aktivácii treba "preplaviť" pravidlá permalinkov, aby fungovali
