@@ -3011,3 +3011,13 @@ body.menu-open .site-header .brand-nox-logo {
    šablóne – festival má vlastnú hlavičku a banner by ju prekrýval/rušil.
    ========================================================================= */
 .nox-art-site .simple-banner{display:none !important}
+
+/* =========================================================================
+   Keď je viditeľný WP admin panel (prihlásený používateľ), treba fixnú
+   hlavičku posunúť pod neho – inak sa jej horná časť prekrýva s admin
+   lištou a vyzerá to stlačené/zarovnané úplne navrch.
+   ========================================================================= */
+.nox-art-site.admin-bar .site-header{top:32px !important}
+@media (max-width:782px){
+  .nox-art-site.admin-bar .site-header{top:46px !important}
+}
