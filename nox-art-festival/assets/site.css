@@ -3005,3 +3005,9 @@ body.menu-open .site-header .brand-nox-logo {
   .nox-art-site .menu-toggle{display:block !important}
 }
 .nox-art-site img{max-width:100%}
+
+/* =========================================================================
+   Skrytie pluginu "Simple Banner" (celoplošné oznámenie) len na tejto
+   šablóne – festival má vlastnú hlavičku a banner by ju prekrýval/rušil.
+   ========================================================================= */
+.nox-art-site .simple-banner{display:none !important}
