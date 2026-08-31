@@ -69,44 +69,61 @@ function wireGo(root){
 }
 
 /* ---------------------------------------------------------------------
-   Mapa (Leaflet)
+   Mapa (Mapbox GL)
    --------------------------------------------------------------------- */
 var map = null;
 var markers = {};
+var mapConfig = (typeof NOX_ART_MAP !== "undefined") ? NOX_ART_MAP : { token: "", style: "" };
 
 function initMap(){
   var mapEl = document.getElementById("na-map");
-  if (!mapEl || typeof L === "undefined") return;
-  map = L.map(mapEl, { scrollWheelZoom: false });
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19,
-    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-  }).addTo(map);
-
-  var icon = L.divIcon({ className: "na-marker", iconSize: [22,22], iconAnchor: [11,22] });
-  var pts = [];
-  DATA.miesta.forEach(function(m){
-    if (m.lat == null || m.lng == null) return;
-    var mk = L.marker([m.lat, m.lng], { icon: icon }).addTo(map);
-    mk.bindPopup("<strong>" + esc(m.nazov) + "</strong>" + (m.adresa ? "<br>" + esc(m.adresa) : ""));
-    mk.on("click", function(){ goDetail("mapa", m.id); });
-    markers[m.id] = mk;
-    pts.push([m.lat, m.lng]);
-  });
-
-  if (pts.length){
-    map.fitBounds(pts, { padding: [50,50], maxZoom: 16 });
-  } else {
-    map.setView([48.7715, 18.6045], 13);
+  if (!mapEl) return;
+  if (!mapConfig.token || typeof mapboxgl === "undefined"){
+    mapEl.innerHTML = '<div style="padding:20px;font-family:monospace;font-size:12px;color:#8d939a">'
+      + 'Mapa nie je nastavená. V administrácii choď do <strong>NOX:ART &rsaquo; Nastavenia mapy</strong> a vlož Mapbox access token.'
+      + '</div>';
+    return;
   }
-  setTimeout(function(){ map.invalidateSize(); }, 200);
+  mapboxgl.accessToken = mapConfig.token;
+
+  var pts = DATA.miesta.filter(function(m){ return m.lat != null && m.lng != null; });
+  var center = pts.length ? [pts[0].lng, pts[0].lat] : [18.6045, 48.7715];
+
+  map = new mapboxgl.Map({
+    container: mapEl,
+    style: mapConfig.style || "mapbox://styles/mapbox/dark-v11",
+    center: center,
+    zoom: 13
+  });
+  map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "bottom-right");
+
+  map.on("load", function(){
+    pts.forEach(function(m){
+      var el = document.createElement("div");
+      el.className = "na-marker";
+      var mk = new mapboxgl.Marker({ element: el, anchor: "bottom" })
+        .setLngLat([m.lng, m.lat])
+        .setPopup(new mapboxgl.Popup({ offset: 24 }).setHTML(
+          "<strong>" + esc(m.nazov) + "</strong>" + (m.adresa ? "<br>" + esc(m.adresa) : "")
+        ))
+        .addTo(map);
+      el.addEventListener("click", function(){ goDetail("mapa", m.id); });
+      markers[m.id] = mk;
+    });
+
+    if (pts.length > 1){
+      var bounds = new mapboxgl.LngLatBounds();
+      pts.forEach(function(m){ bounds.extend([m.lng, m.lat]); });
+      map.fitBounds(bounds, { padding: 60, maxZoom: 16, duration: 0 });
+    }
+  });
 }
 function focusMarker(miestoId){
   if (!map) return;
   var mk = markers[miestoId];
   if (!mk) return;
-  map.flyTo(mk.getLatLng(), Math.max(map.getZoom(), 16), { duration: 0.6 });
-  mk.openPopup();
+  map.flyTo({ center: mk.getLngLat(), zoom: Math.max(map.getZoom(), 16), duration: 600 });
+  if (!mk.getPopup().isOpen()) mk.togglePopup();
 }
 
 /* ---------------------------------------------------------------------
