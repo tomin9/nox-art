@@ -249,6 +249,23 @@
   const allPanels = state.flatMap(({ panels }) => panels);
   allPanels.forEach((panel, i) => { panel.style.zIndex = String(allPanels.length - i); });
 
+  // Panely bližšie k začiatku zásobníka končia o kúsok skôr nad spodkom
+  // obrazovky (kaskádovito po 50px), takže spod nich vždy vykúka zaoblený
+  // spodný okraj ďalšieho panela – ako rozložený balíček kariet. Úplne
+  // posledný panel na stránke je bez tohto odsadenia aj bez zaoblenia
+  // (je to "spodná karta" celej skladačky).
+  const STEP = 50;
+  const applyCascade = () => {
+    const n = allPanels.length;
+    allPanels.forEach((panel, i) => {
+      const fromEnd = n - 1 - i;
+      panel.style.height = fromEnd === 0 ? '' : `calc(100svh - ${fromEnd * STEP}px)`;
+      panel.style.borderRadius = fromEnd === 0 ? '0' : '';
+    });
+  };
+  applyCascade();
+  window.addEventListener('resize', applyCascade);
+
   const update = () => {
     const vh = window.innerHeight;
 
