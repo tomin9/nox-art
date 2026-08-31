@@ -49,6 +49,7 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
 <main>
 <div class="stack-group" data-stack-group style="--panels:3">
 <section class="hero stack-panel" id="top">
+<div class="stack-inner">
   <div class="hero-copy reveal">
     <h1 class="sr-only">NOX:ART — Medzinárodný festival súčasného umenia</h1>
     <p class="hero-location-title">Sídlisko Píly</p>
@@ -68,9 +69,11 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
   <a class="hero-scroll" href="#festival" aria-label="Posunúť sa nižšie">
     <span>#NOXART26</span><b aria-hidden="true">↓</b>
   </a>
+</div>
 </section>
 
 <section class="section about stack-panel" id="festival" aria-labelledby="festival-title">
+<div class="stack-inner">
   <div class="section-label reveal"><span>01</span> O festivale</div>
   <div class="about-grid">
     <div class="about-heading reveal">
@@ -94,9 +97,11 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
       <span>SVETLO — OBRAZ — ZVUK — PRIESTOR — NOX:ART — </span>
     </div>
   </div>
+</div>
 </section>
 
 <section class="section program stack-panel" id="program" aria-labelledby="program-title">
+<div class="stack-inner">
   <div class="section-label section-label-light reveal"><span>02</span> Program</div>
   <div class="program-head reveal">
     <h2 id="program-title">Dve noci.<br>Jedna svetelná trasa.</h2>
@@ -129,6 +134,7 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
   <?php else: ?>
   <div class="empty" style="color:var(--paper);opacity:.7">Program zatiaľ nie je zverejnený.</div>
   <?php endif; ?>
+</div>
 </section>
 </div>
 
@@ -162,6 +168,7 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
 
 <div class="stack-group" data-stack-group style="--panels:3">
 <section class="section info stack-panel" id="info" aria-labelledby="info-title">
+<div class="stack-inner">
   <div class="section-label reveal"><span>04</span> Mapa a praktické info</div>
   <div class="info-grid">
     <div class="route-map reveal" id="mapa" aria-label="Mapa festivalových diel">
@@ -185,9 +192,11 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
       <a class="button button-dark" href="https://maps.google.com/?q=S%C3%ADdlisko+P%C3%ADly+Prievidza" target="_blank" rel="noreferrer">Otvoriť polohu <span aria-hidden="true">↗</span></a>
     </div>
   </div>
+</div>
 </section>
 
 <section class="section partners stack-panel" id="partneri" aria-labelledby="partners-title">
+<div class="stack-inner">
   <div class="section-label reveal"><span>05</span> Partneri</div>
   <div class="partners-head reveal">
     <h2 id="partners-title">Festival vzniká vďaka ľuďom a organizáciám, ktoré veria verejnému priestoru.</h2>
@@ -201,9 +210,11 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
     <div class="partner"><small>Mediálny partner</small><strong>MÉDIÁ</strong></div>
     <div class="partner"><small>Podpora</small><strong>FOND</strong></div>
   </div>
+</div>
 </section>
 
 <section class="newsletter stack-panel" id="kontakt" aria-labelledby="newsletter-title">
+<div class="stack-inner">
   <div class="newsletter-art" aria-hidden="true"><span></span><i></i><b></b></div>
   <div class="newsletter-copy reveal">
     <p class="section-label"><span>06</span> Zostaň v obraze</p>
@@ -216,6 +227,7 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
     <p class="form-status" data-form-status role="status" aria-live="polite"></p>
     <p class="newsletter-note">Prihlásením súhlasíte so zasielaním noviniek o festivale. Z odberu sa môžete kedykoľvek odhlásiť.</p>
   </div>
+</div>
 </section>
 </div>
 </main>

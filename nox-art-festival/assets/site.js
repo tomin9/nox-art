@@ -249,6 +249,10 @@
   const allPanels = state.flatMap(({ panels }) => panels);
   allPanels.forEach((panel, i) => { panel.style.zIndex = String(allPanels.length - i); });
 
+  // Rozostrenie sa aplikuje na vnútorný obsah panela, nie na panel samotný –
+  // inak by bol rozmazaný aj jeho ostrý zaoblený okraj.
+  const innerOf = new Map(allPanels.map((panel) => [panel, panel.querySelector(':scope > .stack-inner') || panel]));
+
   // Panely bližšie k začiatku zásobníka končia o kúsok skôr nad spodkom
   // obrazovky (kaskádovito po 50px), takže spod nich vždy vykúka zaoblený
   // spodný okraj ďalšieho panela – ako rozložený balíček kariet. Úplne
@@ -282,12 +286,13 @@
         panel.style.transform = reduceMotion ? '' : `translateY(${-departProgress * 100}%)`;
 
         // Rozostrenie tohto panela riadi to, ako ďaleko odišiel PREDCHÁDZAJÚCI (panel i-1).
+        const inner = innerOf.get(panel);
         if (i === 0) {
-          panel.style.filter = '';
+          inner.style.filter = '';
         } else {
           const prevDepart = Math.min(Math.max((scrolled - (i - 1) * vh) / vh, 0), 1);
           const blur = reduceMotion ? 0 : (1 - prevDepart) * MAX_BLUR;
-          panel.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : '';
+          inner.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : '';
         }
 
         // Po prejdení celej skupiny sa posledný panel uvoľní z position:fixed,
