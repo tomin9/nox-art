@@ -31,9 +31,15 @@ function nox_art_site_enqueue_assets() {
     wp_enqueue_style('nox-art-mapbox-css', 'https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css', [], '3.1.2');
     wp_enqueue_script('nox-art-mapbox-js', 'https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js', [], '3.1.2', true);
 
-    wp_enqueue_style('nox-art-site-css', NOX_ART_URL . 'assets/site.css', [], NOX_ART_VERSION);
+    // Verzia podľa času poslednej úpravy súboru – nie pevné číslo z hlavičky
+    // pluginu – aby prehliadač/cache/optimalizačné pluginy nikdy neservírovali
+    // zastaranú kešovanú verziu po tom, čo GitHub Plugin Sync nahradí súbory.
+    $site_css_path = NOX_ART_DIR . 'assets/site.css';
+    $site_js_path = NOX_ART_DIR . 'assets/site.js';
 
-    wp_enqueue_script('nox-art-site-js', NOX_ART_URL . 'assets/site.js', ['nox-art-mapbox-js'], NOX_ART_VERSION, true);
+    wp_enqueue_style('nox-art-site-css', NOX_ART_URL . 'assets/site.css', [], file_exists($site_css_path) ? filemtime($site_css_path) : NOX_ART_VERSION);
+
+    wp_enqueue_script('nox-art-site-js', NOX_ART_URL . 'assets/site.js', ['nox-art-mapbox-js'], file_exists($site_js_path) ? filemtime($site_js_path) : NOX_ART_VERSION, true);
     wp_localize_script('nox-art-site-js', 'NOX_SITE_MAP', [
         'token' => $map['token'],
         'style' => $map['style'],
