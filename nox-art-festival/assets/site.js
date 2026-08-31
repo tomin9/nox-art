@@ -283,7 +283,11 @@
       // začiatku stránky. Skupina je "aktívna" až keď sa k nej scrollovaním
       // reálne dostalo (jej horný okraj dosiahol/presiahol vrch obrazovky);
       // predtým nech sú jej panely neviditeľné.
-      const reached = rect.top <= 0;
+      // Tolerancia 100px: keď je používateľ prihlásený, WP admin lišta
+      // posunie celú stránku o pár desiatok px nižšie, takže aj úplne prvá
+      // skupina má na začiatku rect.top mierne nad nulou – bez tolerancie
+      // by to "0" pravidlo schovalo aj ju hneď od začiatku.
+      const reached = rect.top <= 100;
       panels.forEach((panel) => { panel.style.visibility = reached ? '' : 'hidden'; });
       if (!reached) return;
 
