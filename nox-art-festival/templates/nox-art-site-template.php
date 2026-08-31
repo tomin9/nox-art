@@ -47,11 +47,9 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
 </header>
 
 <main>
-<section class="hero" id="top" aria-labelledby="hero-title">
+<section class="hero" id="top">
   <div class="hero-copy reveal">
-    <h1 class="hero-title-logo" id="hero-title" aria-label="NOX:ART — Medzinárodný festival súčasného umenia">
-      <img src="<?php echo nox_art_site_asset('noxart-official-lockup.png'); ?>" width="561" height="195" alt="" aria-hidden="true">
-    </h1>
+    <h1 class="sr-only">NOX:ART — Medzinárodný festival súčasného umenia</h1>
     <p class="hero-location-title">Sídlisko Píly</p>
     <div class="hero-meta">
       <p class="hero-date"><strong>30.&ndash;31.</strong><br>október<br><span>&rsquo;26</span></p>
