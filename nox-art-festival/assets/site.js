@@ -293,12 +293,18 @@
   const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   const STEP = 30;      // kaskádovité odsadenie spodných hrán kariet
-  const MAX_BLUR = 6;   // rozostrenie karty, ktorá sa práve odkrýva
+  /* Karta, ktorá sa práve odkrýva, sa "zaostruje" priehľadnosťou a jemným
+     priblížením – NIE rozostrením. filter:blur() na celoobrazovkovej vrstve
+     musí prehliadač prekresliť pri každej zmene hodnoty a jeho cena rastie
+     s plochou, takže spôsoboval sekanie. Opacity aj transform naproti tomu
+     zvláda grafická karta priamo na hotovej vrstve, bez prekresľovania. */
+  const MIN_FADE = 0.5;    // priehľadnosť obsahu na začiatku odkrývania
+  const MAX_ZOOM = 0.02;   // o koľko je obsah na začiatku zmenšený (2 %)
 
   // Posledné zapísané hodnoty – do štýlov zapisujeme len pri skutočnej zmene.
   // Bez toho by sme pri každom snímku prepisovali 7 transformov a 7 filtrov,
   // čo prehliadač núti stále znova prekresľovať.
-  const prev = panels.map(() => ({ transform: null, blur: null, released: null, hint: null }));
+  const prev = panels.map(() => ({ transform: null, focus: null, released: null, hint: null }));
 
   let groupTop = 0;
   let vh = 0;
@@ -320,8 +326,10 @@
       panel.style.willChange = '';
       panel.classList.remove('is-released');
       inners[i].style.filter = '';
+      inners[i].style.opacity = '';
+      inners[i].style.transform = '';
       inners[i].style.willChange = '';
-      prev[i].transform = prev[i].blur = prev[i].released = prev[i].hint = null;
+      prev[i].transform = prev[i].focus = prev[i].released = prev[i].hint = null;
     });
   };
 
@@ -376,34 +384,28 @@
         state.hint = hint;
       }
 
-      /* Rozostrenie dostáva VÝHRADNE karta, ktorá sa práve odkrýva spod tej
-         odchádzajúcej. Predtým boli rozostrené naraz všetky karty pod vrchnou
-         (pri štarte stránky 6 rozmazaných celoobrazovkových vrstiev naraz) –
-         to je pre prehliadač extrémne drahé a bola to hlavná príčina sekania.
-         Z ostatných kariet aj tak vidno len ~30px prúžok, kde rozostrenie
-         nemá žiadny vizuálny prínos. Hodnotu navyše zaokrúhľujeme na pol
-         pixela, aby sa filter neprepočítaval pri každom snímku. */
-      let blur = 0;
-      if (i === activeIdx + 1) {
-        const raw = Math.min(Math.max(scrolled / vh - activeIdx, 0), 1);
-        /* Rampu stláčame do prvej polovice prechodu. Cena rozostrenia rastie
-           s plochou, ktorú musí GPU prekresliť – a tá sa s odchodom vrchnej
-           karty zväčšuje. Preto rozostrenie dobehne do nuly ešte kým je
-           odkrytý pruh malý; v druhej polovici prechodu už GPU rieši len
-           posun vrstvy, kde sekanie začínalo. */
-        const revealProgress = Math.min(raw / 0.5, 1);
-        // Kroky po 2px (6 → 4 → 2 → 0): rozmazanie celoobrazovkovej vrstvy je
-        // pre GPU najdrahšia operácia na stránke a musí sa prepočítať pri
-        // KAŽDEJ zmene hodnoty. Pri jemných krokoch to bolo ~12 prepočtov na
-        // jeden prechod, teraz sú štyri – počas rýchleho prechodu je rozdiel
-        // okom nepostrehnuteľný, ale plynulosť výrazne stúpne.
-        blur = Math.round((1 - revealProgress) * MAX_BLUR / 2) * 2;
-      }
-      if (blur !== state.blur) {
-        inners[i].style.filter = blur > 0 ? `blur(${blur}px)` : '';
-        // will-change zapíname len na tú jednu kartu, ktorá sa práve mení.
-        inners[i].style.willChange = blur > 0 ? 'filter' : '';
-        state.blur = blur;
+      /* "Zaostrovanie" dostáva VÝHRADNE karta, ktorá sa práve odkrýva spod tej
+         odchádzajúcej – z ostatných vidno len ~30px prúžok, kde by efekt nemal
+         žiadny vizuálny prínos a stál by výkon.
+         focus = 0 na začiatku odkrývania, 1 keď je karta úplne odkrytá. */
+      const focus = i === activeIdx + 1
+        ? Math.min(Math.max(scrolled / vh - activeIdx, 0), 1)
+        : 1;   // ostatné karty nechávame bez štýlov – žiadne vrstvy navyše
+      // Zaokrúhlenie na stotinu: bráni zbytočným zápisom pri mikropohyboch
+      // kolieska, ale je dosť jemné na to, aby prechod pôsobil spojito.
+      const focusStep = Math.round(focus * 100) / 100;
+      if (focusStep !== state.focus) {
+        if (focusStep >= 1) {
+          inners[i].style.opacity = '';
+          inners[i].style.transform = '';
+          inners[i].style.willChange = '';
+        } else {
+          inners[i].style.opacity = (MIN_FADE + (1 - MIN_FADE) * focusStep).toFixed(3);
+          inners[i].style.transform = `scale(${(1 - MAX_ZOOM * (1 - focusStep)).toFixed(4)})`;
+          // will-change zapíname len na tú jednu kartu, ktorá sa práve mení.
+          inners[i].style.willChange = 'opacity, transform';
+        }
+        state.focus = focusStep;
       }
 
       if (isLast) {

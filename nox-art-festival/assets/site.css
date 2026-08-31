@@ -3036,10 +3036,12 @@ body.menu-open .site-header .brand-nox-logo {
 .nox-art-site .stack-panel.installations,
 .nox-art-site .stack-panel.partners,
 .nox-art-site .stack-panel.newsletter{background:var(--paper)}
-/* Rozostrenie ide na vnútorný obsah, nie na samotný panel – vďaka tomu
-   zostáva zaoblený okraj karty vždy ostrý, rozmazáva sa len to vnútri.
-   (will-change:filter nastavuje JS len tej jednej karte, ktorá sa práve
-   odkrýva – mať ho natrvalo na všetkých je zbytočne pamäťovo drahé.) */
+/* Efekt "zaostrenia" ide na vnútorný obsah, nie na samotný panel – vďaka tomu
+   zostáva zaoblený okraj karty vždy ostrý, mení sa len to vnútri. JS naň
+   zapisuje opacity + scale (nie filter:blur – ten musí prehliadač pri každej
+   zmene prekresliť a jeho cena rastie s odkrytou plochou, čo spôsobovalo
+   sekanie; opacity a transform zvláda grafická karta bez prekresľovania).
+   will-change nastavuje JS len tej jednej karte, ktorá sa práve odkrýva. */
 /* Pozor: overflow tu zámerne NEobmedzujeme – v hero sekcii sú absolútne
    umiestnené prvky (AP odznak, bočný text, šípka nadol), ktoré presahujú
    vnútorný obal a orezali by sa. Karta samotná ich aj tak oreže na svojom
