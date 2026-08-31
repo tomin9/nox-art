@@ -2993,3 +2993,15 @@ body.menu-open .site-header .brand-nox-logo {
   border:2px solid var(--paper);box-shadow:0 3px 10px rgba(0,0,0,.35);cursor:pointer;
 }
 .installation-card.is-map-active{outline:2px solid var(--pink);outline-offset:-2px}
+
+/* =========================================================================
+   Obranné pravidlá – tvrdo vynútia layout hlavičky/menu aj keby sa odniekiaľ
+   (mimo enqueue systému, napr. vlastný <style> blok témy) primiešal
+   konfliktný globálny štýl (napr. button{display:...}).
+   ========================================================================= */
+.nox-art-site .site-header{position:fixed !important;top:0 !important;left:0 !important;right:0 !important;width:100% !important;margin:0 !important;max-width:none !important;border-radius:0 !important;box-sizing:border-box !important}
+.nox-art-site .menu-toggle{display:none !important}
+@media (max-width:900px){
+  .nox-art-site .menu-toggle{display:block !important}
+}
+.nox-art-site img{max-width:100%}
