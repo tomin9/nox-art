@@ -3004,7 +3004,7 @@ body.menu-open .site-header .brand-nox-logo {
    ========================================================================= */
 .nox-art-site .stack-group{
   position:relative;
-  height:calc(var(--panels, 1) * 100svh);
+  height:calc((var(--panels, 1) + 1) * 100svh);
 }
 .nox-art-site .stack-panel{
   position:fixed;

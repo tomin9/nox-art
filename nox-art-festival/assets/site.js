@@ -276,7 +276,10 @@
     state.forEach(({ group, panels }) => {
       if (!panels.length) return;
       const rect = group.getBoundingClientRect();
-      const total = panels.length * vh;
+      // +1vh navyše: priestor na to, aby posledný panel v skupine chvíľu
+      // pokojne postál (bez odchodu), kým sa uvoľní ďalšiemu obsahu –
+      // inak by sa uvoľnil hneď v momente, keď sa vôbec objaví.
+      const total = (panels.length + 1) * vh;
       const scrolled = Math.min(Math.max(-rect.top, 0), total - vh);
 
       panels.forEach((panel, i) => {
