@@ -1,11 +1,13 @@
 .nox-art-app{
-  --ink:#14161a;
-  --ink-2:#5a6068;
-  --ink-3:#8d939a;
-  --paper:#f4f3f0;
-  --line:#d5d3cd;
+  --ink:#17140f;
+  --ink-2:#5c574a;
+  --ink-3:#8d8676;
+  --paper:#eee8d9;
+  --line:#dcd4bd;
   --white:#ffffff;
-  --accent:#d0342c;
+  --accent:#e8407c;
+  --accent-2:#f5941d;
+  --accent-grad:linear-gradient(135deg, var(--accent), var(--accent-2));
   --sans:"Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
   --serif:"Newsreader", Georgia, serif;
   --mono:"IBM Plex Mono", ui-monospace, monospace;
@@ -24,7 +26,7 @@
   padding:10px 16px;border-bottom:1px solid var(--line);background:var(--paper);
 }
 .nox-art-app header h1{
-  font-family:var(--sans);font-weight:700;font-size:19px;letter-spacing:.14em;
+  font-family:var(--sans);font-weight:700;font-size:22px;letter-spacing:.01em;
   text-transform:uppercase;margin:0;
 }
 .nox-art-app header .sub{font-family:var(--mono);font-size:11px;color:var(--ink-2);letter-spacing:.04em}
@@ -34,7 +36,7 @@
   background:none;border:1px solid var(--line);padding:5px 10px;cursor:pointer;border-radius:0;
 }
 .nox-art-app .tool:hover{border-color:var(--ink)}
-.nox-art-app .tool[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.nox-art-app .tool[aria-pressed="true"]{background:var(--accent-grad);color:var(--white);border-color:transparent}
 
 .nox-art-app main{flex:1;display:grid;grid-template-columns:3fr 1fr;min-height:0}
 @media (max-width:900px){
@@ -57,7 +59,7 @@
 }
 .nox-art-app .na-marker{
   width:22px;height:22px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);
-  background:var(--accent);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.45);cursor:pointer;
+  background:var(--accent-grad);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.45);cursor:pointer;
 }
 
 .nox-art-app #na-panel{overflow-y:auto;background:var(--paper)}
@@ -105,7 +107,7 @@
 /* ---------- program ---------- */
 .nox-art-app .day-group{margin-bottom:22px}
 .nox-art-app .day-head{font-family:var(--sans);text-transform:uppercase;letter-spacing:.1em;font-weight:700;
-  font-size:14px;color:var(--accent);margin:0 0 6px}
+  font-size:14px;color:var(--accent-2);margin:0 0 6px}
 .nox-art-app .prog-item{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);align-items:baseline}
 .nox-art-app .prog-time{font-family:var(--mono);font-size:12px;color:var(--ink-2);flex:0 0 auto;min-width:70px}
 .nox-art-app .prog-body{flex:1}
