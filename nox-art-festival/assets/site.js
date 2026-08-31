@@ -218,3 +218,37 @@
     });
   });
 })();
+
+
+/* =========================================================================
+   "Stack" efekt sekcií – rozostrenie panela, kým sa pri scrollovaní
+   nedostane navrch (position: sticky robí samotné "prilepenie a
+   prekrytie", toto len dolaďuje ostrosť podľa toho, ako blízko je panel
+   svojej "prilepenej" pozícii).
+   ========================================================================= */
+(() => {
+  const panels = [...document.querySelectorAll('.stack-panel')];
+  if (!panels.length) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const BLUR_RANGE = 260; // px scrollu, počas ktorých rozostrenie mizne
+  const MAX_BLUR = 10;
+
+  const update = () => {
+    panels.forEach((panel) => {
+      const top = panel.getBoundingClientRect().top;
+      const progress = Math.min(Math.max(top / BLUR_RANGE, 0), 1);
+      const blur = progress * MAX_BLUR;
+      panel.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : '';
+    });
+  };
+
+  update();
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { update(); ticking = false; });
+  }, { passive: true });
+  window.addEventListener('resize', update);
+})();

@@ -47,7 +47,7 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
 </header>
 
 <main>
-<section class="hero" id="top">
+<section class="hero stack-panel" id="top">
   <div class="hero-copy reveal">
     <h1 class="sr-only">NOX:ART — Medzinárodný festival súčasného umenia</h1>
     <p class="hero-location-title">Sídlisko Píly</p>
@@ -69,7 +69,7 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
   </a>
 </section>
 
-<section class="section about" id="festival" aria-labelledby="festival-title">
+<section class="section about stack-panel" id="festival" aria-labelledby="festival-title">
   <div class="section-label reveal"><span>01</span> O festivale</div>
   <div class="about-grid">
     <div class="about-heading reveal">
@@ -95,7 +95,7 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
   </div>
 </section>
 
-<section class="section program" id="program" aria-labelledby="program-title">
+<section class="section program stack-panel" id="program" aria-labelledby="program-title">
   <div class="section-label section-label-light reveal"><span>02</span> Program</div>
   <div class="program-head reveal">
     <h2 id="program-title">Dve noci.<br>Jedna svetelná trasa.</h2>
@@ -158,7 +158,7 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
   </div>
 </section>
 
-<section class="section info" id="info" aria-labelledby="info-title">
+<section class="section info stack-panel" id="info" aria-labelledby="info-title">
   <div class="section-label reveal"><span>04</span> Mapa a praktické info</div>
   <div class="info-grid">
     <div class="route-map reveal" id="mapa" aria-label="Mapa festivalových diel">
@@ -184,7 +184,7 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
   </div>
 </section>
 
-<section class="section partners" id="partneri" aria-labelledby="partners-title">
+<section class="section partners stack-panel" id="partneri" aria-labelledby="partners-title">
   <div class="section-label reveal"><span>05</span> Partneri</div>
   <div class="partners-head reveal">
     <h2 id="partners-title">Festival vzniká vďaka ľuďom a organizáciám, ktoré veria verejnému priestoru.</h2>
@@ -200,7 +200,7 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
   </div>
 </section>
 
-<section class="newsletter" id="kontakt" aria-labelledby="newsletter-title">
+<section class="newsletter stack-panel" id="kontakt" aria-labelledby="newsletter-title">
   <div class="newsletter-art" aria-hidden="true"><span></span><i></i><b></b></div>
   <div class="newsletter-copy reveal">
     <p class="section-label"><span>06</span> Zostaň v obraze</p>
