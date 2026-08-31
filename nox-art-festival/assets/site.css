@@ -3012,9 +3012,11 @@ body.menu-open .site-header .brand-nox-logo {
   left:0;
   right:0;
   height:100svh;
+  margin:0;
+  min-height:0;
   border-radius:0 0 var(--radius-xl) var(--radius-xl);
   overflow:hidden;
-  box-shadow:0 8px 16px -8px rgba(0,0,0,.4), 0 3px 0 0 #ff00ff;
+  box-shadow:0 8px 16px -8px rgba(0,0,0,.4), 0 1px 0 0 rgba(0,0,0,.35);
   will-change:transform;
 }
 .nox-art-site .stack-panel.is-released{
