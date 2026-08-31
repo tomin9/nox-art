@@ -301,6 +301,15 @@
   const MIN_FADE = 0.5;    // priehľadnosť obsahu na začiatku odkrývania
   const MAX_ZOOM = 0.02;   // o koľko je obsah na začiatku zmenšený (2 %)
 
+  /* Odchod karty nie je lineárny: čím je karta vyššie, tým ide rýchlejšie.
+     Miešame lineárny priebeh s parabolickým (x²) – EASE určuje, aký podiel
+     má parabola. Pri 0 je pohyb presne lineárny, pri 1 čisto parabolický
+     (to už pôsobí prudko); 0.35 je jemné zrýchlenie, ktoré je cítiť, ale
+     nevyzerá ako trhnutie. Krivka vždy začína v 0 a končí v 1, takže
+     nadväznosť medzi kartami zostáva presná. */
+  const EASE = 0.35;
+  const ease = (t) => t * (1 - EASE) + t * t * EASE;
+
   // Posledné zapísané hodnoty – do štýlov zapisujeme len pri skutočnej zmene.
   // Bez toho by sme pri každom snímku prepisovali 7 transformov a 7 filtrov,
   // čo prehliadač núti stále znova prekresľovať.
@@ -369,7 +378,8 @@
       const isLast = i === panels.length - 1;
       const state = prev[i];
 
-      const depart = isLast ? 0 : Math.min(Math.max((scrolled - i * vh) / vh, 0), 1);
+      const raw = isLast ? 0 : Math.min(Math.max((scrolled - i * vh) / vh, 0), 1);
+      const depart = ease(raw);
       const transform = depart > 0 ? `translate3d(0,${(-depart * 100).toFixed(2)}%,0)` : '';
       if (transform !== state.transform) {
         panels[i].style.transform = transform;
@@ -389,7 +399,7 @@
          žiadny vizuálny prínos a stál by výkon.
          focus = 0 na začiatku odkrývania, 1 keď je karta úplne odkrytá. */
       const focus = i === activeIdx + 1
-        ? Math.min(Math.max(scrolled / vh - activeIdx, 0), 1)
+        ? ease(Math.min(Math.max(scrolled / vh - activeIdx, 0), 1))
         : 1;   // ostatné karty nechávame bez štýlov – žiadne vrstvy navyše
       // Zaokrúhlenie na stotinu: bráni zbytočným zápisom pri mikropohyboch
       // kolieska, ale je dosť jemné na to, aby prechod pôsobil spojito.
