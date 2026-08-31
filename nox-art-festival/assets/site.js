@@ -293,6 +293,12 @@
   const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   const STEP = 30;      // kaskádovité odsadenie spodných hrán kariet
+  /* Karty neodchádzajú úplne z obrazovky – zaparkujú tesne pod lištou menu
+     a nechajú tam vidieť svoju spodnú hranu. Prvá odídená karta končí 5px
+     pod menu, každá ďalšia o 5px nižšie, takže hore vzniká rovnaká kaskáda
+     hrán, akú majú karty dole. */
+  const PARK_GAP = 5;   // medzera medzi lištou menu a spodnou hranou prvej karty
+  const PARK_STEP = 5;  // o koľko nižšie parkuje každá ďalšia karta
   /* Karta, ktorá sa práve odkrýva, sa "zaostruje" priehľadnosťou a jemným
      priblížením – NIE rozostrením. filter:blur() na celoobrazovkovej vrstve
      musí prehliadač prekresliť pri každej zmene hodnoty a jeho cena rastie
@@ -314,6 +320,10 @@
   // Bez toho by sme pri každom snímku prepisovali 7 transformov a 7 filtrov,
   // čo prehliadač núti stále znova prekresľovať.
   const prev = panels.map(() => ({ transform: null, focus: null, released: null, hint: null }));
+
+  const header = document.querySelector('.site-header');
+  // Dráha odchodu každej karty v pixeloch – dopočítava sa v measure().
+  const travel = panels.map(() => 0);
 
   let groupTop = 0;
   let vh = 0;
@@ -357,12 +367,22 @@
     group.style.height = `${(panels.length + 1) * vh}px`;
     maxScroll = panels.length * vh;
 
+    /* Lišta menu je position:fixed, takže jej spodná hrana je voči oknu stále
+       na rovnakom mieste – stačí ju odmerať raz. */
+    const headerBottom = header ? header.getBoundingClientRect().bottom : 0;
+
     const n = panels.length;
     panels.forEach((panel, i) => {
       const fromEnd = n - 1 - i;
+      const height = vh - fromEnd * STEP;
       panel.style.zIndex = String(n - i);
-      panel.style.height = `${vh - fromEnd * STEP}px`;
+      panel.style.height = `${height}px`;
       panel.style.borderRadius = fromEnd === 0 ? '0' : '';
+      /* Kam až karta vycestuje: nie celá svoja výška (to by zmizla), ale len
+         po miesto, kde jej spodná hrana zaparkuje pod menu. Karty s vyšším
+         indexom parkujú o PARK_STEP nižšie, takže hore vznikne kaskáda. */
+      const parkBottom = headerBottom + PARK_GAP + i * PARK_STEP;
+      travel[i] = Math.max(height - parkBottom, 0);
     });
 
   };
@@ -380,7 +400,8 @@
 
       const raw = isLast ? 0 : Math.min(Math.max((scrolled - i * vh) / vh, 0), 1);
       const depart = ease(raw);
-      const transform = depart > 0 ? `translate3d(0,${(-depart * 100).toFixed(2)}%,0)` : '';
+      // Posun v pixeloch (nie v %), lebo cieľová poloha je daná lištou menu.
+      const transform = depart > 0 ? `translate3d(0,${(-depart * travel[i]).toFixed(2)}px,0)` : '';
       if (transform !== state.transform) {
         panels[i].style.transform = transform;
         state.transform = transform;
