@@ -295,10 +295,10 @@
   const STEP = 30;      // kaskádovité odsadenie spodných hrán kariet
   /* Karty neodchádzajú úplne z obrazovky – zaparkujú tesne pod lištou menu
      a nechajú tam vidieť svoju spodnú hranu. Prvá odídená karta končí 5px
-     pod menu, každá ďalšia o 5px nižšie, takže hore vzniká rovnaká kaskáda
+     pod menu, každá ďalšia o 15px nižšie, takže hore vzniká rovnaká kaskáda
      hrán, akú majú karty dole. */
-  const PARK_GAP = 5;   // medzera medzi lištou menu a spodnou hranou prvej karty
-  const PARK_STEP = 5;  // o koľko nižšie parkuje každá ďalšia karta
+  const PARK_GAP = 15;   // medzera medzi lištou menu a spodnou hranou prvej karty
+  const PARK_STEP = 15;  // o koľko nižšie parkuje každá ďalšia karta
   /* Karta, ktorá sa práve odkrýva, sa "zaostruje" priehľadnosťou a jemným
      priblížením – NIE rozostrením. filter:blur() na celoobrazovkovej vrstve
      musí prehliadač prekresliť pri každej zmene hodnoty a jeho cena rastie
