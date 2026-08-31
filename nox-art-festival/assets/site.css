@@ -3090,7 +3090,6 @@ body.menu-open .site-header .brand-nox-logo {
   padding-bottom:6px;
   overflow-x:auto;
   overflow-y:hidden;
-  scroll-snap-type:x proximity;
   overscroll-behavior-x:contain;
   -webkit-overflow-scrolling:touch;
 }
@@ -3098,7 +3097,15 @@ body.menu-open .site-header .brand-nox-logo {
   flex:0 0 clamp(240px, 24vw, 330px);
   min-height:0;
   height:100%;
-  scroll-snap-align:start;
+}
+/* Prechod na hover je v polici vypnutý – inak sa počas listovania spúšťa
+   animácia pri každej karte, cez ktorú prejde kurzor. */
+.nox-art-site .stack-panel .installation-card{
+  transition:none;
+}
+.nox-art-site .stack-panel .installation-card:hover{
+  transform:none;
+  box-shadow:none;
 }
 .nox-art-site .stack-panel .card-visual{
   height:clamp(96px, 20vh, 230px);

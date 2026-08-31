@@ -230,6 +230,15 @@
   });
   map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'bottom-right');
 
+  // Mapa má pružnú výšku (dopĺňa zvyšné miesto v karte), takže pri zmene
+  // veľkosti okna jej treba povedať, nech si prepočíta plátno – inak by
+  // ostalo roztiahnuté v pôvodnom pomere a rozmazané.
+  let mapResizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(mapResizeTimer);
+    mapResizeTimer = setTimeout(() => map.resize(), 200);
+  });
+
   map.on('load', () => {
     pts.forEach((m) => {
       const el = document.createElement('div');
@@ -377,7 +386,12 @@
       let blur = 0;
       if (i === activeIdx + 1) {
         const revealProgress = Math.min(Math.max(scrolled / vh - activeIdx, 0), 1);
-        blur = Math.round((1 - revealProgress) * MAX_BLUR * 2) / 2;
+        // Kroky po 2px (6 → 4 → 2 → 0): rozmazanie celoobrazovkovej vrstvy je
+        // pre GPU najdrahšia operácia na stránke a musí sa prepočítať pri
+        // KAŽDEJ zmene hodnoty. Pri jemných krokoch to bolo ~12 prepočtov na
+        // jeden prechod, teraz sú štyri – počas rýchleho prechodu je rozdiel
+        // okom nepostrehnuteľný, ale plynulosť výrazne stúpne.
+        blur = Math.round((1 - revealProgress) * MAX_BLUR / 2) * 2;
       }
       if (blur !== state.blur) {
         inners[i].style.filter = blur > 0 ? `blur(${blur}px)` : '';
