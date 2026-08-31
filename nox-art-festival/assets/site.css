@@ -3014,7 +3014,7 @@ body.menu-open .site-header .brand-nox-logo {
   height:100svh;
   border-radius:0 0 var(--radius-xl) var(--radius-xl);
   overflow:hidden;
-  box-shadow:0 30px 60px -20px rgba(0,0,0,.4);
+  box-shadow:0 8px 16px -8px rgba(0,0,0,.4);
   will-change:transform;
 }
 .nox-art-site .stack-panel.is-released{
