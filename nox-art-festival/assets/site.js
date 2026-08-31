@@ -276,6 +276,17 @@
     state.forEach(({ group, panels }) => {
       if (!panels.length) return;
       const rect = group.getBoundingClientRect();
+
+      // Panely sú position:fixed, takže bez tohto by boli "vidno" (súperili
+      // by o rovnaké miesto na obrazovke) aj skôr, než sa k ich skupine
+      // vôbec doscrolluje – napr. tmavá "Mapa a info" by presvitala hneď od
+      // začiatku stránky. Skupina je "aktívna" až keď sa k nej scrollovaním
+      // reálne dostalo (jej horný okraj dosiahol/presiahol vrch obrazovky);
+      // predtým nech sú jej panely neviditeľné.
+      const reached = rect.top <= 0;
+      panels.forEach((panel) => { panel.style.visibility = reached ? '' : 'hidden'; });
+      if (!reached) return;
+
       // +1vh navyše: priestor na to, aby posledný panel v skupine chvíľu
       // pokojne postál (bez odchodu), kým sa uvoľní ďalšiemu obsahu –
       // inak by sa uvoľnil hneď v momente, keď sa vôbec objaví.
