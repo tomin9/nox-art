@@ -312,7 +312,6 @@
       panel.classList.remove('is-released');
       inners[i].style.filter = '';
       inners[i].style.willChange = '';
-      inners[i].classList.remove('can-scroll');
       prev[i].transform = prev[i].blur = prev[i].released = prev[i].hint = null;
     });
   };
@@ -340,12 +339,6 @@
       panel.style.borderRadius = fromEnd === 0 ? '0' : '';
     });
 
-    // Vnútorné scrollovanie zapneme len kartám, ktorých obsah sa naozaj
-    // nezmestí (tolerancia 8px kvôli zaokrúhľovaniu) – inak by koliesko
-    // myši ostávalo "uväznené" v karte namiesto posúvania stránky.
-    inners.forEach((inner) => {
-      inner.classList.toggle('can-scroll', inner.scrollHeight - inner.clientHeight > 8);
-    });
   };
 
   const render = () => {
