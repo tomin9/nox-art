@@ -221,25 +221,60 @@
 
 
 /* =========================================================================
-   "Stack" efekt sekcií – rozostrenie panela, kým sa pri scrollovaní
-   nedostane navrch (position: sticky robí samotné "prilepenie a
-   prekrytie", toto len dolaďuje ostrosť podľa toho, ako blízko je panel
-   svojej "prilepenej" pozícii).
+   "Stack" efekt sekcií – panely v .stack-group sú position:fixed, teda
+   sami sa nikdy neposúvajú. Ten, čo je práve "na rade" odísť, dostane
+   transform:translateY() a vysunie sa hore preč; panel pod ním celý čas
+   stojí na mieste a len sa mu mení rozostrenie (zaostruje sa presne
+   podľa toho, ako ten navrchu odchádza). Po prejdení celej skupiny sa
+   posledný panel "uvoľní" (position:absolute v rámci skupiny), aby
+   normálne odscrolloval preč spolu so zvyškom stránky.
    ========================================================================= */
 (() => {
-  const panels = [...document.querySelectorAll('.stack-panel')];
-  if (!panels.length) return;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const groups = [...document.querySelectorAll('[data-stack-group]')];
+  if (!groups.length) return;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const BLUR_RANGE = 260; // px scrollu, počas ktorých rozostrenie mizne
   const MAX_BLUR = 10;
 
+  const state = groups.map((group) => ({
+    group,
+    panels: [...group.querySelectorAll(':scope > .stack-panel')],
+  }));
+
+  // Skorší panel v skupine musí byť pri odpočiatku navrchu (vyšší z-index),
+  // aby prekrýval tie za ním, kým sa sám nevysunie preč.
+  state.forEach(({ panels }) => {
+    panels.forEach((panel, i) => { panel.style.zIndex = String(panels.length - i); });
+  });
+
   const update = () => {
-    panels.forEach((panel) => {
-      const top = panel.getBoundingClientRect().top;
-      const progress = Math.min(Math.max(top / BLUR_RANGE, 0), 1);
-      const blur = progress * MAX_BLUR;
-      panel.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : '';
+    const vh = window.innerHeight;
+
+    state.forEach(({ group, panels }) => {
+      if (!panels.length) return;
+      const rect = group.getBoundingClientRect();
+      const total = panels.length * vh;
+      const scrolled = Math.min(Math.max(-rect.top, 0), total - vh);
+
+      panels.forEach((panel, i) => {
+        const isLast = i === panels.length - 1;
+        const departProgress = isLast ? 0 : Math.min(Math.max((scrolled - i * vh) / vh, 0), 1);
+
+        panel.style.transform = reduceMotion ? '' : `translateY(${-departProgress * 100}%)`;
+
+        // Rozostrenie tohto panela riadi to, ako ďaleko odišiel PREDCHÁDZAJÚCI (panel i-1).
+        if (i === 0) {
+          panel.style.filter = '';
+        } else {
+          const prevDepart = Math.min(Math.max((scrolled - (i - 1) * vh) / vh, 0), 1);
+          const blur = reduceMotion ? 0 : (1 - prevDepart) * MAX_BLUR;
+          panel.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : '';
+        }
+
+        // Po prejdení celej skupiny sa posledný panel uvoľní z position:fixed,
+        // aby normálne odscrolloval preč a nezakrýval nasledujúci obsah.
+        if (isLast) panel.classList.toggle('is-released', scrolled >= total - vh);
+      });
     });
   };
 

@@ -47,6 +47,7 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
 </header>
 
 <main>
+<div class="stack-group" data-stack-group style="--panels:3">
 <section class="hero stack-panel" id="top">
   <div class="hero-copy reveal">
     <h1 class="sr-only">NOX:ART — Medzinárodný festival súčasného umenia</h1>
@@ -129,6 +130,7 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
   <div class="empty" style="color:var(--paper);opacity:.7">Program zatiaľ nie je zverejnený.</div>
   <?php endif; ?>
 </section>
+</div>
 
 <section class="section installations" id="instalacie" aria-labelledby="installations-title">
   <div class="section-label reveal"><span>03</span> Inštalácie</div>
@@ -158,6 +160,7 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
   </div>
 </section>
 
+<div class="stack-group" data-stack-group style="--panels:3">
 <section class="section info stack-panel" id="info" aria-labelledby="info-title">
   <div class="section-label reveal"><span>04</span> Mapa a praktické info</div>
   <div class="info-grid">
@@ -214,6 +217,7 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
     <p class="newsletter-note">Prihlásením súhlasíte so zasielaním noviniek o festivale. Z odberu sa môžete kedykoľvek odhlásiť.</p>
   </div>
 </section>
+</div>
 </main>
 
 <footer class="site-footer">

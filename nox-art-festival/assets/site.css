@@ -2994,18 +2994,32 @@ body.menu-open .site-header .brand-nox-logo {
 }
 
 /* =========================================================================
-   "Stack" scroll efekt – jednotlivé sekcie (okrem Diel, tá môže byť príliš
-   vysoká) sa pri scrollovaní prilepia navrch, kým ich neprekryje ďalšia;
-   sekcia pod aktívnou je najprv rozostrená a zaostrí sa, keď sa dostane
-   navrch (blur ovláda JS v site.js podľa pozície scrollu).
+   "Stack" scroll efekt – panely v rámci .stack-group sú position:fixed
+   (nikdy sa samy neposúvajú, ležia navzájom nad sebou v rovnakom mieste
+   obrazovky). Keď je jeden z nich "na rade" odísť, JS mu nastaví
+   transform:translateY(), aby sa vysunul hore preč – panel pod ním je
+   celý čas pokojne na mieste, len sa mu podľa toho istého priebehu mení
+   rozostrenie (zaostruje sa, ako ten navrchu odchádza). Diela zámerne
+   nie sú súčasťou žiadnej skupiny (normálne, plynulé scrollovanie).
    ========================================================================= */
-.nox-art-site main{position:relative}
+.nox-art-site .stack-group{
+  position:relative;
+  height:calc(var(--panels, 1) * 100svh);
+}
 .nox-art-site .stack-panel{
-  position:sticky;
+  position:fixed;
   top:0;
+  left:0;
+  right:0;
+  height:100svh;
   border-radius:0 0 var(--radius-xl) var(--radius-xl);
   overflow:hidden;
-  will-change:filter;
+  will-change:transform, filter;
+}
+.nox-art-site .stack-panel.is-released{
+  position:absolute;
+  top:auto;
+  bottom:0;
 }
 .nox-art-site .stack-panel.about,
 .nox-art-site .stack-panel.program,
