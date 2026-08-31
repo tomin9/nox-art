@@ -44,40 +44,6 @@ function nox_art_site_enqueue_assets() {
 add_action('wp_enqueue_scripts', 'nox_art_site_enqueue_assets');
 
 /**
- * Táto šablóna je zámerne "čisté plátno" bez štýlu/skriptov aktívnej témy
- * alebo iných pluginov (podobne ako "Elementor Canvas") – inak sa do nej
- * globálne pravidlá témy/Elementora premietajú (napr. button{display:...}
- * prepíše skrytie mobilného menu, alebo globálny max-width/rámček okolo
- * stránky), a hlavička prestane vyzerať a správať sa presne podľa dizajnu.
- * Beží na veľmi neskorej priorite, aby už mal každý iný plugin/téma
- * príležitosť svoje štýly/skripty zaradiť do frontu – a až potom ich
- * z frontu na tejto šablóne odstránime, okrem tých, čo sme si sami pridali
- * vyššie, a nevyhnutných vecí pre fungovanie prihláseného WP admin panela.
- */
-function nox_art_site_strip_foreign_assets() {
-    if (!is_page_template('nox-art-site-template.php')) return;
-
-    $keep_styles = ['nox-art-mapbox-css', 'nox-art-site-css', 'admin-bar', 'dashicons'];
-    $keep_scripts = ['nox-art-mapbox-js', 'nox-art-site-js', 'admin-bar', 'jquery', 'jquery-core', 'jquery-migrate', 'heartbeat'];
-
-    global $wp_styles, $wp_scripts;
-
-    if ($wp_styles instanceof WP_Styles) {
-        foreach ((array) $wp_styles->queue as $handle) {
-            if (!in_array($handle, $keep_styles, true)) wp_dequeue_style($handle);
-        }
-    }
-    if ($wp_scripts instanceof WP_Scripts) {
-        foreach ((array) $wp_scripts->queue as $handle) {
-            if (!in_array($handle, $keep_scripts, true)) wp_dequeue_script($handle);
-        }
-    }
-}
-add_action('wp_enqueue_scripts', 'nox_art_site_strip_foreign_assets', 9999);
-add_action('wp_print_styles', 'nox_art_site_strip_foreign_assets', 0);
-add_action('wp_print_scripts', 'nox_art_site_strip_foreign_assets', 0);
-
-/**
  * Pomocné funkcie použité v templates/nox-art-site-template.php.
  */
 function nox_art_site_asset($file) {
