@@ -2972,6 +2972,7 @@ body.menu-open .site-header .brand-nox-logo {
    ========================================================================= */
 .nox-art-site .site-header{position:fixed !important;top:0 !important;left:0 !important;right:0 !important;width:100% !important;margin:0 !important;max-width:none !important;border-radius:0 !important;box-sizing:border-box !important}
 .nox-art-site .menu-toggle{display:none !important}
+.nox-art-site .main-nav > a:not(.nav-pill){color:var(--ink) !important}
 @media (max-width:900px){
   .nox-art-site .menu-toggle{display:block !important}
 }
