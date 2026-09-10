@@ -2995,178 +2995,24 @@ body.menu-open .site-header .brand-nox-logo {
 }
 
 /* =========================================================================
-   "Stack" scroll efekt – panely v rámci .stack-group sú position:fixed
-   (nikdy sa samy neposúvajú, ležia navzájom nad sebou v rovnakom mieste
-   obrazovky). Keď je jeden z nich "na rade" odísť, JS mu nastaví
-   transform:translateY(), aby sa vysunul hore preč – panel pod ním je
-   celý čas pokojne na mieste, len sa mu podľa toho istého priebehu mení
-   rozostrenie (zaostruje sa, ako ten navrchu odchádza). Diela zámerne
-   nie sú súčasťou žiadnej skupiny (normálne, plynulé scrollovanie).
+   Rozloženie po zjednodušení: žiadne fixované karty ani "stack" animácia –
+   stránka scrolluje natívne a obsah je rozdelený na podstránky. Zostávajú
+   len dve úpravy oproti pôvodnému prototypu.
    ========================================================================= */
-.nox-art-site .stack-group{
-  position:relative;
-  /* Skutočnú výšku nastavuje JS v pixeloch (rovnaká hodnota, s akou počíta
-     aj scroll) – toto je len záložná hodnota, kým sa JS nespustí. */
-  height:calc((var(--panels, 1) + 1) * 100svh);
-}
-.nox-art-site .stack-panel{
-  position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  height:100svh;
-  margin:0;
-  min-height:0;
-  border-radius:0 0 var(--radius-xl) var(--radius-xl);
-  overflow:hidden;
-  box-shadow:0 8px 16px -8px rgba(0,0,0,.4), 0 1px 0 0 rgba(128,128,128,.5);
-  /* Prehliadaču hovorí, že prekresľovanie sa nikdy nemusí šíriť mimo karty. */
-  contain:paint;
-  /* will-change zámerne NIE je natrvalo na všetkých kartách – 7 celo-
-     obrazovkových GPU vrstiev naraz zbytočne žerie pamäť (na 4K displeji
-     stovky MB). JS ho zapína len kartám okolo práve aktívnej. */
-}
-.nox-art-site .stack-panel.is-released{
-  position:absolute;
-  top:auto;
-  bottom:0;
-}
-.nox-art-site .stack-panel.about,
-.nox-art-site .stack-panel.program,
-.nox-art-site .stack-panel.installations,
-.nox-art-site .stack-panel.partners,
-.nox-art-site .stack-panel.newsletter{background:var(--paper)}
-/* Efekt "zaostrenia" ide na vnútorný obsah, nie na samotný panel – vďaka tomu
-   zostáva zaoblený okraj karty vždy ostrý, mení sa len to vnútri. JS naň
-   zapisuje opacity + scale (nie filter:blur – ten musí prehliadač pri každej
-   zmene prekresliť a jeho cena rastie s odkrytou plochou, čo spôsobovalo
-   sekanie; opacity a transform zvláda grafická karta bez prekresľovania).
-   will-change nastavuje JS len tej jednej karte, ktorá sa práve odkrýva. */
-/* Pozor: overflow tu zámerne NEobmedzujeme – v hero sekcii sú absolútne
-   umiestnené prvky (AP odznak, bočný text, šípka nadol), ktoré presahujú
-   vnútorný obal a orezali by sa. Karta samotná ich aj tak oreže na svojom
-   zaoblenom okraji.
-   Vnútorný obal je flex stĺpec, aby sa obsahová časť (mriežka diel, mapa…)
-   vedela roztiahnuť presne na zvyšnú výšku karty. */
-.nox-art-site .stack-inner{
-  display:flex;
-  flex-direction:column;
-  height:100%;
-  min-height:0;
-}
 
-/* ---------------------------------------------------------------------
-   Obsah kariet je prispôsobený VÝŠKE KARTY – karty sa zámerne nescrollujú
-   vnútri, lebo druhý (vnútorný) pohyb by bil s hlavným scrollovaním
-   stránky a pôsobil trhane. Odsadenia preto počítame z výšky okna (vh),
-   nie z pevných pixelov, aby sa obsah zmestil aj na nižších monitoroch.
-   --------------------------------------------------------------------- */
-.nox-art-site .stack-panel.section{
-  padding-top:clamp(76px, 13vh, 150px);
-  padding-bottom:clamp(24px, 4vh, 64px);
-}
-.nox-art-site .stack-panel .section-label{
-  margin-bottom:clamp(12px, 3vh, 46px);
-}
-.nox-art-site .stack-panel .installations-head,
-.nox-art-site .stack-panel .program-head,
-.nox-art-site .stack-panel .partners-head{
-  gap:clamp(14px, 3vw, 60px);
-}
-.nox-art-site .stack-panel .marquee{
-  margin-top:clamp(14px, 3vh, 48px);
-}
-.nox-art-site .stack-panel .festival-facts{
-  margin-top:clamp(16px, 3.5vh, 56px);
-}
-
-/* Diela: vodorovná "polica" namiesto mriežky, ktorá rástla do výšky.
-   Karty diel tak vždy presne vyplnia výšku festivalovej karty a listuje
-   sa v nich do strany – zvislý pohyb ostáva len jeden, ten hlavný. */
-.nox-art-site .stack-panel .installation-grid{
-  display:flex;
-  flex:1;
-  min-height:0;
-  gap:clamp(12px, 1.4vw, 22px);
-  margin-top:clamp(16px, 3vh, 48px);
-  padding-bottom:6px;
-  overflow-x:auto;
-  overflow-y:hidden;
-  overscroll-behavior-x:contain;
-  -webkit-overflow-scrolling:touch;
-}
-.nox-art-site .stack-panel .installation-card{
-  flex:0 0 clamp(240px, 24vw, 330px);
-  min-height:0;
-  height:100%;
-}
-/* Prechod na hover je v polici vypnutý – inak sa počas listovania spúšťa
-   animácia pri každej karte, cez ktorú prejde kurzor. */
-.nox-art-site .stack-panel .installation-card{
-  transition:none;
-}
-.nox-art-site .stack-panel .installation-card:hover{
-  transform:none;
-  box-shadow:none;
-}
-.nox-art-site .stack-panel .card-visual{
-  height:clamp(96px, 20vh, 230px);
-  margin-bottom:clamp(10px, 1.6vh, 18px);
-}
-
-/* Mapa sa prispôsobí zvyšnej výške karty namiesto pevných 430px. */
-.nox-art-site .stack-panel .info-grid{
-  flex:1;
-  min-height:0;
-}
-.nox-art-site .stack-panel .route-map{
-  display:flex;
-  flex-direction:column;
-  min-height:0;
-}
-.nox-art-site .stack-panel .route-map-stage{
-  flex:1;
-  min-height:0;
-  margin-bottom:8px;
-}
-.nox-art-site .stack-panel .site-map-wrap{
-  height:100%;
-  min-height:0;
-}
-
-/* Program: riadky sa zmestia aj na nižších obrazovkách. */
-.nox-art-site .stack-panel .program-tabs{
-  margin-top:clamp(12px, 2.5vh, 34px);
-}
-.nox-art-site .stack-panel .program-row{
-  padding-top:clamp(8px, 1.4vh, 20px);
-  padding-bottom:clamp(8px, 1.4vh, 20px);
-}
-/* Hero text (dátum, popis, tlačidlá) zarovnaný dole namiesto hore.
-   margin-top:auto namiesto justify-content:flex-end – pri
-   justify-content by sa vrchná časť obsahu nedala doscrollovať, keby sa
-   raz nezmestil do výšky okna. */
-.nox-art-site .hero > .stack-inner{
+/* 1) Text v hero sekcii (dátum, popis, tlačidlá) je zarovnaný dole.
+      margin-top:auto namiesto justify-content:flex-end – pri justify-content
+      by sa vrchná časť obsahu nedala doscrollovať, keby sa raz nezmestila. */
+.nox-art-site .hero{
   display:flex;
   flex-direction:column;
 }
-.nox-art-site .hero > .stack-inner > .hero-copy{
+.nox-art-site .hero > .hero-copy{
   margin-top:auto;
 }
 
-/* Záložný režim, keď má používateľ v systéme zapnuté obmedzenie animácií
-   (prefers-reduced-motion): karty sa vrátia do normálneho toku stránky.
-   Bez tohto by zostali navrstvené na sebe a k obsahu by sa nedalo dostať. */
-.nox-art-site .stack-group.stack-off{
-  height:auto !important;
-}
-.nox-art-site .stack-group.stack-off .stack-panel{
-  position:static;
-  height:auto;
-  contain:none;
-  will-change:auto;
-}
-.nox-art-site .stack-group.stack-off .stack-inner{
-  height:auto;
-  overflow:visible;
+/* 2) Prvá sekcia na podstránke začína hneď pod fixnou hlavičkou, takže musí
+      mať o jej výšku väčšie horné odsadenie (hero si to rieši sám). */
+.nox-art-site main > .section:first-child{
+  padding-top:calc(var(--header-h) + clamp(38px, 6vh, 86px));
 }
