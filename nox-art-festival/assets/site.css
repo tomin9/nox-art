@@ -3016,3 +3016,11 @@ body.menu-open .site-header .brand-nox-logo {
 .nox-art-site main > .section:first-child{
   padding-top:calc(var(--header-h) + clamp(38px, 6vh, 86px));
 }
+
+/* 3) Hero (prvá strana) je na celú výšku okna. Prototyp ho na viacerých
+      breakpointoch znižoval pevnými pixelmi – jedno pravidlo s vyššou
+      špecifickosťou ich prebije naraz. min-height (nie height): keby sa raz
+      obsah do výšky okna nezmestil, sekcia môže narásť namiesto orezania. */
+.nox-art-site .hero{
+  min-height:100svh;
+}
