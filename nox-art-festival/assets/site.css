@@ -3364,48 +3364,51 @@ body.menu-open .site-header .brand-nox-logo {
 }
 
 /* =========================================================================
-   Hero ako roletka: drží celé okno a prvou obrazovkou scrollovania sa
-   vysunie hore. Obsah pod ňou zatiaľ stojí – JS mu dorovnáva posun, takže
-   sa tvári, že roletka odchádza ponad pokojne ležiacu stránku. Po prvej
-   obrazovke sa dorovnávanie zastaví a všetko scrolluje normálne.
+   Hero ako roletka: scrollovaním sa vysunie hore, zatiaľ čo Program a diela
+   pod ňou stoja na mieste; po prvej obrazovke pokračuje stránka úplne
+   normálne.
+
+   Celé to drží CSS, bez jediného riadku JS na snímok. Je to zámer: keď
+   posun obsahu dorovnával skript, vždy bežal snímok za scrollovaním a
+   spodná stránka viditeľne poskakovala. Natívne prilepenie (sticky) rieši
+   prehliadač priamo pri scrollovaní, takže sa nemá čo rozísť.
+
+   Mechanika: hero je v normálnom toku a odscrolluje sa sám. Obsah pod ním
+   je záporným odstupom vytiahnutý naňho (hero ho prekrýva vyššou vrstvou)
+   a jeho vnútorný obal je prilepený o hornú hranu. Obal je o obrazovku
+   nižší než jeho rodič, takže prilepený zostane presne jednu obrazovku –
+   dovtedy, kým roletka neodíde.
    ========================================================================= */
 .nox-art-site .curtain{
-  position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  height:100svh;
+  position:relative;
   z-index:5;
-  /* Vlastná výška z pravidla vyššie by tu prekážala – roletka je presne
-     na okno, nikdy nie vyššia. */
+  height:100svh;
   min-height:0;
 }
-/* Obsah začína o obrazovku nižšie – skutočným odsadením, nie posunom.
-   Vďaka tomu výška dokumentu sedí a hlavne: po odchode roletky môže JS
-   transform úplne zrušiť. Keby na obale zostal, bol by z neho vzťažný
-   rámec a prilepená mapa vnútri by sa posunula mimo obrazovku. */
 .nox-art-site .curtain-below{
   position:relative;
   z-index:1;
-  padding-top:100svh;
+  margin-top:-100svh;
+  padding-bottom:100svh;
+}
+.nox-art-site .curtain-below-inner{
+  position:sticky;
+  top:0;
 }
 /* Prvá sekcia pod roletkou sa už nemá na čo prekrývať – záporný odstup z
    prototypu by ju len vysunul nad horný okraj okna. */
-.nox-art-site .curtain-below > .section:first-child{
+.nox-art-site .curtain-below .section:first-child{
   margin-top:0;
 }
 
-/* Keď má používateľ v systéme obmedzené animácie, roletka sa nehýbe a
-   stránka je obyčajný dokument – inak by sa k obsahu nedalo dostať, keby
-   JS zlyhal alebo bol vypnutý. */
-.nox-art-site.curtain-off .curtain{
-  position:relative;
-  height:auto;
-  min-height:100svh;
-}
-.nox-art-site.curtain-off .curtain-below{
-  transform:none !important;
-}
-.nox-art-site.curtain-off .curtain-below{
-  padding-top:0;
+/* Pri obmedzených animáciách je stránka obyčajný dokument – hero sa
+   normálne odscrolluje a obsah ide hneď za ním. */
+@media (prefers-reduced-motion: reduce){
+  .nox-art-site .curtain-below{
+    margin-top:0;
+    padding-bottom:0;
+  }
+  .nox-art-site .curtain-below-inner{
+    position:static;
+  }
 }
