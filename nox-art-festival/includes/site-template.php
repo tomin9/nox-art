@@ -206,23 +206,6 @@ function nox_art_site_enqueue_assets() {
 add_action('wp_enqueue_scripts', 'nox_art_site_enqueue_assets');
 
 /**
- * Pomocné funkcie použité v templates/nox-art-site-template.php.
- */
-function nox_art_site_asset($file) {
-    return esc_url(NOX_ART_URL . 'assets/site/' . $file);
-}
-
-function nox_art_site_program_by_day() {
-    $days = [];
-    foreach (nox_art_data_program() as $item) {
-        $key = $item['datum'] ?: 'bez-datumu';
-        if (!isset($days[$key])) $days[$key] = [];
-        $days[$key][] = $item;
-    }
-    return $days;
-}
-
-/**
  * Jeden spoločný zoznam všetkého, čo sa zobrazuje v sekcii Program:
  * body programu (chronologicky), diela a miesta s priradenou kategóriou
  * (partnerské podniky). Stavia sa tu, a nie v šablóne, lebo to isté
@@ -250,11 +233,9 @@ function nox_art_site_items() {
             'nazov' => $item['nazov'],
             'foto' => $item['foto'],
             'kategorie' => $item['kategorie'],
-            'cas' => nox_art_site_time_label($item['datum'], $item['casOd'], $item['casDo']),
+            'cas' => nox_art_site_time_summary($item['terminy']),
+            'terminy' => $item['terminy'],
             'popis' => $item['popis'],
-            'datum' => $item['datum'],
-            'casOd' => $item['casOd'],
-            'casDo' => $item['casDo'],
             'meta' => '',
             'work' => '',
             'miestoId' => $item['miestoId'],
@@ -270,11 +251,9 @@ function nox_art_site_items() {
             'nazov' => $d['nazov'],
             'foto' => $d['foto'],
             'kategorie' => $d['kategorie'],
-            'cas' => nox_art_site_time_label($d['datum'], $d['casOd'], $d['casDo']),
+            'cas' => nox_art_site_time_summary($d['terminy']),
+            'terminy' => $d['terminy'],
             'popis' => $d['popis'],
-            'datum' => $d['datum'],
-            'casOd' => $d['casOd'],
-            'casDo' => $d['casDo'],
             'meta' => $u ? $u['meno'] : '',
             'work' => $d['id'],
             'miestoId' => $d['miestoId'],
@@ -292,11 +271,9 @@ function nox_art_site_items() {
             'nazov' => $m['nazov'],
             'foto' => $m['foto'],
             'kategorie' => $m['kategorie'],
-            'cas' => nox_art_site_time_label($m['datum'], $m['casOd'], $m['casDo']),
+            'cas' => nox_art_site_time_summary($m['terminy']),
+            'terminy' => $m['terminy'],
             'popis' => $m['popis'],
-            'datum' => $m['datum'],
-            'casOd' => $m['casOd'],
-            'casDo' => $m['casDo'],
             'meta' => $m['adresa'],
             'work' => '',
             'miestoId' => $m['id'],
@@ -352,8 +329,12 @@ function nox_art_site_items() {
 function nox_art_site_schedule() {
     $days = [];
     foreach (nox_art_site_items() as $item) {
-        if (!$item['casOd'] && !$item['casDo']) continue;
-        $days[$item['datum']][] = $item;
+        // Každý termín je vlastný riadok – položka na oba dni sa tak objaví
+        // v oboch dňoch, s vlastným časom.
+        foreach ($item['terminy'] as $t) {
+            if (!$t['od'] && !$t['do']) continue;
+            $days[$t['datum']][] = $item + ['casOd' => $t['od'], 'casDo' => $t['do']];
+        }
     }
 
     // Dni chronologicky, "celý festival" až na koniec; v rámci dňa podľa času.
@@ -404,6 +385,28 @@ function nox_art_site_map_numbers() {
 }
 
 /**
+ * Popisy jednotlivých termínov, napr. ["Pia 30.10. · 18:00–22:00", …].
+ */
+function nox_art_site_time_labels($terminy) {
+    $labels = [];
+    foreach ((array) $terminy as $t) {
+        $label = nox_art_site_time_label($t['datum'] ?? '', $t['od'] ?? '', $t['do'] ?? '');
+        if ($label) $labels[] = $label;
+    }
+    return $labels;
+}
+
+/**
+ * Sklíčko na dlaždici. Na dva riadky tam nie je miesto, takže pri viacerých
+ * termínoch ukazuje prvý a koľko ďalších je – celý rozpis je v detaile.
+ */
+function nox_art_site_time_summary($terminy) {
+    $labels = nox_art_site_time_labels($terminy);
+    if (!$labels) return '';
+    return count($labels) > 1 ? $labels[0] . ' +' . (count($labels) - 1) : $labels[0];
+}
+
+/**
  * Krátky popis termínu na dlaždicu: "Pia 30.10. · 18:00–22:00". Dátum aj
  * časy sú nepovinné – bez dátumu zostane len čas (otváracie hodiny platné
  * počas celého festivalu), bez času len deň.
@@ -422,6 +425,13 @@ function nox_art_site_time_label($datum, $cas_od, $cas_do) {
     if ($cas) $parts[] = $cas;
 
     return implode(' · ', $parts);
+}
+
+/**
+ * Pomocné funkcie použité v templates/nox-art-site-template.php.
+ */
+function nox_art_site_asset($file) {
+    return esc_url(NOX_ART_URL . 'assets/site/' . $file);
 }
 
 function nox_art_site_day_label($datum) {

@@ -30,9 +30,7 @@ function nox_art_data_miesta() {
             'foto' => get_the_post_thumbnail_url($p->ID, 'large') ?: '',
             'kategorie' => nox_art_post_categories($p->ID),
             'cislo' => (int) get_post_meta($p->ID, '_nox_cislo', true),
-            'datum' => get_post_meta($p->ID, '_nox_datum', true) ?: '',
-            'casOd' => get_post_meta($p->ID, '_nox_cas_od', true) ?: '',
-            'casDo' => get_post_meta($p->ID, '_nox_cas_do', true) ?: '',
+            'terminy' => nox_art_get_terminy($p->ID),
         ];
     }, $posts);
 }
@@ -62,9 +60,7 @@ function nox_art_data_diela() {
             'typ' => get_post_meta($p->ID, '_nox_typ', true) ?: '',
             'kategorie' => nox_art_post_categories($p->ID),
             'cislo' => (int) get_post_meta($p->ID, '_nox_cislo', true),
-            'datum' => get_post_meta($p->ID, '_nox_datum', true) ?: '',
-            'casOd' => get_post_meta($p->ID, '_nox_cas_od', true) ?: '',
-            'casDo' => get_post_meta($p->ID, '_nox_cas_do', true) ?: '',
+            'terminy' => nox_art_get_terminy($p->ID),
         ];
     }, $posts);
 }
@@ -77,16 +73,16 @@ function nox_art_data_program() {
             'nazov' => get_the_title($p),
             'popis' => apply_filters('the_content', $p->post_content),
             'cislo' => (int) get_post_meta($p->ID, '_nox_cislo', true),
-            'datum' => get_post_meta($p->ID, '_nox_datum', true) ?: '',
-            'casOd' => get_post_meta($p->ID, '_nox_cas_od', true) ?: '',
-            'casDo' => get_post_meta($p->ID, '_nox_cas_do', true) ?: '',
+            'terminy' => nox_art_get_terminy($p->ID),
             'miestoId' => (int) get_post_meta($p->ID, '_nox_miesto_id', true) ?: null,
             'foto' => get_the_post_thumbnail_url($p->ID, 'large') ?: '',
             'kategorie' => nox_art_post_categories($p->ID),
         ];
     }, $posts);
     usort($items, function($a, $b){
-        return strcmp($a['datum'] . $a['casOd'], $b['datum'] . $b['casOd']);
+        $ka = ($a['terminy'][0]['datum'] ?? '') . ($a['terminy'][0]['od'] ?? '');
+        $kb = ($b['terminy'][0]['datum'] ?? '') . ($b['terminy'][0]['od'] ?? '');
+        return strcmp($ka, $kb);
     });
     return $items;
 }

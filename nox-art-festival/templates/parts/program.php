@@ -85,7 +85,9 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
       <ul class="detail-facts">
         <?php if ($p['meta']): ?><li><?php echo esc_html($p['meta']); ?></li><?php endif; ?>
         <?php if ($p['miestoNazov']): ?><li><?php echo esc_html($p['miestoNazov']); ?></li><?php endif; ?>
-        <?php if ($p['cas']): ?><li><?php echo esc_html($p['cas']); ?></li><?php endif; ?>
+        <?php foreach (nox_art_site_time_labels($p['terminy']) as $label): ?>
+        <li><?php echo esc_html($label); ?></li>
+        <?php endforeach; ?>
       </ul>
       <?php if ($p['foto']): ?>
       <img class="detail-foto" src="<?php echo esc_url($p['foto']); ?>" alt="<?php echo esc_attr($p['nazov']); ?>" loading="lazy">

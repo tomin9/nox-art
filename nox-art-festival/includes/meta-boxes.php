@@ -4,11 +4,12 @@ if (!defined('ABSPATH')) exit;
 function nox_art_add_meta_boxes() {
     add_meta_box('nox_miesto_poloha', 'Poloha', 'nox_art_render_miesto_metabox', 'nox_miesto', 'normal', 'high');
     add_meta_box('nox_dielo_suvislosti', 'Súvislosti diela', 'nox_art_render_dielo_metabox', 'nox_dielo', 'side', 'default');
-    add_meta_box('nox_program_termin', 'Termín', 'nox_art_render_program_metabox', 'nox_program', 'side', 'default');
+    add_meta_box('nox_program_termin', 'Miesto', 'nox_art_render_program_metabox', 'nox_program', 'side', 'default');
     // Čas má zmysel pri všetkom, nielen pri programe: dielo býva prístupné
     // len vo vymedzených hodinách a podnik má otváracie hodiny.
-    add_meta_box('nox_termin', 'Termín / čas', 'nox_art_render_termin_metabox', 'nox_dielo', 'side', 'default');
-    add_meta_box('nox_termin', 'Termín / čas', 'nox_art_render_termin_metabox', 'nox_miesto', 'side', 'default');
+    add_meta_box('nox_termin', 'Termíny', 'nox_art_render_termin_metabox', 'nox_dielo', 'side', 'default');
+    add_meta_box('nox_termin', 'Termíny', 'nox_art_render_termin_metabox', 'nox_miesto', 'side', 'default');
+    add_meta_box('nox_termin', 'Termíny', 'nox_art_render_termin_metabox', 'nox_program', 'side', 'default');
     // Poradové číslo na mape a na dlaždici – ručne nastaviteľné, aby si
     // editor vedel určiť trasu festivalu.
     foreach (['nox_dielo', 'nox_miesto', 'nox_program'] as $typ) {
@@ -150,24 +151,42 @@ foreach (['nox_dielo', 'nox_miesto', 'nox_program'] as $nox_typ) {
 }
 
 /**
- * Dátum a časový rozsah – spoločné pre Diela a Miesta. Program má vlastné
- * políčka v boxe "Termín", lebo k nim patrí aj výber miesta.
+ * Termíny – festival trvá viac dní, takže každá položka môže mať vlastný
+ * deň a čas zvlášť (napr. v piatok 17:00–23:00, v sobotu 10:00–18:00).
+ * Ukladajú sa ako jedno pole v meta _nox_terminy.
  */
+function nox_art_termin_rows() {
+    return 3;   // dva festivalové dni + jeden riadok navyše
+}
+
+function nox_art_get_terminy($post_id) {
+    $terminy = get_post_meta($post_id, '_nox_terminy', true);
+    if (is_array($terminy) && $terminy) return $terminy;
+
+    // Spätná kompatibilita so starším jedným termínom.
+    $datum = get_post_meta($post_id, '_nox_datum', true);
+    $od = get_post_meta($post_id, '_nox_cas_od', true);
+    $do = get_post_meta($post_id, '_nox_cas_do', true);
+    if ($datum || $od || $do) return [['datum' => $datum, 'od' => $od, 'do' => $do]];
+
+    return [];
+}
+
 function nox_art_render_termin_metabox($post) {
     wp_nonce_field('nox_art_save_termin', 'nox_art_termin_nonce');
-    $datum = get_post_meta($post->ID, '_nox_datum', true);
-    $cas_od = get_post_meta($post->ID, '_nox_cas_od', true);
-    $cas_do = get_post_meta($post->ID, '_nox_cas_do', true);
+    $terminy = nox_art_get_terminy($post->ID);
+    $rows = max(nox_art_termin_rows(), count($terminy) + 1);
     ?>
-    <p>
-        <label for="nox_datum"><strong>Dátum (nepovinné)</strong></label><br>
-        <input type="date" id="nox_datum" name="nox_datum" class="widefat" value="<?php echo esc_attr($datum); ?>">
-    </p>
-    <p style="display:flex;gap:12px">
-        <label style="flex:1">Od<br><input type="time" id="nox_cas_od" name="nox_cas_od" class="widefat" value="<?php echo esc_attr($cas_od); ?>"></label>
-        <label style="flex:1">Do<br><input type="time" id="nox_cas_do" name="nox_cas_do" class="widefat" value="<?php echo esc_attr($cas_do); ?>"></label>
-    </p>
-    <p class="description">Ak dátum nevyplníš, čas sa zobrazí ako otváracie hodiny platné počas celého festivalu.</p>
+    <p class="description" style="margin-top:0">Každý riadok je jeden deň festivalu. Dátum necháš prázdny, ak čas platí počas celého festivalu (napr. otváracie hodiny).</p>
+    <?php for ($i = 0; $i < $rows; $i++): $t = $terminy[$i] ?? ['datum' => '', 'od' => '', 'do' => '']; ?>
+    <div style="margin:0 0 14px;padding:0 0 12px;border-bottom:1px solid #e0e0e0">
+        <input type="date" name="nox_termin_datum[]" class="widefat" value="<?php echo esc_attr($t['datum']); ?>">
+        <p style="display:flex;gap:10px;margin:6px 0 0">
+            <label style="flex:1">Od<br><input type="time" name="nox_termin_od[]" class="widefat" value="<?php echo esc_attr($t['od']); ?>"></label>
+            <label style="flex:1">Do<br><input type="time" name="nox_termin_do[]" class="widefat" value="<?php echo esc_attr($t['do']); ?>"></label>
+        </p>
+    </div>
+    <?php endfor; ?>
     <?php
 }
 
@@ -176,29 +195,47 @@ function nox_art_save_termin($post_id) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
     if (!current_user_can('edit_post', $post_id)) return;
 
-    update_post_meta($post_id, '_nox_datum', isset($_POST['nox_datum']) ? sanitize_text_field($_POST['nox_datum']) : '');
-    update_post_meta($post_id, '_nox_cas_od', isset($_POST['nox_cas_od']) ? sanitize_text_field($_POST['nox_cas_od']) : '');
-    update_post_meta($post_id, '_nox_cas_do', isset($_POST['nox_cas_do']) ? sanitize_text_field($_POST['nox_cas_do']) : '');
+    $datumy = (array) ($_POST['nox_termin_datum'] ?? []);
+    $od = (array) ($_POST['nox_termin_od'] ?? []);
+    $do = (array) ($_POST['nox_termin_do'] ?? []);
+
+    $terminy = [];
+    foreach ($datumy as $i => $datum) {
+        $row = [
+            'datum' => sanitize_text_field(wp_unslash($datum)),
+            'od' => sanitize_text_field(wp_unslash($od[$i] ?? '')),
+            'do' => sanitize_text_field(wp_unslash($do[$i] ?? '')),
+        ];
+        // Úplne prázdny riadok preskakujeme, nech sa neukladajú prázdne termíny.
+        if ($row['datum'] || $row['od'] || $row['do']) $terminy[] = $row;
+    }
+
+    if ($terminy) {
+        update_post_meta($post_id, '_nox_terminy', $terminy);
+    } else {
+        delete_post_meta($post_id, '_nox_terminy');
+    }
+
+    // Staršie polia držíme zosynchronizované s prvým termínom, aby na ne
+    // mohol zvyšok pluginu aj naďalej siahať.
+    $prvy = $terminy[0] ?? ['datum' => '', 'od' => '', 'do' => ''];
+    update_post_meta($post_id, '_nox_datum', $prvy['datum']);
+    update_post_meta($post_id, '_nox_cas_od', $prvy['od']);
+    update_post_meta($post_id, '_nox_cas_do', $prvy['do']);
 }
 add_action('save_post_nox_dielo', 'nox_art_save_termin');
 add_action('save_post_nox_miesto', 'nox_art_save_termin');
+add_action('save_post_nox_program', 'nox_art_save_termin');
 
+/**
+ * Pri bode programu zostáva v tomto boxe len výber miesta – dátum a časy
+ * rieši spoločný box "Termíny", ktorý zvládne aj viac dní naraz.
+ */
 function nox_art_render_program_metabox($post) {
     wp_nonce_field('nox_art_save_program', 'nox_art_program_nonce');
-    $datum = get_post_meta($post->ID, '_nox_datum', true);
-    $cas_od = get_post_meta($post->ID, '_nox_cas_od', true);
-    $cas_do = get_post_meta($post->ID, '_nox_cas_do', true);
     $miesto_id = get_post_meta($post->ID, '_nox_miesto_id', true);
     $miesta = get_posts(['post_type' => 'nox_miesto', 'post_status' => 'publish', 'numberposts' => -1, 'orderby' => 'title', 'order' => 'ASC']);
     ?>
-    <p>
-        <label for="nox_datum"><strong>Dátum</strong></label><br>
-        <input type="date" id="nox_datum" name="nox_datum" class="widefat" value="<?php echo esc_attr($datum); ?>">
-    </p>
-    <p style="display:flex;gap:12px">
-        <label style="flex:1">Od<br><input type="time" id="nox_cas_od" name="nox_cas_od" class="widefat" value="<?php echo esc_attr($cas_od); ?>"></label>
-        <label style="flex:1">Do (nepovinné)<br><input type="time" id="nox_cas_do" name="nox_cas_do" class="widefat" value="<?php echo esc_attr($cas_do); ?>"></label>
-    </p>
     <p>
         <label for="nox_miesto_id"><strong>Miesto (nepovinné)</strong></label><br>
         <select id="nox_miesto_id" name="nox_miesto_id" class="widefat">
@@ -216,9 +253,6 @@ function nox_art_save_program($post_id) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
     if (!current_user_can('edit_post', $post_id)) return;
 
-    update_post_meta($post_id, '_nox_datum', isset($_POST['nox_datum']) ? sanitize_text_field($_POST['nox_datum']) : '');
-    update_post_meta($post_id, '_nox_cas_od', isset($_POST['nox_cas_od']) ? sanitize_text_field($_POST['nox_cas_od']) : '');
-    update_post_meta($post_id, '_nox_cas_do', isset($_POST['nox_cas_do']) ? sanitize_text_field($_POST['nox_cas_do']) : '');
     update_post_meta($post_id, '_nox_miesto_id', isset($_POST['nox_miesto_id']) ? absint($_POST['nox_miesto_id']) : 0);
 }
 add_action('save_post_nox_program', 'nox_art_save_program');

@@ -16,7 +16,6 @@ $sections = nox_art_site_sections();
 $diela = nox_art_data_diela();
 $miesta = nox_art_data_miesta();
 $umelci = nox_art_data_umelci();
-$programByDay = nox_art_site_program_by_day();
 $visualClasses = ['visual-one', 'visual-two', 'visual-three', 'visual-four', 'visual-five', 'visual-six', 'visual-seven', 'visual-eight'];
 $dielaCount = count($diela);
 $umelecById = [];
