@@ -299,11 +299,17 @@
 
   document.querySelectorAll('[data-show-on-map]').forEach((link) => {
     link.addEventListener('click', (event) => {
+      /* Mapa je na tej istej stránke a pri zozname stále vidno – skok na
+         kotvu #mapa by len zbytočne odscrolloval stránku. Tento kód beží
+         len vtedy, keď mapa na stránke naozaj je (inak sa poslucháč vôbec
+         nepripojí), takže odkaz je bezpečné zastaviť vždy. */
+      event.preventDefault();
+
       // Miesto berieme z dlaždice, v ktorej odkaz je – položka nemusí byť
       // dielo (partnerský podnik je priamo miesto a vlastné dielo nemá).
       const tile = link.closest('[data-miesto]');
       const miestoId = tile?.dataset.miesto;
-      if (!miestoId) { event.preventDefault(); return; }
+      if (!miestoId) return;
       highlightTile(tile);
       focusMiesto(miestoId);
     });
