@@ -419,3 +419,50 @@
   });
 })();
 
+
+
+/* =========================================================================
+   Doskrolovanie roletky. Keď človek zastaví uprostred prvej obrazovky,
+   roletka by zamrzla v polovici – doviezieme ju teda tam, kam mala ísť.
+
+   Prichytávanie cez CSS (scroll-snap) sa na to nehodí: "proximity" sa z
+   polovice obrazovky vôbec nespustí a "mandatory" by zasa ťahalo naspäť aj
+   pri scrollovaní zvyškom stránky, kde žiadny bod nie je. Tento kód beží
+   až po zastavení scrollovania, takže počas neho do ničoho nezasahuje.
+   ========================================================================= */
+(() => {
+  const curtain = document.querySelector('.curtain');
+  const below = document.querySelector('.curtain-below');
+  if (!curtain || !below) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!CSS.supports('animation-timeline', 'scroll()')) return;
+
+  let settling = false;
+
+  const settle = () => {
+    if (settling) return;
+
+    const vh = window.innerHeight;
+    const y = window.scrollY;
+    if (y <= 0 || y >= vh) return;   // roletka je celá dole alebo celá preč
+
+    const target = y < vh / 2 ? 0 : vh;
+    settling = true;
+    window.scrollTo({ top: target, behavior: 'smooth' });
+    // Poistka, keby prehliadač "scrollend" po plynulom posune nedoručil.
+    setTimeout(() => { settling = false; }, 800);
+  };
+
+  if ('onscrollend' in window) {
+    window.addEventListener('scrollend', () => {
+      if (settling) { settling = false; return; }
+      settle();
+    });
+  } else {
+    let timer = null;
+    window.addEventListener('scroll', () => {
+      clearTimeout(timer);
+      timer = setTimeout(settle, 120);
+    }, { passive: true });
+  }
+})();
