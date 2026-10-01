@@ -3046,6 +3046,10 @@ body.menu-open .site-header .brand-nox-logo {
       obsah do výšky okna nezmestil, sekcia môže narásť namiesto orezania. */
 .nox-art-site .hero{
   min-height:100svh;
+  /* Tlačidlá sú zarovnané na spodok hero, takže odsadenie zdola určuje,
+     ako blízko k hrane sedia. Prototyp ho mal na desktope len ~30px, čo
+     pôsobí natesno. */
+  padding-bottom:clamp(54px, 7vh, 110px);
 }
 
 /* =========================================================================
