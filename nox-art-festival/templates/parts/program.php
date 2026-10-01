@@ -12,8 +12,6 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
 ?>
 <section class="section program" id="program" aria-labelledby="program-title">
   <div class="section-label section-label-light reveal"><span>01</span> Program a diela</div>
-  <div class="program-layout">
-  <div class="program-layout-list">
   <div class="program-head reveal">
     <h2 id="program-title">Dve noci.<br>Jedna svetelná trasa.</h2>
     <p><?php echo (int) $dielaCount; ?> diel, sprievodný program a podniky s festivalovým menu — prepni si, čo ťa práve zaujíma.</p>
@@ -64,11 +62,9 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
     <?php endforeach; ?>
   </div>
   <p class="filter-empty" data-filter-empty="program" hidden>V tejto kategórii zatiaľ nič nie je.</p>
-  </div>
 
-  <?php /* Mapa drží krok so zoznamom – na veľkej obrazovke je prilepená
-           (sticky) vpravo, na malej sa presunie pod zoznam. */ ?>
-  <aside class="program-layout-map reveal" id="mapa" aria-label="Mapa festivalových diel">
+  <?php /* Mapa je pod zoznamom cez celú šírku sekcie. */ ?>
+  <aside class="program-map reveal" id="mapa" aria-label="Mapa festivalových diel">
     <div class="route-map">
       <div class="route-map-head">
         <p>Mapa diel</p>
@@ -80,5 +76,4 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
     </div>
     <p class="route-note">Klikni na značku na mape, alebo na dlaždicu v zozname.</p>
   </aside>
-  </div>
 </section>

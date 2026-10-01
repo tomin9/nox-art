@@ -3224,78 +3224,33 @@ body.menu-open .site-header .brand-nox-logo {
 }
 
 /* =========================================================================
-   Program: zoznam vľavo (2/3), mapa vpravo (1/3). Mapa je prilepená, takže
-   zostáva na očiach aj počas prechádzania dlhého zoznamu. Pod 1000px sa
-   rozloženie zlomí do jedného stĺpca a mapa klesne pod zoznam – na úzkej
-   obrazovke by tretinový stĺpec nebol na nič použiteľný.
+   Mapa pod zoznamom, cez celú šírku sekcie.
    ========================================================================= */
-.program-layout{
-  display:grid;
-  grid-template-columns:2fr 1fr;
-  gap:clamp(18px, 2.2vw, 36px);
-  align-items:start;
-  margin-top:clamp(18px, 3vh, 34px);
+.program-map{
+  display:block;
+  margin-top:clamp(28px, 5vh, 64px);
 }
-.program-layout-list{
-  min-width:0;
-}
-.program-layout-list .gallery-grid{
-  margin-top:0;
-  /* Užší stĺpec než celá stránka – dlaždice nesmú byť také široké ako inde. */
-  grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));
-}
-/* .program má overflow:hidden kvôli dekoratívnym tvarom, lenže to z nej robí
-   scroll kontajner a prilepenie (sticky) by prestalo fungovať. overflow:clip
-   oreže rovnako, ale scroll kontajner nevytvára; staršie prehliadače tento
-   riadok ignorujú a zostane im pôvodné hidden (mapa sa len neprilepí). */
-.program{
-  overflow:clip;
-}
-.program-layout-map{
-  position:sticky;
-  top:calc(var(--header-h) + 18px);
-  /* Začína až na úrovni dlaždíc, nie hneď pod nadpisom – zarovnané s tým,
-     čo mapa vlastne ukazuje. Prilepenia sa to netýka: po prilepení drží
-     mapa svoje miesto pri hornom okraji. */
-  margin-top:clamp(90px, 15vh, 200px);
-}
-.program-layout-map .route-map{
-  display:flex;
-  flex-direction:column;
-}
-.program-layout-map .site-map-wrap{
-  min-height:min(70vh, 720px);
+.program-map .site-map-wrap{
+  min-height:min(72vh, 680px);
 }
 /* Rámček mal okolo mapy zbytočne veľa miesta – samotná mapa je tu obsah,
    nie ozdoba, tak nech ho využije. */
-.program-layout-map .route-map{
+.program-map .route-map{
   padding:clamp(12px, 1.2vw, 18px);
 }
 /* Hlavička s nadpisom "Mapa diel" a jej linka si držia pôvodnú šírku –
    zúženie rámčeka sa prejaví len na samotnej mape. Dorovnávame presne o
    rozdiel starého a nového odsadenia. */
-.program-layout-map .route-map-head{
+.program-map .route-map-head{
   padding-bottom:12px;
   padding-inline:calc(clamp(20px, 3vw, 36px) - clamp(12px, 1.2vw, 18px));
 }
-.program-layout-map .route-map-stage{
+.program-map .route-map-stage{
   margin:12px 0 8px;
 }
 /* Popisok je pod rámčekom, nie v ňom – je to pokyn k mape, nie jej súčasť. */
-.program-layout-map .route-note{
+.program-map .route-note{
   margin:10px 2px 0;
-}
-
-@media (max-width: 1000px){
-  .program-layout{
-    grid-template-columns:1fr;
-  }
-  .program-layout-map{
-    position:static;
-  }
-  .program-layout-map .site-map-wrap{
-    min-height:420px;
-  }
 }
 
 /* Sekcia Praktické info už mapu neobsahuje – obsah ide cez celú šírku. */
@@ -3394,12 +3349,11 @@ body.menu-open .site-header .brand-nox-logo {
   overflow-x:clip;
 }
 
-/* V dvojstĺpci nie je vedľa nadpisu dosť miesta, aby text stál pri ňom –
-   ide preto pod neho. */
-.program-layout .program-head{
+/* Text patrí pod nadpis, nie vedľa neho. */
+.nox-art-site .program-head{
   display:block;
 }
-.program-layout .program-head p{
+.nox-art-site .program-head p{
   max-width:46ch;
   margin-top:clamp(14px, 2.5vh, 28px);
 }
