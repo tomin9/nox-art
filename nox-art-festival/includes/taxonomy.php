@@ -185,9 +185,18 @@ function nox_art_color_palette() {
  * CSS hodnota pozadia značky pre daný term. Vlastná farba z administrácie
  * má prednosť; inak sa použije farba z palety podľa poradia kategórie.
  */
-function nox_art_term_color($term) {
+function nox_art_term_color($term, $depth = 0) {
     $custom = get_term_meta($term->term_id, '_nox_farba', true);
     if ($custom) return 'linear-gradient(135deg, ' . $custom . ', ' . $custom . ')';
+
+    /* Podkategória dedí farbu svojej skupiny: všetky diela majú na mape
+       rovnakú značku, nech sú to inštalácie alebo sgrafitá – farba hovorí,
+       do ktorej z troch skupín vec patrí, nie o aký druh diela ide.
+       (Vlastná farba nastavená v administrácii má aj tak prednosť.) */
+    if ($term->parent && $depth < 5) {
+        $parent = get_term($term->parent, 'nox_kategoria');
+        if ($parent && !is_wp_error($parent)) return nox_art_term_color($parent, $depth + 1);
+    }
 
     // Základné kategórie majú farbu viazanú na slug, nie na poradie – inak by
     // sa im farba posunula len preto, že pribudla iná kategória.
