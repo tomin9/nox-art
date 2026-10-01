@@ -288,6 +288,11 @@
       pts.forEach((m) => bounds.extend([m.lng, m.lat]));
       map.fitBounds(bounds, { padding: 60, maxZoom: 16, duration: 0 });
     }
+
+    // Filtrovacia časť stihla výber poslať skôr, než mapa dokončila načítanie –
+    // uplatníme ho až teraz, keď značky existujú. Výrez pritom nemeníme,
+    // zostáva ten z fitBounds vyššie.
+    pouziVyber(false);
   });
 
   /* Prejdenie kurzorom nad dlaždicou zvýrazní jej značku na mape – nie je
@@ -303,6 +308,41 @@
     if (!miestoId) return;
     tile.addEventListener('pointerenter', () => hoverMarker(miestoId, true));
     tile.addEventListener('pointerleave', () => hoverMarker(miestoId, false));
+  });
+
+  /* Filtrovanie značiek podľa toho, čo je práve v zozname (udalosť posiela
+     filtrovacia časť). Značky neodstraňujeme, len skrývame – znovuvytváranie
+     pri každom prepnutí filtra by bolo zbytočne drahé. */
+  let vyberMiest = null;
+
+  const pouziVyber = (prisposobVyrez) => {
+    if (!vyberMiest) return;
+    const miesta = vyberMiest;
+
+    const viditelne = [];
+    Object.keys(markers).forEach((id) => {
+      const show = !miesta.length || miesta.includes(String(id));
+      markers[id].getElement().classList.toggle('is-map-hidden', !show);
+      if (show) viditelne.push(markers[id]);
+    });
+
+    if (!map || !prisposobVyrez || !viditelne.length) return;
+
+    // Výrez prispôsobíme tomu, čo zostalo – pri jedinom bode naň priblížime.
+    if (viditelne.length === 1) {
+      map.flyTo({ center: viditelne[0].getLngLat(), zoom: Math.max(map.getZoom(), 16), duration: 600 });
+      return;
+    }
+    const bounds = new mapboxgl.LngLatBounds();
+    viditelne.forEach((marker) => bounds.extend(marker.getLngLat()));
+    map.fitBounds(bounds, { padding: 60, maxZoom: 16, duration: 600 });
+  };
+
+  window.addEventListener('nox:map-filter', (event) => {
+    const miesta = event.detail?.miesta || [];
+    const rovnaky = vyberMiest && vyberMiest.join(',') === miesta.join(',');
+    vyberMiest = miesta;
+    if (!rovnaky) pouziVyber(true);
   });
 
   document.querySelectorAll('[data-show-on-map]').forEach((link) => {
@@ -360,6 +400,25 @@
     // Odkiaľ sa do detailu prišlo – tlačidlo späť vráti ten istý pohľad.
     let viewBeforeDetail = 'items';
 
+    /* Mapa ukazuje len to, čo je práve v zozname: pri skupine jej položky,
+       v detaile jediný bod, v harmonograme všetko, čo má čas. Zoznam miest
+       posielame mape udalosťou, aby o sebe tie dve časti nemuseli vedieť. */
+    const syncMap = () => {
+      let tiles = [];
+      if (view === 'detail') {
+        const open = details.find((el) => !el.hidden);
+        const tile = open && document.getElementById(open.dataset.detail);
+        tiles = tile ? [tile] : [];
+      } else if (view === 'harmonogram') {
+        tiles = [...target.querySelectorAll('.gallery-tile[data-cas]')];
+      } else {
+        tiles = [...target.querySelectorAll('.gallery-tile')].filter((tile) => !tile.classList.contains('is-filtered-out'));
+      }
+
+      const miesta = [...new Set(tiles.map((tile) => tile.dataset.miesto).filter(Boolean))];
+      window.dispatchEvent(new CustomEvent('nox:map-filter', { detail: { miesta } }));
+    };
+
     const apply = () => {
       views.forEach((el) => { el.hidden = el.dataset.viewPanel !== view; });
       bar.hidden = view === 'detail';
@@ -367,6 +426,7 @@
 
       if (view !== 'items') {
         if (emptyNote) emptyNote.hidden = true;
+        syncMap();
         return;
       }
 
@@ -382,6 +442,8 @@
         const visible = items.some((item) => !item.classList.contains('is-filtered-out') && item.offsetParent !== null);
         emptyNote.hidden = visible;
       }
+
+      syncMap();
     };
 
     const syncSubBars = () => {

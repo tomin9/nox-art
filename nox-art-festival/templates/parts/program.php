@@ -46,7 +46,7 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
     <p class="empty" style="color:var(--paper);opacity:.7">Program zatiaľ nie je zverejnený — pridaj ho v administrácii (NOX:ART &rsaquo; Program, Diela).</p>
     <?php endif; ?>
     <?php foreach ($polozky as $i => $p): $visual = $visualClasses[$i % count($visualClasses)]; ?>
-    <article class="gallery-tile reveal" id="<?php echo esc_attr($p['id']); ?>"<?php echo $p['work'] ? ' data-work="' . esc_attr($p['work']) . '"' : ''; ?> data-miesto="<?php echo esc_attr($p['miestoId'] ?: ''); ?>" data-cat="<?php echo esc_attr(implode(' ', $p['kategorie'])); ?>">
+    <article class="gallery-tile reveal" id="<?php echo esc_attr($p['id']); ?>"<?php echo $p['work'] ? ' data-work="' . esc_attr($p['work']) . '"' : ''; ?> data-miesto="<?php echo esc_attr($p['miestoId'] ?: ''); ?>"<?php echo $p['terminy'] ? ' data-cas="1"' : ''; ?> data-cat="<?php echo esc_attr(implode(' ', $p['kategorie'])); ?>">
       <?php if ($p['foto']): ?>
       <div class="tile-media" aria-hidden="true" style="background-image:url('<?php echo esc_url($p['foto']); ?>')"></div>
       <?php else: ?>

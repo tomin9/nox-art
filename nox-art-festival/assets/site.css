@@ -3663,3 +3663,8 @@ body.menu-open .site-header .brand-nox-logo {
 .schedule-row[data-row-kategoria]:hover{
   background:rgba(239, 238, 220, .07);
 }
+
+/* Značka mimo práve zobrazeného výberu. */
+.site-marker.is-map-hidden{
+  display:none;
+}
