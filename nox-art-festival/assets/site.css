@@ -3280,9 +3280,12 @@ body.menu-open .site-header .brand-nox-logo {
 .program-layout-map .site-map-wrap{
   min-height:min(70vh, 720px);
 }
-/* Popisok je pod rámčekom, nie v ňom – je to pokyn k mape, nie jej súčasť. */
+/* Popisok je pod rámčekom, nie v ňom – je to pokyn k mape, nie jej súčasť.
+   Vodorovne lícuje s plátnom mapy, teda o odsadenie rámčeka a jeho linku
+   dovnútra, nie s okrajom rámčeka. */
 .program-layout-map .route-note{
-  margin:10px 2px 0;
+  margin:10px 0 0;
+  padding-inline:calc(clamp(12px, 1.2vw, 18px) + 1px);
 }
 
 @media (max-width: 1000px){
