@@ -3652,3 +3652,14 @@ body.menu-open .site-header .brand-nox-logo {
 .nox-art-site .partners{
   padding-top:clamp(34px, 4vw, 70px);
 }
+
+/* Riadok harmonogramu, ktorý niekam vedie, sa správa ako odkaz. */
+.schedule-row[data-row-detail],
+.schedule-row[data-row-kategoria]{
+  cursor:pointer;
+  transition:background .18s ease;
+}
+.schedule-row[data-row-detail]:hover,
+.schedule-row[data-row-kategoria]:hover{
+  background:rgba(239, 238, 220, .07);
+}

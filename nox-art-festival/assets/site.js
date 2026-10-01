@@ -458,6 +458,34 @@
     /* Odkaz v menu na túto sekciu znamená "ukáž mi celý zoznam" – ak je
        otvorený detail, zavrieme ho. Bez toho by kliknutie na "Program a
        diela" len odscrollovalo na detail, v ktorom človek už je. */
+    /* Riadky v harmonograme sa správajú ako dlaždice: jednotlivá položka
+       otvorí svoj detail, zlúčený riadok prepne zoznam na svoju kategóriu. */
+    document.querySelectorAll('[data-row-detail], [data-row-kategoria]').forEach((row) => {
+      row.addEventListener('click', () => {
+        const id = row.dataset.rowDetail;
+        if (id) { openDetail(id); return; }
+
+        const slug = row.dataset.rowKategoria;
+        if (!slug) return;
+
+        /* Prepnutie robíme vždy kliknutím na niektoré tlačidlo, nie ručným
+           prepísaním stavu – zoznam, filtre aj zvýraznené tlačidlo tak
+           zostanú v súlade. Keď kategória vlastné tlačidlo nemá, vraciame
+           sa na prvú skupinu. */
+        const subChip = [...document.querySelectorAll('[data-filter-parent] .filter-chip')]
+          .find((chip) => chip.dataset.filter === slug);
+
+        if (subChip) {
+          const parentSlug = subChip.closest('[data-filter-sub]')?.dataset.filterSub;
+          (chips.find((chip) => chip.dataset.filter === parentSlug) || chips[0])?.click();
+          subChip.click();
+          return;
+        }
+
+        (chips.find((chip) => chip.dataset.filter === slug) || chips[0])?.click();
+      });
+    });
+
     document.querySelectorAll('.main-nav a[href*="#"], .footer-links a[href*="#"]').forEach((link) => {
       link.addEventListener('click', () => {
         const hash = (link.getAttribute('href') || '').split('#')[1];

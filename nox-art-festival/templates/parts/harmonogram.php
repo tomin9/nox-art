@@ -27,7 +27,12 @@ if ($datum) {
   <h3 class="schedule-day-title"><?php echo esc_html($nadpis); ?><?php if ($podnadpis): ?> <span><?php echo esc_html($podnadpis); ?></span><?php endif; ?></h3>
   <ul class="schedule-list">
     <?php foreach ($polozky as $p): ?>
-    <li class="schedule-row">
+    <li class="schedule-row"<?php
+      // Riadok vedie buď na detail konkrétnej položky, alebo – ak zlučuje
+      // viac diel – na svoju kategóriu v zozname.
+      if ($p['detailId']) echo ' data-row-detail="' . esc_attr($p['detailId']) . '"';
+      elseif ($p['kategoriaSlug']) echo ' data-row-kategoria="' . esc_attr($p['kategoriaSlug']) . '"';
+    ?>>
       <time class="schedule-time"><?php echo esc_html($p['casOd']); ?><?php echo $p['casDo'] ? '–' . esc_html($p['casDo']) : ''; ?></time>
       <?php $pinColor = nox_art_item_color($p['kategorie']); ?>
       <span class="schedule-dot" aria-hidden="true"<?php echo $pinColor ? ' style="--pin:' . esc_attr($pinColor) . '"' : ''; ?>></span>
