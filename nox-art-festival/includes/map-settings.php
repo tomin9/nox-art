@@ -75,6 +75,23 @@ function nox_art_render_map_settings_page() {
             </table>
             <?php submit_button('Uložiť nastavenia'); ?>
         </form>
+
+        <?php
+        /* Verzia a čas poslednej zmeny súborov – podľa toho sa dá bez prístupu
+           k súborom zistiť, či sa posledná synchronizácia z GitHubu naozaj
+           prejavila na tejto inštalácii. */
+        $template = NOX_ART_DIR . 'templates/parts/program.php';
+        $time = file_exists($template) ? filemtime($template) : 0;
+        ?>
+        <h2>Verzia pluginu</h2>
+        <table class="widefat striped" style="max-width:640px">
+            <tbody>
+                <tr><td><strong>Verzia pluginu</strong></td><td><?php echo esc_html(NOX_ART_VERSION); ?></td></tr>
+                <tr><td><strong>Posledná zmena súborov</strong></td><td><?php echo $time ? esc_html(date_i18n('j.n.Y H:i:s', $time)) : '—'; ?></td></tr>
+                <tr><td><strong>Priečinok pluginu</strong></td><td><code><?php echo esc_html(NOX_ART_DIR); ?></code></td></tr>
+            </tbody>
+        </table>
+        <p class="description">Ak po synchronizácii z GitHubu tieto údaje zostanú rovnaké, nové súbory sa na túto inštaláciu nedostali.</p>
     </div>
     <?php
 }

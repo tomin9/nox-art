@@ -21,7 +21,9 @@ function nox_art_register_post_types() {
         ],
         'public' => false,
         'show_ui' => true,
-        'show_in_menu' => 'nox-art-festival',
+        // Miesta sú prvou záložkou menu (viď nox_art_admin_submenu), takže
+        // vlastnú podpoložku už nepotrebujú – bola by dvakrát.
+        'show_in_menu' => false,
         'supports' => ['title', 'editor', 'thumbnail'],
         'menu_icon' => 'dashicons-location',
         'capability_type' => 'post',
@@ -119,41 +121,26 @@ function nox_art_admin_menu() {
 add_action('admin_menu', 'nox_art_admin_menu');
 
 function nox_art_admin_landing() {
-    ?>
-    <div class="wrap">
-        <h1>NOX:ART Festival</h1>
-        <p>Obsah podstránky festivalu spravuješ cez položky nižšie v menu: <strong>Miesta</strong>, <strong>Diela</strong>, <strong>Umelci</strong>, <strong>Program</strong> a <strong>Podniky</strong>.</p>
-        <p>Na stránku, kde chceš zobraziť interaktívnu mapu a zoznamy, vlož shortcode:</p>
-        <p><code>[nox_art]</code></p>
-
-        <?php
-        /* Verzia a čas poslednej zmeny súborov – podľa toho sa dá bez prístupu
-           k súborom zistiť, či sa posledná synchronizácia z GitHubu naozaj
-           prejavila na tejto inštalácii. */
-        $template = NOX_ART_DIR . 'templates/parts/program.php';
-        $time = file_exists($template) ? filemtime($template) : 0;
-        ?>
-        <h2>Verzia</h2>
-        <table class="widefat striped" style="max-width:640px">
-            <tbody>
-                <tr><td><strong>Verzia pluginu</strong></td><td><?php echo esc_html(NOX_ART_VERSION); ?></td></tr>
-                <tr><td><strong>Posledná zmena súborov</strong></td><td><?php echo $time ? esc_html(date_i18n('j.n.Y H:i:s', $time)) : '—'; ?></td></tr>
-                <tr><td><strong>Priečinok pluginu</strong></td><td><code><?php echo esc_html(NOX_ART_DIR); ?></code></td></tr>
-            </tbody>
-        </table>
-        <p class="description">Ak po synchronizácii z GitHubu tieto údaje zostanú rovnaké, nové súbory sa na túto inštaláciu nedostali.</p>
-    </div>
-    <?php
+    // Prvá záložka menu vedie rovno na Miesta, takže sa sem nedá dostať –
+    // callback si add_menu_page napriek tomu vyžaduje.
+    wp_safe_redirect(admin_url('edit.php?post_type=nox_miesto'));
+    exit;
 }
 
 /**
  * add_menu_page si vytvorí vlastnú podpoložku s rovnakým slugom ako menu
  * (duplicitná "NOX:ART" položka) – premenujeme ju na niečo zmysluplnejšie.
  */
+/**
+ * add_menu_page si vytvorí vlastnú podpoložku s rovnakým slugom ako menu –
+ * nasmerujeme ju rovno na Miesta, nech je zoznam hneď po ruke a názov
+ * nebol prázdny "NOX:ART" dvakrát pod sebou.
+ */
 function nox_art_admin_submenu() {
     global $submenu;
     if (isset($submenu['nox-art-festival'][0])) {
-        $submenu['nox-art-festival'][0][0] = 'Prehľad';
+        $submenu['nox-art-festival'][0][0] = 'Miesta';
+        $submenu['nox-art-festival'][0][2] = 'edit.php?post_type=nox_miesto';
     }
 }
 add_action('admin_menu', 'nox_art_admin_submenu', 100);
