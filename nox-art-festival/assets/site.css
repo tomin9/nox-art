@@ -3267,12 +3267,10 @@ body.menu-open .site-header .brand-nox-logo {
      nie ozdoba, tak nech ho využije. */
   padding:clamp(12px, 1.2vw, 18px);
 }
-/* Hlavička s nadpisom "Mapa diel" a jej linka si držia pôvodnú šírku –
-   zúženie rámčeka sa prejaví len na samotnej mape. Dorovnávame presne o
-   rozdiel starého a nového odsadenia. */
+/* Hlavička s nadpisom "Mapa diel" a jej linka idú cez celú šírku rámčeka. */
 .program-layout-map .route-map-head{
   padding-bottom:12px;
-  padding-inline:calc(clamp(20px, 3vw, 36px) - clamp(12px, 1.2vw, 18px));
+  padding-inline:0;
 }
 .program-layout-map .route-map-stage{
   margin:12px 0 8px;
