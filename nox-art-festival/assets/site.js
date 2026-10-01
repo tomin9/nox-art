@@ -439,18 +439,31 @@
 
   let settling = false;
 
+  // Kam sa roletka dotiahne, rozhoduje smer posledného pohybu: pri
+  // scrollovaní nadol odchádza preč, pri scrollovaní nahor sa vracia dole.
+  // Ťahať ju preč aj vtedy, keď sa človek vracia na začiatok, by znamenalo
+  // ísť proti nemu.
+  let dir = 1;
+  let prevY = window.scrollY;
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    if (y !== prevY) dir = y > prevY ? 1 : -1;
+    prevY = y;
+  }, { passive: true });
+
   const settle = () => {
     if (settling) return;
 
-    const vh = window.innerHeight;
+    /* Výšku berieme zo samotnej roletky, nie z window.innerHeight: roletka
+       je vysoká 100svh a na tej istej hodnote končí aj animácia. Na
+       mobiloch sa tie dve čísla líšia (svh počíta s vysunutými lištami
+       prehliadača) a roletka by sa dotiahla vedľa. */
+    const vh = curtain.offsetHeight;
     const y = window.scrollY;
     if (y <= 0 || y >= vh) return;   // roletka je celá dole alebo celá preč
 
-    // Vždy dopredu, nikdy späť dole: akonáhle sa človek pohne, roletka
-    // odchádza. Vracať ju nadol by pôsobilo, že stránka scrollovanie
-    // odmieta.
     settling = true;
-    window.scrollTo({ top: vh, behavior: 'smooth' });
+    window.scrollTo({ top: dir < 0 ? 0 : vh, behavior: 'smooth' });
     // Poistka, keby prehliadač "scrollend" po plynulom posune nedoručil.
     setTimeout(() => { settling = false; }, 800);
   };

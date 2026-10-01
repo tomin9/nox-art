@@ -3406,6 +3406,25 @@ body.menu-open .site-header .brand-nox-logo {
   margin-top:0;
 }
 
+/* Roletka neodchádza rovnomerne – spočiatku sa akoby zdráha a čím je
+   vyššie, tým ide rýchlejšie. Keyframy držia jej zdržanie oproti bežnému
+   scrollovaniu: je nulové na začiatku aj na konci (tam musí sedieť presne)
+   a najväčšie v polovici. Krivka je parabola E·(p − p²) s E = 0,5, len
+   rozpísaná po desatinách – CSS mocninu zapísať nevie. */
+@keyframes nox-curtain-lift{
+  0%{transform:translate3d(0,0,0)}
+  10%{transform:translate3d(0,4.5svh,0)}
+  20%{transform:translate3d(0,8svh,0)}
+  30%{transform:translate3d(0,10.5svh,0)}
+  40%{transform:translate3d(0,12svh,0)}
+  50%{transform:translate3d(0,12.5svh,0)}
+  60%{transform:translate3d(0,12svh,0)}
+  70%{transform:translate3d(0,10.5svh,0)}
+  80%{transform:translate3d(0,8svh,0)}
+  90%{transform:translate3d(0,4.5svh,0)}
+  100%{transform:translate3d(0,0,0)}
+}
+
 @keyframes nox-curtain-reveal{
   from{transform:translate3d(0,-100svh,0)}
   to{transform:translate3d(0,0,0)}
@@ -3417,6 +3436,11 @@ body.menu-open .site-header .brand-nox-logo {
   @media not (prefers-reduced-motion: reduce){
     .nox-art-site .curtain-below{
       animation:nox-curtain-reveal linear both;
+      animation-timeline:scroll(root block);
+      animation-range:0 100svh;
+    }
+    .nox-art-site .curtain{
+      animation:nox-curtain-lift linear both;
       animation-timeline:scroll(root block);
       animation-range:0 100svh;
     }
