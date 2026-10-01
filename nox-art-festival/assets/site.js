@@ -270,12 +270,14 @@
         .addTo(map);
       markers[m.id] = marker;
       el.addEventListener('click', () => {
-        /* Značka otvorí detail tej istej položky ako kliknutie na dlaždicu –
-           bublina s náhľadom tu už nie je, detail v ľavom stĺpci povie
-           podstatne viac. Dlaždicou miesta je buď prvé dielo na ňom, alebo
-           samotné miesto (partnerský podnik). */
+        /* Značka otvorí detail tej položky, ktorú práve zastupuje – na jednom
+           mieste môže stáť dielo aj bod programu a značka ukazuje tú, ktorá je
+           v zobrazenom výbere. Bez toho by sprievodný program na mape vždy
+           preklikol na dielo. */
+        const vybrane = vyberBodov[m.id];
         const first = dielaAt(m.id)[0];
-        const tile = (first && document.getElementById(`work-${first.id}`)) ||
+        const tile = (vybrane && document.getElementById(vybrane.id)) ||
+          (first && document.getElementById(`work-${first.id}`)) ||
           document.getElementById(`miesto-${m.id}`);
         if (!tile) return;
         highlightTile(tile);
@@ -434,7 +436,7 @@
       tiles.forEach((tile) => {
         const miesto = tile.dataset.miesto;
         if (!miesto || body.has(miesto)) return;
-        body.set(miesto, { cislo: tile.dataset.cislo || '', pin: tile.dataset.pin || '' });
+        body.set(miesto, { id: tile.id, cislo: tile.dataset.cislo || '', pin: tile.dataset.pin || '' });
       });
 
       window.dispatchEvent(new CustomEvent('nox:map-filter', {
