@@ -397,8 +397,10 @@
     let parent = chips.find((chip) => chip.classList.contains('is-active'))?.dataset.filter || '';
     let child = '';
     let view = 'items';
-    // Odkiaľ sa do detailu prišlo – tlačidlo späť vráti ten istý pohľad.
+    // Odkiaľ sa do detailu prišlo – tlačidlo späť vráti ten istý pohľad
+    // aj miesto v zozname, kde človek pred otvorením bol.
     let viewBeforeDetail = 'items';
+    let scrollBeforeDetail = null;
 
     /* Mapa ukazuje len to, čo je práve v zozname: pri skupine jej položky,
        v detaile jediný bod, v harmonograme všetko, čo má čas. Zoznam miest
@@ -498,6 +500,7 @@
       if (!detail) return;
       details.forEach((el) => { el.hidden = el !== detail; });
       viewBeforeDetail = view;
+      scrollBeforeDetail = window.scrollY;
       view = 'detail';
       syncSubBars();
       apply();
@@ -562,6 +565,19 @@
       view = viewBeforeDetail;
       syncSubBars();
       apply();
+
+      /* Vrátime aj miesto, na ktorom človek v zozname bol – inak by skončil
+         na začiatku sekcie a dlaždicu, z ktorej odišiel, by musel hľadať. */
+      if (scrollBeforeDetail !== null) {
+        const ciel = scrollBeforeDetail;
+        scrollBeforeDetail = null;
+        /* Až po prekreslení: zoznam je oveľa vyšší než detail a prehliadač si
+           po zmene výšky polohu sám dorovnáva – keby sme skrolovali hneď,
+           prepísal by nás. */
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => window.scrollTo({ top: ciel, behavior: 'smooth' }));
+        });
+      }
     });
 
     subBars.forEach((sub) => {

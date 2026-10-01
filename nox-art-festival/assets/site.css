@@ -3668,3 +3668,10 @@ body.menu-open .site-header .brand-nox-logo {
 .site-marker.is-map-hidden{
   display:none;
 }
+
+/* Prepínanie pohľadov mení výšku stránky – bez tohto by prehliadač polohu
+   sám dorovnával a prebíjal by návrat na miesto, kde človek v zozname bol.
+   Musí to byť na posúvanom dokumente, nie na meniacom sa prvku. */
+.nox-art-site{
+  overflow-anchor:none;
+}
