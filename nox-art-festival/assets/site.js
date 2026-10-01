@@ -771,8 +771,10 @@
     return url.pathname === window.location.pathname;   // inak odkaz vedie na inú podstránku
   });
   let poslednySpust = null;
+  let scrollPriOtvoreni = 0;
 
   const nastav = (otvorene) => {
+    scrollPriOtvoreni = window.scrollY;
     dock.classList.toggle('is-open', otvorene);
     spuste.forEach((link) => link.setAttribute('aria-expanded', otvorene ? 'true' : 'false'));
     if (otvorene) panel?.querySelector('input')?.focus({ preventScroll: true });
@@ -807,6 +809,14 @@
     if (event.target.closest?.('a[href*="#kontakt"]')) return;
     nastav(false);
   });
+
+  /* Rolovanie stránky panel zasunie – ide o prekryv nad obsahom, nie o jeho
+     časť. Malý posun (napr. dorovnanie kotvy) ešte neráta. */
+  window.addEventListener('scroll', () => {
+    if (!dock.classList.contains('is-open')) return;
+    if (Math.abs(window.scrollY - scrollPriOtvoreni) < 40) return;
+    nastav(false);
+  }, { passive: true });
 
   if (window.location.hash === '#kontakt') nastav(true);
 })();
