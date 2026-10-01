@@ -356,12 +356,19 @@
     // Hlavná skupina (Diela / Sprievodný program / Podniky) a prípadné
     // spresnenie v jej druhom rade. Položky nesú aj nadradené kategórie,
     // takže na hlavnú skupinu sadne všetko, čo pod ňu patrí.
+    const details = [...document.querySelectorAll('[data-detail]')];
+    const backButton = document.querySelector('[data-detail-back]');
+
     let parent = chips.find((chip) => chip.classList.contains('is-active'))?.dataset.filter || '';
     let child = '';
     let view = 'items';
+    // Odkiaľ sa do detailu prišlo – tlačidlo späť vráti ten istý pohľad.
+    let viewBeforeDetail = 'items';
 
     const apply = () => {
       views.forEach((el) => { el.hidden = el.dataset.viewPanel !== view; });
+      bar.hidden = view === 'detail';
+
       if (view !== 'items') {
         if (emptyNote) emptyNote.hidden = true;
         return;
@@ -408,6 +415,33 @@
         syncSubBars();
         apply();
       });
+    });
+
+    /* Detail položky. Je vykreslený na serveri pri každej dlaždici, takže sa
+       len prepína viditeľnosť – otvorenie je okamžité. */
+    const openDetail = (id) => {
+      const detail = details.find((el) => el.dataset.detail === id);
+      if (!detail) return;
+      details.forEach((el) => { el.hidden = el !== detail; });
+      viewBeforeDetail = view;
+      view = 'detail';
+      syncSubBars();
+      apply();
+    };
+
+    // Klikacia je celá dlaždica, nielen odkaz na mapu – položka bez miesta
+    // odkaz nemá, a detail má mať každá.
+    target.querySelectorAll('.gallery-tile[id]').forEach((tile) => {
+      tile.addEventListener('click', (event) => {
+        event.preventDefault();
+        openDetail(tile.id);
+      });
+    });
+
+    backButton?.addEventListener('click', () => {
+      view = viewBeforeDetail;
+      syncSubBars();
+      apply();
     });
 
     subBars.forEach((sub) => {

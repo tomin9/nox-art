@@ -238,6 +238,12 @@ function nox_art_site_items() {
 
     $items = [];
 
+    $umelecById = [];
+    foreach (nox_art_data_umelci() as $u) $umelecById[$u['id']] = $u;
+
+    $miestoById = [];
+    foreach (nox_art_data_miesta() as $m) $miestoById[$m['id']] = $m;
+
     foreach (nox_art_data_program() as $item) {
         $items[] = [
             'id' => 'program-' . $item['id'],
@@ -245,18 +251,17 @@ function nox_art_site_items() {
             'foto' => $item['foto'],
             'kategorie' => $item['kategorie'],
             'cas' => nox_art_site_time_label($item['datum'], $item['casOd'], $item['casDo']),
+            'popis' => $item['popis'],
             'datum' => $item['datum'],
             'casOd' => $item['casOd'],
             'casDo' => $item['casDo'],
             'meta' => '',
             'work' => '',
             'miestoId' => $item['miestoId'],
+            'miestoNazov' => $miestoById[$item['miestoId']]['nazov'] ?? '',
             'cislo' => $item['cislo'],
         ];
     }
-
-    $umelecById = [];
-    foreach (nox_art_data_umelci() as $u) $umelecById[$u['id']] = $u;
 
     foreach (nox_art_data_diela() as $d) {
         $u = $umelecById[$d['umelecId']] ?? null;
@@ -266,12 +271,14 @@ function nox_art_site_items() {
             'foto' => $d['foto'],
             'kategorie' => $d['kategorie'],
             'cas' => nox_art_site_time_label($d['datum'], $d['casOd'], $d['casDo']),
+            'popis' => $d['popis'],
             'datum' => $d['datum'],
             'casOd' => $d['casOd'],
             'casDo' => $d['casDo'],
             'meta' => $u ? $u['meno'] : '',
             'work' => $d['id'],
             'miestoId' => $d['miestoId'],
+            'miestoNazov' => $miestoById[$d['miestoId']]['nazov'] ?? '',
             'cislo' => $d['cislo'],
         ];
     }
@@ -286,12 +293,14 @@ function nox_art_site_items() {
             'foto' => $m['foto'],
             'kategorie' => $m['kategorie'],
             'cas' => nox_art_site_time_label($m['datum'], $m['casOd'], $m['casDo']),
+            'popis' => $m['popis'],
             'datum' => $m['datum'],
             'casOd' => $m['casOd'],
             'casDo' => $m['casDo'],
             'meta' => $m['adresa'],
             'work' => '',
             'miestoId' => $m['id'],
+            'miestoNazov' => $m['adresa'],
             'cislo' => $m['cislo'],
         ];
     }

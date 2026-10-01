@@ -70,6 +70,29 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
   <p class="filter-empty" data-filter-empty="program" hidden>V tejto kategórii zatiaľ nič nie je.</p>
   </div>
 
+  <?php /* Detail položky sa vykresľuje na server rovno ku každej dlaždici a
+           prepína sa len skrývaním – otvorenie je tak okamžité a bez
+           načítavania. */ ?>
+  <div data-view-panel="detail" hidden>
+    <button class="detail-back" type="button" data-detail-back>&larr; Späť na zoznam</button>
+    <?php foreach ($polozky as $p): ?>
+    <article class="detail" data-detail="<?php echo esc_attr($p['id']); ?>" hidden>
+      <h3 class="detail-title"><?php echo esc_html($p['nazov']); ?></h3>
+      <ul class="detail-facts">
+        <?php if ($p['meta']): ?><li><?php echo esc_html($p['meta']); ?></li><?php endif; ?>
+        <?php if ($p['miestoNazov']): ?><li><?php echo esc_html($p['miestoNazov']); ?></li><?php endif; ?>
+        <?php if ($p['cas']): ?><li><?php echo esc_html($p['cas']); ?></li><?php endif; ?>
+      </ul>
+      <?php if ($p['foto']): ?>
+      <img class="detail-foto" src="<?php echo esc_url($p['foto']); ?>" alt="<?php echo esc_attr($p['nazov']); ?>" loading="lazy">
+      <?php endif; ?>
+      <?php if ($p['popis']): ?>
+      <div class="detail-text"><?php echo wp_kses_post($p['popis']); ?></div>
+      <?php endif; ?>
+    </article>
+    <?php endforeach; ?>
+  </div>
+
   <div class="schedule" data-view-panel="harmonogram" hidden>
     <?php include NOX_ART_DIR . 'templates/parts/harmonogram.php'; ?>
   </div>
