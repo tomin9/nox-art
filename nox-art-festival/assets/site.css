@@ -3278,14 +3278,47 @@ body.menu-open .site-header .brand-nox-logo {
   border-radius:0 0 var(--radius-xl) var(--radius-xl);
 }
 
-/* Druhý rad filtrov (spresnenie v rámci skupiny) – menší a jemnejší, aby
-   bolo na prvý pohľad jasné, že je podradený hlavnému radu. */
+/* Druhý rad filtrov je spresnenie v rámci skupiny, nie rovnocenná voľba –
+   preto nemá rámčeky ako hlavný rad, ale je to riadok drobných textových
+   prepínačov. Rozdiel vo veľkosti sám o sebe nestačil: dva rady rovnako
+   orámovaných tlačidiel pod sebou vyzerali ako jeden dlhý zoznam. */
 .filter-bar-sub{
-  margin-top:10px;
+  align-items:baseline;
+  gap:4px;
+  margin-top:12px;
   padding-left:2px;
 }
-.filter-chip-sm{
-  padding:7px 14px;
-  font-size:.74rem;
+.filter-bar-sub::before{
+  content:"Spresniť:";
+  align-self:center;
+  margin-right:6px;
+  color:rgba(239, 238, 220, .5);
+  font-size:.66rem;
+  font-weight:700;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+.filter-bar-sub .filter-chip{
+  padding:5px 11px;
+  border:0;
+  border-radius:999px;
+  background:transparent;
+  color:rgba(239, 238, 220, .68);
+  font-size:.76rem;
   font-weight:600;
+}
+.filter-bar-sub .filter-chip:hover{
+  color:var(--paper);
+  background:rgba(239, 238, 220, .09);
+}
+.filter-bar-sub .filter-chip.is-active{
+  background:rgba(239, 238, 220, .16);
+  color:var(--paper);
+}
+
+@media (max-width: 620px){
+  .filter-bar-sub::before{
+    width:100%;
+    margin:0 0 2px;
+  }
 }

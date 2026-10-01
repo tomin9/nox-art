@@ -75,7 +75,7 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
   <?php foreach ($filtre as $i => $uzol): if (!$uzol['children']) continue; ?>
   <div class="filter-bar filter-bar-light filter-bar-sub" data-filter-sub="<?php echo esc_attr($uzol['term']->slug); ?>" data-filter-parent="program" role="group" aria-label="Spresnenie: <?php echo esc_attr($uzol['term']->name); ?>"<?php echo $i === 0 ? '' : ' hidden'; ?>>
     <?php foreach ($uzol['children'] as $child): ?>
-    <button class="filter-chip filter-chip-sm" type="button" data-filter="<?php echo esc_attr($child->slug); ?>" aria-pressed="false"><?php echo esc_html($child->name); ?></button>
+    <button class="filter-chip" type="button" data-filter="<?php echo esc_attr($child->slug); ?>" aria-pressed="false"><?php echo esc_html($child->name); ?></button>
     <?php endforeach; ?>
   </div>
   <?php endforeach; ?>
