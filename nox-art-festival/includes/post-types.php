@@ -138,9 +138,16 @@ function nox_art_admin_landing() {
  */
 function nox_art_admin_submenu() {
     global $submenu;
-    if (isset($submenu['nox-art-festival'][0])) {
-        $submenu['nox-art-festival'][0][0] = 'Miesta';
-        $submenu['nox-art-festival'][0][2] = 'edit.php?post_type=nox_miesto';
+    if (empty($submenu['nox-art-festival'])) return;
+
+    /* Hľadáme položku podľa slugu, nie podľa poradia: poradie závisí od toho,
+       kedy sa pridali podpoložky jednotlivých typov obsahu, a index 0 môže
+       pokojne patriť niektorému z nich (vtedy by sme premenovali jeho). */
+    foreach ($submenu['nox-art-festival'] as $index => $item) {
+        if (($item[2] ?? '') !== 'nox-art-festival') continue;
+        $submenu['nox-art-festival'][$index][0] = 'Miesta';
+        $submenu['nox-art-festival'][$index][2] = 'edit.php?post_type=nox_miesto';
+        break;
     }
 }
 add_action('admin_menu', 'nox_art_admin_submenu', 100);
