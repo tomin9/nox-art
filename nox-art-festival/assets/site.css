@@ -3675,3 +3675,13 @@ body.menu-open .site-header .brand-nox-logo {
 .nox-art-site{
   overflow-anchor:none;
 }
+
+/* Značka zastupujúca viac vecí na jednom mieste – namiesto čísla tri bodky. */
+.site-marker.is-cluster b{
+  font-size:.62rem;
+  letter-spacing:.5px;
+}
+/* Rozložené značky ležia nad ostatnými, nech sa dá kliknúť presne. */
+.site-marker.is-expanded{
+  z-index:6;
+}

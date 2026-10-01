@@ -236,6 +236,7 @@
     zoom: 14,
   });
   map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'bottom-right');
+  map.on('click', () => zlozit());
 
   // Mapa má pružnú výšku (dopĺňa zvyšné miesto v karte), takže pri zmene
   // veľkosti okna jej treba povedať, nech si prepočíta plátno – inak by
@@ -269,19 +270,23 @@
         .setLngLat([m.lng, m.lat])
         .addTo(map);
       markers[m.id] = marker;
-      el.addEventListener('click', () => {
+      el.addEventListener('click', (event) => {
+        event.stopPropagation();
+
         /* Značka otvorí detail tej položky, ktorú práve zastupuje – na jednom
-           mieste môže stáť dielo aj bod programu a značka ukazuje tú, ktorá je
-           v zobrazenom výbere. Bez toho by sprievodný program na mape vždy
-           preklikol na dielo. */
-        const vybrane = vyberBodov[m.id];
+           mieste môže stáť dielo aj bod programu. Keď ich je viac, najprv sa
+           značka rozloží, nech sa dá vybrať konkrétna vec. */
+        const polozky = vyberBodov[m.id] || [];
+        if (polozky.length > 1) {
+          rozlozit([m.lng, m.lat], polozky);
+          return;
+        }
+
         const first = dielaAt(m.id)[0];
-        const tile = (vybrane && document.getElementById(vybrane.id)) ||
-          (first && document.getElementById(`work-${first.id}`)) ||
-          document.getElementById(`miesto-${m.id}`);
-        if (!tile) return;
-        highlightTile(tile);
-        tile.click();
+        const id = polozky[0]?.id
+          || (first && `work-${first.id}`)
+          || `miesto-${m.id}`;
+        otvorPolozku(id);
       });
     });
 
@@ -318,6 +323,56 @@
   let vyberMiest = null;
   let vyberBodov = {};
 
+  /* Značka s číslom (alebo s tromi bodkami, keď na mieste stojí viac vecí). */
+  const vytvorZnacku = (popis) => {
+    const el = document.createElement('div');
+    el.className = 'site-marker';
+    el.appendChild(document.createElement('i'));
+    const label = document.createElement('b');
+    label.textContent = popis.cislo;
+    el.appendChild(label);
+    if (popis.pin) el.style.setProperty('--pin', popis.pin);
+    return el;
+  };
+
+  const otvorPolozku = (id) => {
+    const tile = document.getElementById(id);
+    if (!tile) return;
+    highlightTile(tile);
+    tile.click();
+  };
+
+  /* Na jednom mieste môže stáť viac vecí – značka vtedy ukáže tri bodky a po
+     kliknutí sa rozloží do samostatných značiek s vlastnými číslami. */
+  let rozlozene = [];
+
+  const zlozit = () => {
+    rozlozene.forEach((marker) => marker.remove());
+    rozlozene = [];
+  };
+
+  const rozlozit = (lngLat, polozky) => {
+    zlozit();
+    const polomer = 52;
+    polozky.forEach((popis, i) => {
+      const uhol = (-90 + (360 / polozky.length) * i) * (Math.PI / 180);
+      const el = vytvorZnacku(popis);
+      el.classList.add('is-expanded');
+      el.addEventListener('click', (event) => {
+        event.stopPropagation();
+        otvorPolozku(popis.id);
+        zlozit();
+      });
+      rozlozene.push(
+        new mapboxgl.Marker({
+          element: el,
+          anchor: 'bottom',
+          offset: [Math.cos(uhol) * polomer, Math.sin(uhol) * polomer],
+        }).setLngLat(lngLat).addTo(map)
+      );
+    });
+  };
+
   const pouziVyber = (prisposobVyrez) => {
     if (!vyberMiest) return;
     const miesta = vyberMiest;
@@ -330,12 +385,14 @@
       if (!show) return;
       viditelne.push(markers[id]);
 
-      // Číslo a farba podľa položky, ktorá značku do výberu dostala.
-      const bod = vyberBodov[id];
-      if (!bod) return;
+      // Číslo a farba podľa položiek, ktoré značku do výberu dostali.
+      const polozky = vyberBodov[id] || [];
+      if (!polozky.length) return;
       const label = el.querySelector('b');
-      if (label && bod.cislo) label.textContent = bod.cislo;
-      if (bod.pin) el.style.setProperty('--pin', bod.pin);
+      const zhluk = polozky.length > 1;
+      el.classList.toggle('is-cluster', zhluk);
+      if (label) label.textContent = zhluk ? '•••' : polozky[0].cislo;
+      if (polozky[0].pin) el.style.setProperty('--pin', polozky[0].pin);
     });
 
     if (!map || !prisposobVyrez || !viditelne.length) return;
@@ -355,6 +412,7 @@
     const rovnaky = vyberMiest && vyberMiest.join(',') === miesta.join(',');
     vyberMiest = miesta;
     vyberBodov = event.detail?.body || {};
+    zlozit();
     pouziVyber(!rovnaky);
   });
 
@@ -435,8 +493,9 @@
       const body = new Map();
       tiles.forEach((tile) => {
         const miesto = tile.dataset.miesto;
-        if (!miesto || body.has(miesto)) return;
-        body.set(miesto, { id: tile.id, cislo: tile.dataset.cislo || '', pin: tile.dataset.pin || '' });
+        if (!miesto) return;
+        if (!body.has(miesto)) body.set(miesto, []);
+        body.get(miesto).push({ id: tile.id, cislo: tile.dataset.cislo || '', pin: tile.dataset.pin || '' });
       });
 
       window.dispatchEvent(new CustomEvent('nox:map-filter', {
