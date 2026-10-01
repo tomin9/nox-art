@@ -1,5 +1,5 @@
 <?php if (!defined('ABSPATH')) exit; ?>
-<section class="hero" id="top">
+<section class="hero curtain" id="top" data-curtain>
   <div class="hero-copy reveal">
     <h1 class="sr-only">NOX:ART — Medzinárodný festival súčasného umenia</h1>
     <p class="hero-location-title">Sídlisko Píly</p>
