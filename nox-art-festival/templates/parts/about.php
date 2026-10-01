@@ -8,7 +8,7 @@
     <div class="about-copy reveal">
       <p>NOX:ART prináša súčasné umenie priamo medzi domy, ulice a sgrafitá sídliska Píly. Svetelné objekty, projekcie, zvukové zásahy a digitálne diela vytvoria trasu, ktorú možno objavovať vlastným tempom.</p>
       <p>Festival spája pamäť miesta so súčasnou tvorbou a ukazuje, že kvalitné umenie nemusí zostať zatvorené v galérii.</p>
-      <a class="text-link" href="<?php echo nox_art_site_link('info'); ?>">Ako sa dostať na festival <span aria-hidden="true">↗</span></a>
+      <a class="text-link" href="<?php echo nox_art_site_link('program', 'mapa'); ?>">Mapa diel <span aria-hidden="true">↗</span></a>
     </div>
   </div>
   <div class="festival-facts reveal" aria-label="Základné informácie o festivale">
