@@ -17,7 +17,7 @@ function nox_art_default_categories() {
     return [
         'Diela' => ['Inštalácie', 'Nové sgrafitá', 'Živé sgrafitá', 'Galéria ulice'],
         'Sprievodný program' => [],
-        'Podniky' => [],
+        'Partnerské podniky' => [],
     ];
 }
 
@@ -52,7 +52,13 @@ function nox_art_seed_categories() {
     // Verzia, nie len príznak: keď sa základná sada zmení, doplnia sa aj na
     // stránkach, kde už zakladanie raz prebehlo. Nič sa nemaže – kategórie,
     // ktoré editor nepotrebuje, si zmaže sám.
-    if ((int) get_option('nox_art_categories_seeded') >= 3) return;
+    if ((int) get_option('nox_art_categories_seeded') >= 4) return;
+
+    // Premenovanie z prvej verzie: skupina sa pôvodne volala "Podniky".
+    $stare = get_term_by('name', 'Podniky', 'nox_kategoria');
+    if ($stare && !term_exists('Partnerské podniky', 'nox_kategoria')) {
+        wp_update_term($stare->term_id, 'nox_kategoria', ['name' => 'Partnerské podniky']);
+    }
 
     foreach (nox_art_default_categories() as $name => $children) {
         $parent = term_exists($name, 'nox_kategoria');
@@ -61,12 +67,18 @@ function nox_art_seed_categories() {
         $parent_id = (int) (is_array($parent) ? $parent['term_id'] : $parent);
 
         foreach ($children as $child) {
-            if (!term_exists($child, 'nox_kategoria')) {
+            $existing = get_term_by('name', $child, 'nox_kategoria');
+            if (!$existing) {
                 wp_insert_term($child, 'nox_kategoria', ['parent' => $parent_id]);
+            } elseif ((int) $existing->parent === 0) {
+                // Z predchádzajúcej verzie zostali tieto kategórie ako
+                // samostatné skupiny – zaradíme ich pod Diela, inak by sa
+                // hlavná skupina vôbec neukázala.
+                wp_update_term($existing->term_id, 'nox_kategoria', ['parent' => $parent_id]);
             }
         }
     }
-    update_option('nox_art_categories_seeded', 3);
+    update_option('nox_art_categories_seeded', 4);
 }
 add_action('init', 'nox_art_seed_categories', 20);
 
@@ -121,14 +133,30 @@ function nox_art_filter_terms($post_type) {
  * zvolení. Vracia pole [term, children] len s tým, čo naozaj má obsah.
  */
 function nox_art_filter_tree($post_type) {
-    $terms = nox_art_filter_terms($post_type);
-    if (!$terms) return [];
+    // Hlavné skupiny sa zobrazujú vždy, aj keď sú zatiaľ prázdne – sú to
+    // pevné piliere stránky a návštevník má hneď vidieť, čo festival ponúka.
+    // Podkategórie sa naopak ukážu, až keď v nich niečo je.
+    $groups = get_terms(['taxonomy' => 'nox_kategoria', 'hide_empty' => false, 'parent' => 0, 'orderby' => 'term_id', 'order' => 'ASC']);
+    if (!$groups || is_wp_error($groups)) return [];
 
+    $used = nox_art_filter_terms($post_type);
     $by_parent = [];
-    foreach ($terms as $term) $by_parent[(int) $term->parent][] = $term;
+    foreach ($used as $term) {
+        if ((int) $term->parent) $by_parent[(int) $term->parent][] = $term;
+    }
+
+    // Poradie: najprv základné skupiny tak, ako sú definované, potom ostatné.
+    $order = array_keys(nox_art_default_categories());
+    usort($groups, function($a, $b) use ($order) {
+        $ia = array_search($a->name, $order, true);
+        $ib = array_search($b->name, $order, true);
+        if ($ia === false) $ia = count($order) + $a->term_id;
+        if ($ib === false) $ib = count($order) + $b->term_id;
+        return $ia <=> $ib;
+    });
 
     $tree = [];
-    foreach ($by_parent[0] ?? [] as $term) {
+    foreach ($groups as $term) {
         $tree[] = ['term' => $term, 'children' => $by_parent[$term->term_id] ?? []];
     }
     return $tree;
@@ -168,6 +196,7 @@ function nox_art_term_color($term) {
         'instalacie' => 'linear-gradient(135deg, #ff2d87, #ff5c3d)',
         'sprievodny-program' => 'linear-gradient(135deg, #4f8bff, #7b5cff)',
         'podniky' => 'linear-gradient(135deg, #ffb627, #ff7a1a)',
+        'partnerske-podniky' => 'linear-gradient(135deg, #ffb627, #ff7a1a)',
     ];
     if (isset($fixed[$term->slug])) return $fixed[$term->slug];
 
