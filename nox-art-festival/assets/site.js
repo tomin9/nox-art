@@ -423,7 +423,7 @@
 
 /* =========================================================================
    Doskrolovanie roletky. Keď človek zastaví uprostred prvej obrazovky,
-   roletka by zamrzla v polovici – doviezieme ju teda tam, kam mala ísť.
+   roletka by zamrzla v polovici – dotiahneme ju teda celkom preč.
 
    Prichytávanie cez CSS (scroll-snap) sa na to nehodí: "proximity" sa z
    polovice obrazovky vôbec nespustí a "mandatory" by zasa ťahalo naspäť aj
@@ -446,9 +446,11 @@
     const y = window.scrollY;
     if (y <= 0 || y >= vh) return;   // roletka je celá dole alebo celá preč
 
-    const target = y < vh / 2 ? 0 : vh;
+    // Vždy dopredu, nikdy späť dole: akonáhle sa človek pohne, roletka
+    // odchádza. Vracať ju nadol by pôsobilo, že stránka scrollovanie
+    // odmieta.
     settling = true;
-    window.scrollTo({ top: target, behavior: 'smooth' });
+    window.scrollTo({ top: vh, behavior: 'smooth' });
     // Poistka, keby prehliadač "scrollend" po plynulom posune nedoručil.
     setTimeout(() => { settling = false; }, 800);
   };
