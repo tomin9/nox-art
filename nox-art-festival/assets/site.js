@@ -1,3 +1,20 @@
+/* =========================================================================
+   Telefóny kreslia stránku aj do pásu s hodinami a batériou. Aby tam siahala
+   aj fixná hlavička (a nie len rolujúci sa obsah), musí mať stránka vo
+   viewporte viewport-fit=cover. V šablóne to je, ale téma, optimalizačný
+   plugin alebo keš vedia pridať vlastnú značku viewportu, ktorá tú našu
+   prebije – preto to pre istotu dorovnáme aj tu, za behu.
+   ========================================================================= */
+(() => {
+  const metas = document.querySelectorAll('meta[name="viewport"]');
+  metas.forEach((meta) => {
+    const obsah = meta.getAttribute('content') || '';
+    if (/viewport-fit/.test(obsah)) return;
+    meta.setAttribute('content', (obsah ? obsah + ', ' : '') + 'viewport-fit=cover');
+  });
+})();
+
+
 /* Spodná hrana fixnej hlavičky v súradniciach okna. Zahŕňa všetko, čo nad
    obsahom stojí: samotnú hlavičku, bezpečnú zónu telefónu, presah hlavičky
    nad okraj okna aj admin lištu WordPressu, ak je fixovaná. Podľa tohto
