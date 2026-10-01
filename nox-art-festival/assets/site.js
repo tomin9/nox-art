@@ -314,6 +314,7 @@
      filtrovacia časť). Značky neodstraňujeme, len skrývame – znovuvytváranie
      pri každom prepnutí filtra by bolo zbytočne drahé. */
   let vyberMiest = null;
+  let vyberBodov = {};
 
   const pouziVyber = (prisposobVyrez) => {
     if (!vyberMiest) return;
@@ -322,8 +323,17 @@
     const viditelne = [];
     Object.keys(markers).forEach((id) => {
       const show = !miesta.length || miesta.includes(String(id));
-      markers[id].getElement().classList.toggle('is-map-hidden', !show);
-      if (show) viditelne.push(markers[id]);
+      const el = markers[id].getElement();
+      el.classList.toggle('is-map-hidden', !show);
+      if (!show) return;
+      viditelne.push(markers[id]);
+
+      // Číslo a farba podľa položky, ktorá značku do výberu dostala.
+      const bod = vyberBodov[id];
+      if (!bod) return;
+      const label = el.querySelector('b');
+      if (label && bod.cislo) label.textContent = bod.cislo;
+      if (bod.pin) el.style.setProperty('--pin', bod.pin);
     });
 
     if (!map || !prisposobVyrez || !viditelne.length) return;
@@ -342,7 +352,8 @@
     const miesta = event.detail?.miesta || [];
     const rovnaky = vyberMiest && vyberMiest.join(',') === miesta.join(',');
     vyberMiest = miesta;
-    if (!rovnaky) pouziVyber(true);
+    vyberBodov = event.detail?.body || {};
+    pouziVyber(!rovnaky);
   });
 
   document.querySelectorAll('[data-show-on-map]').forEach((link) => {
@@ -416,8 +427,19 @@
         tiles = [...target.querySelectorAll('.gallery-tile')].filter((tile) => !tile.classList.contains('is-filtered-out'));
       }
 
-      const miesta = [...new Set(tiles.map((tile) => tile.dataset.miesto).filter(Boolean))];
-      window.dispatchEvent(new CustomEvent('nox:map-filter', { detail: { miesta } }));
+      /* Značke posielame aj číslo a farbu položky, ktorá ju do výberu
+         dostala. Na jednom mieste môže stáť dielo aj bod programu – bez toho
+         by značka pri sprievodnom programe ukazovala číslo a farbu diela. */
+      const body = new Map();
+      tiles.forEach((tile) => {
+        const miesto = tile.dataset.miesto;
+        if (!miesto || body.has(miesto)) return;
+        body.set(miesto, { cislo: tile.dataset.cislo || '', pin: tile.dataset.pin || '' });
+      });
+
+      window.dispatchEvent(new CustomEvent('nox:map-filter', {
+        detail: { miesta: [...body.keys()], body: Object.fromEntries(body) },
+      }));
     };
 
     const apply = () => {

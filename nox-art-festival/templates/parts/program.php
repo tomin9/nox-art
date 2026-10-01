@@ -45,15 +45,14 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
     <?php if (!$polozky): ?>
     <p class="empty" style="color:var(--paper);opacity:.7">Program zatiaľ nie je zverejnený — pridaj ho v administrácii (NOX:ART &rsaquo; Program, Diela).</p>
     <?php endif; ?>
-    <?php foreach ($polozky as $i => $p): $visual = $visualClasses[$i % count($visualClasses)]; ?>
-    <article class="gallery-tile reveal" id="<?php echo esc_attr($p['id']); ?>"<?php echo $p['work'] ? ' data-work="' . esc_attr($p['work']) . '"' : ''; ?> data-miesto="<?php echo esc_attr($p['miestoId'] ?: ''); ?>"<?php echo $p['terminy'] ? ' data-cas="1"' : ''; ?> data-cat="<?php echo esc_attr(implode(' ', $p['kategorie'])); ?>">
+    <?php foreach ($polozky as $i => $p): $visual = $visualClasses[$i % count($visualClasses)]; $pinColorTile = nox_art_item_color($p['kategorie']); ?>
+    <article class="gallery-tile reveal" id="<?php echo esc_attr($p['id']); ?>"<?php echo $p['work'] ? ' data-work="' . esc_attr($p['work']) . '"' : ''; ?> data-miesto="<?php echo esc_attr($p['miestoId'] ?: ''); ?>"<?php echo $p['terminy'] ? ' data-cas="1"' : ''; ?> data-cislo="<?php echo (int) $p['cislo']; ?>"<?php echo $pinColorTile ? ' data-pin="' . esc_attr($pinColorTile) . '"' : ''; ?> data-cat="<?php echo esc_attr(implode(' ', $p['kategorie'])); ?>">
       <?php if ($p['foto']): ?>
       <div class="tile-media" aria-hidden="true" style="background-image:url('<?php echo esc_url($p['foto']); ?>')"></div>
       <?php else: ?>
       <div class="tile-media tile-media-empty <?php echo esc_attr($visual); ?>" aria-hidden="true"><span></span><i></i><b></b></div>
       <?php endif; ?>
-      <?php $pinColor = nox_art_item_color($p['kategorie']); ?>
-      <span class="tile-pin" aria-hidden="true"<?php echo $pinColor ? ' style="--pin:' . esc_attr($pinColor) . '"' : ''; ?>><b><?php echo (int) $p['cislo']; ?></b></span>
+      <span class="tile-pin" aria-hidden="true"<?php echo $pinColorTile ? ' style="--pin:' . esc_attr($pinColorTile) . '"' : ''; ?>><b><?php echo (int) $p['cislo']; ?></b></span>
       <div class="tile-caption">
         <h3><?php echo esc_html($p['nazov']); ?></h3>
         <?php if ($p['meta']): ?><p><?php echo esc_html($p['meta']); ?></p><?php endif; ?>
