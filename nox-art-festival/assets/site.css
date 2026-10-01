@@ -3635,6 +3635,13 @@ body.menu-open .site-header .brand-nox-logo {
   padding-top:clamp(28px, 4vw, 60px);
 }
 
+/* V detaile nie je vľavo mriežka dlaždíc, s ktorou sa mapa zarovnávala –
+   vytiahnutie hore by ju tak posunulo pod hlavičku. Začína preto rovno
+   pri tlačidle späť. */
+.nox-art-site .program.is-detail .program-layout-map{
+  margin-top:0;
+}
+
 /* Detail je kratší než mapa vedľa neho – nech aspoň nekončí hneď pod
    textom a stĺpce pôsobia ako jeden celok. */
 .nox-art-site .program.is-detail .program-layout-list{
