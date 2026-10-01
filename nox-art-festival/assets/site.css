@@ -3615,12 +3615,11 @@ body.menu-open .site-header .brand-nox-logo {
 .nox-art-site .program.is-detail .program-head{
   display:none;
 }
-/* Sekcia sa po otvorení detailu scrolluje tak, že jej vrch sedí 24px pod
-   hlavičkou (scroll-margin-top). Horné odsadenie preto doladíme presne na
-   zvyšok do --map-gap – mapa tým začína rovno vo svojej prilepenej polohe
-   a hore aj dole jej zostane rovnaká medzera. */
+/* Tmavá sekcia je zasunutá pod hero o polomer jeho zaoblenia (hero ju
+   prekrýva vyššou vrstvou), takže obsah detailu musí začínať až za tým –
+   inak hero prekryje tlačidlo späť aj vrch mapy. */
 .nox-art-site .program.is-detail{
-  padding-top:calc(var(--map-gap, 34px) - 24px);
+  padding-top:calc(var(--radius-xl) + 10px);
 }
 
 /* V detaile nie je vľavo mriežka dlaždíc, s ktorou sa mapa zarovnávala –

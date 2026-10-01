@@ -433,13 +433,16 @@
          je používateľ prihlásený, lišta posúva hlavičku o svoju výšku nižšie
          a sekcia by skončila pod ňou – presne o toľko, o koľko mape zmizla
          medzera nad aj pod ňou. */
-      if (section) {
-        const styles = getComputedStyle(document.documentElement);
-        const headerH = parseFloat(styles.getPropertyValue('--header-h')) || 82;
-        const adminBar = document.body.classList.contains('admin-bar')
-          ? (window.innerWidth <= 782 ? 46 : 32)
-          : 0;
-        const top = section.getBoundingClientRect().top + window.scrollY - headerH - adminBar - 24;
+      /* Cieľ počítame z mapy, nie zo sekcie: mapa má presne takú výšku, aby
+         sa aj s medzerami zmestila do okna, takže keď ju posunieme na jej
+         prilepenú polohu, sedí všetko ostatné samo. Sekcia sa na to nehodí –
+         je zasunutá pod hero a jej vrch je prekrytý. */
+      const anchor = document.querySelector('.program-layout-map') || section;
+      if (anchor) {
+        const styles = getComputedStyle(anchor);
+        const stickyTop = parseFloat(styles.top);
+        const offset = Number.isFinite(stickyTop) ? stickyTop : 120;
+        const top = anchor.getBoundingClientRect().top + window.scrollY - offset;
         window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
       }
     };
