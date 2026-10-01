@@ -54,9 +54,6 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
       <?php endif; ?>
       <?php $pinColor = nox_art_item_color($p['kategorie']); ?>
       <span class="tile-pin" aria-hidden="true"<?php echo $pinColor ? ' style="--pin:' . esc_attr($pinColor) . '"' : ''; ?>><b><?php echo (int) $p['cislo']; ?></b></span>
-      <?php if ($p['cas']): ?>
-      <span class="tile-time"><?php echo esc_html($p['cas']); ?></span>
-      <?php endif; ?>
       <div class="tile-caption">
         <h3><?php echo esc_html($p['nazov']); ?></h3>
         <?php if ($p['meta']): ?><p><?php echo esc_html($p['meta']); ?></p><?php endif; ?>

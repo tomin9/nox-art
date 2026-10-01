@@ -3400,23 +3400,6 @@ body.menu-open .site-header .brand-nox-logo {
   }
 }
 
-/* Čas na dlaždici – vpravo hore, oproti kvapke s číslom. Tmavé sklíčko,
-   aby bol čitateľný nad svetlou aj tmavou fotkou. */
-.tile-time{
-  position:absolute;
-  top:14px;
-  right:14px;
-  z-index:2;
-  padding:5px 10px;
-  border-radius:999px;
-  background:rgba(8, 9, 8, .62);
-  backdrop-filter:blur(6px);
-  color:var(--paper);
-  font-size:.7rem;
-  font-weight:700;
-  letter-spacing:.01em;
-  white-space:nowrap;
-}
 
 /* Prototyp má na <body> overflow-x:hidden. Tým sa z neho stáva posuvný
    kontajner – prilepená mapa pri zozname sa potom vzťahuje naň, lenže body

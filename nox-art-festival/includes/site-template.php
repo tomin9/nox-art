@@ -233,7 +233,6 @@ function nox_art_site_items() {
             'nazov' => $item['nazov'],
             'foto' => $item['foto'],
             'kategorie' => $item['kategorie'],
-            'cas' => nox_art_site_time_summary($item['terminy']),
             'terminy' => $item['terminy'],
             'popis' => $item['popis'],
             'meta' => '',
@@ -251,7 +250,6 @@ function nox_art_site_items() {
             'nazov' => $d['nazov'],
             'foto' => $d['foto'],
             'kategorie' => $d['kategorie'],
-            'cas' => nox_art_site_time_summary($d['terminy']),
             'terminy' => $d['terminy'],
             'popis' => $d['popis'],
             'meta' => $u ? $u['meno'] : '',
@@ -271,7 +269,6 @@ function nox_art_site_items() {
             'nazov' => $m['nazov'],
             'foto' => $m['foto'],
             'kategorie' => $m['kategorie'],
-            'cas' => nox_art_site_time_summary($m['terminy']),
             'terminy' => $m['terminy'],
             'popis' => $m['popis'],
             'meta' => $m['adresa'],
@@ -394,16 +391,6 @@ function nox_art_site_time_labels($terminy) {
         if ($label) $labels[] = $label;
     }
     return $labels;
-}
-
-/**
- * Sklíčko na dlaždici. Na dva riadky tam nie je miesto, takže pri viacerých
- * termínoch ukazuje prvý a koľko ďalších je – celý rozpis je v detaile.
- */
-function nox_art_site_time_summary($terminy) {
-    $labels = nox_art_site_time_labels($terminy);
-    if (!$labels) return '';
-    return count($labels) > 1 ? $labels[0] . ' +' . (count($labels) - 1) : $labels[0];
 }
 
 /**
