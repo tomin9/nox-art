@@ -3238,6 +3238,10 @@ body.menu-open .site-header .brand-nox-logo {
   /* Medzi hero a sekciou je aj tak veľký odstup, nemusí ho zdvojovať ešte
      odsadenie samotnej sekcie. */
   padding-top:clamp(40px, 5vw, 84px);
+  /* Tmavá sekcia musí siahať až za celý oblúk zaoblených rohov hero, inak
+     v nich presvitá pozadie stránky. Prototyp ju podsúval len o 20px, čo je
+     menej než polomer zaoblenia. */
+  margin-top:calc(-1 * var(--radius-xl));
 }
 .program-layout{
   display:grid;
