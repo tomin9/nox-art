@@ -456,6 +456,19 @@
       });
     });
 
+    /* Odkaz v menu na túto sekciu znamená "ukáž mi celý zoznam" – ak je
+       otvorený detail, zavrieme ho. Bez toho by kliknutie na "Program a
+       diela" len odscrollovalo na detail, v ktorom človek už je. */
+    document.querySelectorAll('.main-nav a[href*="#"], .footer-links a[href*="#"]').forEach((link) => {
+      link.addEventListener('click', () => {
+        const hash = (link.getAttribute('href') || '').split('#')[1];
+        if (!section || hash !== section.id || view !== 'detail') return;
+        view = 'items';
+        syncSubBars();
+        apply();
+      });
+    });
+
     backButton?.addEventListener('click', () => {
       view = viewBeforeDetail;
       syncSubBars();
