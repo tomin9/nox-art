@@ -3306,6 +3306,10 @@ body.menu-open .site-header .brand-nox-logo {
   }
   .program-layout-map{
     position:static;
+    /* V jednom stĺpci mapa nasleduje za dlaždicami, takže vytiahnutie hore
+       (ktoré ju v dvojstĺpci zarovnávalo s prvým radom) by ju naňho
+       posunulo – tu naopak potrebuje odstup. */
+    margin-top:clamp(28px, 5vh, 60px);
   }
   .program-layout-map .site-map-wrap{
     min-height:420px;
