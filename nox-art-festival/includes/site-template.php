@@ -20,14 +20,14 @@ if (!defined('ABSPATH')) exit;
  */
 function nox_art_site_template_map() {
     return [
-        'nox-art-site-template.php'    => ['label' => 'NOX:ART — Celá stránka (všetky sekcie)', 'sections' => ['hero', 'program', 'about', 'partners', 'newsletter']],
+        'nox-art-site-template.php'    => ['label' => 'NOX:ART — Celá stránka (všetky sekcie)', 'sections' => ['hero', 'program', 'harmonogram', 'about', 'partners', 'newsletter']],
         'nox-art-page-domov.php'       => ['label' => 'NOX:ART — Domov (úvod)',                'sections' => ['hero', 'about', 'newsletter']],
         'nox-art-page-festival.php'    => ['label' => 'NOX:ART — O festivale',                 'sections' => ['about', 'newsletter']],
         // Program a diela sú jedna sekcia – program festivalu obsahuje aj
         // diela aj sprievodný program, delia sa len kategóriami. Šablóna
         // "Diela" zostáva zaregistrovaná ako alias, aby sa nerozbila
         // stránka, ktorá ju už používa.
-        'nox-art-page-program.php'     => ['label' => 'NOX:ART — Program a diela',             'sections' => ['program', 'newsletter']],
+        'nox-art-page-program.php'     => ['label' => 'NOX:ART — Program a diela',             'sections' => ['program', 'harmonogram', 'newsletter']],
         'nox-art-page-diela.php'       => ['label' => 'NOX:ART — Program a diela (alias)',     'sections' => ['program', 'newsletter']],
         // Mapa je dnes súčasťou sekcie Program, samostatná sekcia s mapou
         // a praktickým infom zanikla – šablóna zostáva ako alias, aby sa
@@ -245,6 +245,9 @@ function nox_art_site_items() {
             'foto' => $item['foto'],
             'kategorie' => $item['kategorie'],
             'cas' => nox_art_site_time_label($item['datum'], $item['casOd'], $item['casDo']),
+            'datum' => $item['datum'],
+            'casOd' => $item['casOd'],
+            'casDo' => $item['casDo'],
             'meta' => '',
             'work' => '',
             'miestoId' => $item['miestoId'],
@@ -263,6 +266,9 @@ function nox_art_site_items() {
             'foto' => $d['foto'],
             'kategorie' => $d['kategorie'],
             'cas' => nox_art_site_time_label($d['datum'], $d['casOd'], $d['casDo']),
+            'datum' => $d['datum'],
+            'casOd' => $d['casOd'],
+            'casDo' => $d['casDo'],
             'meta' => $u ? $u['meno'] : '',
             'work' => $d['id'],
             'miestoId' => $d['miestoId'],
@@ -280,6 +286,9 @@ function nox_art_site_items() {
             'foto' => $m['foto'],
             'kategorie' => $m['kategorie'],
             'cas' => nox_art_site_time_label($m['datum'], $m['casOd'], $m['casDo']),
+            'datum' => $m['datum'],
+            'casOd' => $m['casOd'],
+            'casDo' => $m['casDo'],
             'meta' => $m['adresa'],
             'work' => '',
             'miestoId' => $m['id'],
@@ -324,6 +333,34 @@ function nox_art_site_items() {
     unset($item);
 
     return $items;
+}
+
+/**
+ * Položky s vyplneným časom, zoradené podľa dní – podklad pre sekciu
+ * Časový harmonogram. Deň "" (prázdny kľúč) znamená, že položka platí
+ * počas celého festivalu (vyplnený čas, nevyplnený dátum).
+ */
+function nox_art_site_schedule() {
+    $days = [];
+    foreach (nox_art_site_items() as $item) {
+        if (!$item['casOd'] && !$item['casDo']) continue;
+        $days[$item['datum']][] = $item;
+    }
+
+    // Dni chronologicky, "celý festival" až na koniec; v rámci dňa podľa času.
+    uksort($days, function($a, $b) {
+        if ($a === '') return 1;
+        if ($b === '') return -1;
+        return strcmp($a, $b);
+    });
+    foreach ($days as &$items) {
+        usort($items, function($a, $b) {
+            return strcmp($a['casOd'] . $a['nazov'], $b['casOd'] . $b['nazov']);
+        });
+    }
+    unset($items);
+
+    return $days;
 }
 
 /**

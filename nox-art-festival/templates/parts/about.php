@@ -1,6 +1,6 @@
 <?php if (!defined('ABSPATH')) exit; ?>
 <section class="section about" id="festival" aria-labelledby="festival-title">
-  <div class="section-label reveal"><span>02</span> O festivale</div>
+  <div class="section-label reveal"><span>03</span> O festivale</div>
   <div class="about-grid">
     <div class="about-heading reveal">
       <h2 id="festival-title">Sídlisko sa na dve noci zmení na otvorenú galériu.</h2>

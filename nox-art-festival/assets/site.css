@@ -3458,3 +3458,75 @@ body.menu-open .site-header .brand-nox-logo {
     height:auto;
   }
 }
+
+/* =========================================================================
+   Časový harmonogram – riadky zoradené podľa času, po dňoch.
+   ========================================================================= */
+.schedule-day{
+  margin-top:clamp(26px, 4vh, 52px);
+}
+.schedule-day-title{
+  display:flex;
+  align-items:baseline;
+  gap:12px;
+  margin:0 0 10px;
+  padding-bottom:10px;
+  border-bottom:1px solid var(--line);
+  font-size:clamp(1rem, 1.3vw, 1.2rem);
+  font-weight:800;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.schedule-day-title span{
+  color:var(--muted);
+  font-size:.82rem;
+  font-weight:700;
+  letter-spacing:.04em;
+}
+.schedule-list{
+  margin:0;
+  padding:0;
+  list-style:none;
+}
+/* Riadok: čas, farebná bodka kategórie, názov, doplnok. Na úzkej obrazovke
+   sa doplnok presunie pod názov, čas zostáva vľavo. */
+.schedule-row{
+  display:grid;
+  grid-template-columns:auto auto 1fr;
+  align-items:baseline;
+  gap:4px 12px;
+  padding:9px 2px;
+  border-bottom:1px solid rgba(8, 9, 8, .09);
+}
+.schedule-time{
+  min-width:7.5em;
+  color:var(--ink);
+  font-size:.86rem;
+  font-weight:800;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+.schedule-dot{
+  width:9px;
+  height:9px;
+  border-radius:50% 50% 50% 0;
+  transform:rotate(-45deg);
+  background:var(--pin, linear-gradient(135deg, var(--pink), var(--orange)));
+}
+.schedule-name{
+  font-weight:700;
+}
+.schedule-meta{
+  grid-column:3;
+  color:var(--muted);
+  font-size:.86rem;
+}
+@media (min-width: 701px){
+  .schedule-row{
+    grid-template-columns:auto auto 1fr auto;
+  }
+  .schedule-meta{
+    grid-column:4;
+    text-align:right;
+  }
+}
