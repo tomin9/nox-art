@@ -305,16 +305,36 @@
   /* Prejdenie kurzorom nad dlaždicou zvýrazní jej značku na mape – nie je
      na to treba klikať. Značku hľadáme až pri prejdení, lebo v čase, keď
      sa tieto poslucháče pripájajú, mapa ešte značky vytvorené nemá. */
-  const hoverMarker = (miestoId, on) => {
+  const hoverMarker = (miestoId, on, tile) => {
     const marker = markers[miestoId];
-    if (marker) marker.getElement().classList.toggle('is-hovered', on);
+    if (!marker) return;
+
+    const el = marker.getElement();
+    el.classList.toggle('is-hovered', on);
+
+    /* Keď značka zastupuje viac vecí, ukazuje tri bodky – pri prejdení
+       kurzorom nad dlaždicou v nej ukážeme číslo a farbu práve tej položky,
+       nech je jasné, ktorá z nich to na mape je. */
+    const polozky = vyberBodov[miestoId] || [];
+    if (polozky.length < 2) return;
+
+    const label = el.querySelector('b');
+    if (!label) return;
+
+    if (on) {
+      if (tile?.dataset.cislo) label.textContent = tile.dataset.cislo;
+      if (tile?.dataset.pin) el.style.setProperty('--pin', tile.dataset.pin);
+    } else {
+      label.textContent = '•••';
+      if (polozky[0].pin) el.style.setProperty('--pin', polozky[0].pin);
+    }
   };
 
   tiles.forEach((tile) => {
     const miestoId = tile.dataset.miesto;
     if (!miestoId) return;
-    tile.addEventListener('pointerenter', () => hoverMarker(miestoId, true));
-    tile.addEventListener('pointerleave', () => hoverMarker(miestoId, false));
+    tile.addEventListener('pointerenter', () => hoverMarker(miestoId, true, tile));
+    tile.addEventListener('pointerleave', () => hoverMarker(miestoId, false, tile));
   });
 
   /* Filtrovanie značiek podľa toho, čo je práve v zozname (udalosť posiela
