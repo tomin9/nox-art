@@ -3254,6 +3254,11 @@ body.menu-open .site-header .brand-nox-logo {
 .program-layout-map{
   position:sticky;
   top:calc(var(--header-h) + 18px);
+  /* Vytiahnuté hore o výšku hlavičky rámčeka, aby s prvým radom dlaždíc
+     vľavo lícovalo samotné plátno mapy, nie okraj rámčeka. Hodnota sa
+     skladá z odsadenia rámčeka a pevnej časti (nadpis + medzery), takže
+     drží aj keď sa odsadenie so šírkou okna mení. */
+  margin-top:calc(-1 * (clamp(12px, 1.2vw, 18px) + 50px));
 }
 .program-layout-map .route-map{
   display:flex;
