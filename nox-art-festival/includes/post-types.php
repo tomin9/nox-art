@@ -21,9 +21,7 @@ function nox_art_register_post_types() {
         ],
         'public' => false,
         'show_ui' => true,
-        // Miesta sú prvou záložkou menu (viď nox_art_admin_submenu), takže
-        // vlastnú podpoložku už nepotrebujú – bola by dvakrát.
-        'show_in_menu' => false,
+        'show_in_menu' => 'nox-art-festival',
         'supports' => ['title', 'editor', 'thumbnail'],
         'menu_icon' => 'dashicons-location',
         'capability_type' => 'post',
@@ -140,13 +138,15 @@ function nox_art_admin_submenu() {
     global $submenu;
     if (empty($submenu['nox-art-festival'])) return;
 
-    /* Hľadáme položku podľa slugu, nie podľa poradia: poradie závisí od toho,
-       kedy sa pridali podpoložky jednotlivých typov obsahu, a index 0 môže
-       pokojne patriť niektorému z nich (vtedy by sme premenovali jeho). */
+    /* WordPress si k hlavnej položke menu pridá jej vlastnú kópiu ako prvú
+       podpoložku (bývala to záložka "Prehľad"). Tú odstránime, takže prvou
+       záložkou je rovno zoznam Miest – ten má vlastnú podpoložku ako každý
+       iný typ obsahu, nič sa teda nemôže stratiť. Hľadáme ju podľa slugu,
+       nie podľa poradia: to závisí od toho, kedy sa ktorá podpoložka
+       zaregistrovala. */
     foreach ($submenu['nox-art-festival'] as $index => $item) {
         if (($item[2] ?? '') !== 'nox-art-festival') continue;
-        $submenu['nox-art-festival'][$index][0] = 'Miesta';
-        $submenu['nox-art-festival'][$index][2] = 'edit.php?post_type=nox_miesto';
+        unset($submenu['nox-art-festival'][$index]);
         break;
     }
 }
