@@ -181,7 +181,8 @@ function nox_art_site_enqueue_assets() {
     // Mapbox naťahujeme len na stránkach, kde je mapa – inak sú to zbytočné
     // ~800 kB skriptu a štýlov na každej podstránke.
     $deps = [];
-    $has_map = in_array('info', $sections, true);
+    // Mapa je súčasťou sekcie Program (vpravo vedľa zoznamu diel).
+    $has_map = in_array('program', $sections, true);
     if ($has_map) {
         wp_enqueue_style('nox-art-mapbox-css', 'https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css', [], '3.1.2');
         wp_enqueue_script('nox-art-mapbox-js', 'https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js', [], '3.1.2', true);

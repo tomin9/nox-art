@@ -56,6 +56,8 @@ $filtre = nox_art_filter_terms(['nox_program', 'nox_dielo']);
   </div>
   <?php endif; ?>
 
+  <div class="program-layout">
+  <div class="program-layout-list">
   <div class="gallery-grid" data-filter-target="program">
     <?php if (!$polozky): ?>
     <p class="empty" style="color:var(--paper);opacity:.7">Program zatiaľ nie je zverejnený — pridaj ho v administrácii (NOX:ART &rsaquo; Program, Diela).</p>
@@ -73,10 +75,27 @@ $filtre = nox_art_filter_terms(['nox_program', 'nox_dielo']);
         <?php if ($p['meta']): ?><p><?php echo esc_html($p['meta']); ?></p><?php endif; ?>
       </div>
       <?php if ($p['miestoId']): ?>
-      <a class="tile-link" href="<?php echo nox_art_site_link('info', 'mapa'); ?>"<?php echo $p['work'] ? ' data-show-on-map="' . esc_attr($p['work']) . '"' : ''; ?>><span class="sr-only">Ukázať <?php echo esc_html($p['nazov']); ?> na mape</span></a>
+      <a class="tile-link" href="<?php echo nox_art_site_link('program', 'mapa'); ?>"<?php echo $p['work'] ? ' data-show-on-map="' . esc_attr($p['work']) . '"' : ''; ?>><span class="sr-only">Ukázať <?php echo esc_html($p['nazov']); ?> na mape</span></a>
       <?php endif; ?>
     </article>
     <?php endforeach; ?>
   </div>
   <p class="filter-empty" data-filter-empty="program" hidden>V tejto kategórii zatiaľ nič nie je.</p>
+  </div>
+
+  <?php /* Mapa drží krok so zoznamom – na veľkej obrazovke je prilepená
+           (sticky) vpravo, na malej sa presunie pod zoznam. */ ?>
+  <aside class="program-layout-map reveal" id="mapa" aria-label="Mapa festivalových diel">
+    <div class="route-map">
+      <div class="route-map-head">
+        <p>Mapa diel</p>
+        <span><?php echo (int) count($miesta); ?> miest / Sídlisko Píly</span>
+      </div>
+      <div class="route-map-stage">
+        <div class="site-map-wrap"><div id="nox-site-map" class="site-map"></div></div>
+      </div>
+      <p class="route-note">Klikni na značku na mape, alebo na dlaždicu v zozname.</p>
+    </div>
+  </aside>
+  </div>
 </section>
