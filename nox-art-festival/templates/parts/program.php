@@ -16,7 +16,7 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
   <div class="program-layout-list">
   <div class="program-head reveal">
     <h2 id="program-title">Dve noci.<br>Jedna svetelná trasa.</h2>
-    <p>Program budeme odhaľovať postupne. <?php echo (int) $dielaCount; ?> diel, sprievodný program a podniky s festivalovým menu — prepni si, čo ťa práve zaujíma.</p>
+    <p><?php echo (int) $dielaCount; ?> diel, sprievodný program a podniky s festivalovým menu — prepni si, čo ťa práve zaujíma.</p>
   </div>
 
   <?php if ($filtre): ?>

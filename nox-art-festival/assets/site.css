@@ -3389,3 +3389,13 @@ body.menu-open .site-header .brand-nox-logo {
 .nox-art-site{
   overflow-x:clip;
 }
+
+/* V dvojstĺpci nie je vedľa nadpisu dosť miesta, aby text stál pri ňom –
+   ide preto pod neho. */
+.program-layout .program-head{
+  display:block;
+}
+.program-layout .program-head p{
+  max-width:46ch;
+  margin-top:clamp(14px, 2.5vh, 28px);
+}
