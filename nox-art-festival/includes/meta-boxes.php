@@ -187,6 +187,13 @@ function nox_art_render_termin_metabox($post) {
         </p>
     </div>
     <?php endfor; ?>
+    <p>
+        <label>
+            <input type="checkbox" name="nox_harmonogram_samostatne" value="1" <?php checked(get_post_meta($post->ID, '_nox_samostatne', true)); ?>>
+            V harmonograme uviesť samostatne
+        </label>
+    </p>
+    <p class="description">Inak sa položka zlúči s ostatnými zo svojej kategórie do jedného riadku (napr. „Inštalácie 17:00–22:00").</p>
     <?php
 }
 
@@ -208,6 +215,12 @@ function nox_art_save_termin($post_id) {
         ];
         // Úplne prázdny riadok preskakujeme, nech sa neukladajú prázdne termíny.
         if ($row['datum'] || $row['od'] || $row['do']) $terminy[] = $row;
+    }
+
+    if (!empty($_POST['nox_harmonogram_samostatne'])) {
+        update_post_meta($post_id, '_nox_samostatne', 1);
+    } else {
+        delete_post_meta($post_id, '_nox_samostatne');
     }
 
     if ($terminy) {

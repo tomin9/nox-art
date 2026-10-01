@@ -31,6 +31,7 @@ function nox_art_data_miesta() {
             'kategorie' => nox_art_post_categories($p->ID),
             'cislo' => (int) get_post_meta($p->ID, '_nox_cislo', true),
             'terminy' => nox_art_get_terminy($p->ID),
+            'samostatne' => (bool) get_post_meta($p->ID, '_nox_samostatne', true),
         ];
     }, $posts);
 }
@@ -61,6 +62,7 @@ function nox_art_data_diela() {
             'kategorie' => nox_art_post_categories($p->ID),
             'cislo' => (int) get_post_meta($p->ID, '_nox_cislo', true),
             'terminy' => nox_art_get_terminy($p->ID),
+            'samostatne' => (bool) get_post_meta($p->ID, '_nox_samostatne', true),
         ];
     }, $posts);
 }
@@ -74,6 +76,7 @@ function nox_art_data_program() {
             'popis' => apply_filters('the_content', $p->post_content),
             'cislo' => (int) get_post_meta($p->ID, '_nox_cislo', true),
             'terminy' => nox_art_get_terminy($p->ID),
+            'samostatne' => (bool) get_post_meta($p->ID, '_nox_samostatne', true),
             'miestoId' => (int) get_post_meta($p->ID, '_nox_miesto_id', true) ?: null,
             'foto' => get_the_post_thumbnail_url($p->ID, 'large') ?: '',
             'kategorie' => nox_art_post_categories($p->ID),

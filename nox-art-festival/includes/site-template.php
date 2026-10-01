@@ -234,6 +234,8 @@ function nox_art_site_items() {
             'foto' => $item['foto'],
             'kategorie' => $item['kategorie'],
             'terminy' => $item['terminy'],
+            'samostatne' => $item['samostatne'],
+            'kategoriaNazov' => nox_art_item_category_label($item['kategorie']),
             'popis' => $item['popis'],
             'meta' => '',
             'work' => '',
@@ -251,6 +253,8 @@ function nox_art_site_items() {
             'foto' => $d['foto'],
             'kategorie' => $d['kategorie'],
             'terminy' => $d['terminy'],
+            'samostatne' => $d['samostatne'],
+            'kategoriaNazov' => nox_art_item_category_label($d['kategorie']),
             'popis' => $d['popis'],
             'meta' => $u ? $u['meno'] : '',
             'work' => $d['id'],
@@ -270,6 +274,8 @@ function nox_art_site_items() {
             'foto' => $m['foto'],
             'kategorie' => $m['kategorie'],
             'terminy' => $m['terminy'],
+            'samostatne' => $m['samostatne'],
+            'kategoriaNazov' => nox_art_item_category_label($m['kategorie']),
             'popis' => $m['popis'],
             'meta' => $m['adresa'],
             'work' => '',
@@ -330,7 +336,33 @@ function nox_art_site_schedule() {
         // v oboch dňoch, s vlastným časom.
         foreach ($item['terminy'] as $t) {
             if (!$t['od'] && !$t['do']) continue;
-            $days[$t['datum']][] = $item + ['casOd' => $t['od'], 'casDo' => $t['do']];
+
+            /* Diela sa v harmonograme zlučujú po kategóriách: nezaujíma, že
+               inštalácií je dvadsať, ale že svietia 17:00–22:00. Bod programu
+               je naopak jednotlivá udalosť a položka označená ako "samostatne"
+               (napr. výstava otvorená celý deň) má mať vlastný riadok tiež. */
+            $jednotlivo = $item['samostatne']
+                || strpos($item['id'], 'program-') === 0
+                || !$item['kategoriaNazov'];
+
+            $kluc = $jednotlivo
+                ? 'i:' . $item['id'] . ':' . $t['od'] . $t['do']
+                : 'k:' . $item['kategoriaNazov'] . ':' . $t['od'] . $t['do'];
+
+            if (isset($days[$t['datum']][$kluc])) {
+                $days[$t['datum']][$kluc]['pocet']++;
+                continue;
+            }
+
+            $days[$t['datum']][$kluc] = [
+                'nazov' => $jednotlivo ? $item['nazov'] : $item['kategoriaNazov'],
+                'meta' => $jednotlivo ? $item['meta'] : '',
+                'kategorie' => $item['kategorie'],
+                'casOd' => $t['od'],
+                'casDo' => $t['do'],
+                'pocet' => 1,
+                'jednotlivo' => $jednotlivo,
+            ];
         }
     }
 
@@ -341,6 +373,7 @@ function nox_art_site_schedule() {
         return strcmp($a, $b);
     });
     foreach ($days as &$items) {
+        $items = array_values($items);
         usort($items, function($a, $b) {
             return strcmp($a['casOd'] . $a['nazov'], $b['casOd'] . $b['nazov']);
         });

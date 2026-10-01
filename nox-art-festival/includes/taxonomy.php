@@ -320,3 +320,21 @@ function nox_art_item_color($slugs) {
     }
     return '';
 }
+
+/**
+ * Názov najkonkrétnejšej kategórie položky – podkategória má prednosť pred
+ * skupinou, do ktorej patrí. Podľa nej sa v harmonograme zlučujú riadky.
+ */
+function nox_art_item_category_label($slugs) {
+    if (!$slugs) return '';
+
+    $terms = get_terms(['taxonomy' => 'nox_kategoria', 'hide_empty' => false, 'slug' => (array) $slugs]);
+    if (!$terms || is_wp_error($terms)) return '';
+
+    $best = null;
+    foreach ($terms as $term) {
+        // Podkategória (má rodiča) vyhráva nad skupinou.
+        if (!$best || ((int) $term->parent && !(int) $best->parent)) $best = $term;
+    }
+    return $best ? $best->name : '';
+}
