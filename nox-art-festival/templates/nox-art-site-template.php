@@ -55,20 +55,20 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
 <main>
 <?php
 /* Hero funguje ako roletka: scrollovaním sa vysunie hore, zatiaľ čo obsah
-   pod ňou stojí. Rieši to čisto CSS (prilepený vnútorný obal), preto tie
-   dva obaly. Keď hero na stránke nie je, nič sa nebalí. */
+   pod ňou stojí (viď .curtain-below v site.css). Keď hero na stránke nie
+   je, nič sa nebalí. */
 $hasHero = in_array('hero', $sections, true);
 $below = array_values(array_diff($sections, ['hero']));
 ?>
 <?php if ($hasHero): ?>
 <?php include NOX_ART_DIR . 'templates/parts/hero.php'; ?>
-<div class="curtain-below"><div class="curtain-below-inner">
+<div class="curtain-below">
 <?php endif; ?>
 <?php foreach ($below as $section): ?>
 <?php include NOX_ART_DIR . 'templates/parts/' . $section . '.php'; ?>
 <?php endforeach; ?>
 <?php if ($hasHero): ?>
-</div></div>
+</div>
 <?php endif; ?>
 </main>
 

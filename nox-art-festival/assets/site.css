@@ -3368,22 +3368,25 @@ body.menu-open .site-header .brand-nox-logo {
    pod ňou stoja na mieste; po prvej obrazovke pokračuje stránka úplne
    normálne.
 
-   Celé to drží CSS, bez jediného riadku JS na snímok. Je to zámer: keď
-   posun obsahu dorovnával skript, vždy bežal snímok za scrollovaním a
-   spodná stránka viditeľne poskakovala. Natívne prilepenie (sticky) rieši
-   prehliadač priamo pri scrollovaní, takže sa nemá čo rozísť.
+   Prečo práve takto:
+   • Skript, ktorý obsah dorovnával pri každom snímku, vždy bežal snímok za
+     scrollovaním – spodná stránka viditeľne poskakovala.
+   • Prilepenie (sticky) tu nepomôže: prehliadač neprilepí prvok, ktorý je
+     vyšší než okno, a obsah stránky taký je. Preto sa roletka predtým
+     hýbala aj s obsahom.
+   Zostáva animácia riadená scrollovaním: prehliadač ju počíta priamo pri
+   posune, rovnako ako samotné scrollovanie, takže sa nemajú ako rozísť.
 
    Mechanika: hero je v normálnom toku a odscrolluje sa sám. Obsah pod ním
-   je záporným odstupom vytiahnutý naňho (hero ho prekrýva vyššou vrstvou)
-   a jeho vnútorný obal je prilepený o hornú hranu. Obal je o obrazovku
-   nižší než jeho rodič, takže prilepený zostane presne jednu obrazovku –
-   dovtedy, kým roletka neodíde.
+   je na začiatku vytiahnutý o obrazovku hore (teda presne pod roletku) a
+   počas prvej obrazovky sa vracia na svoje miesto – výsledkom je, že stojí.
+   Potom je posun nulový a všetko ide normálne.
    ========================================================================= */
 /* KĽÚČOVÉ: prototyp má na <body> overflow-x:hidden. Tým sa z neho stáva
-   posuvný kontajner, a prilepenie (sticky) sa potom vzťahuje naň – lenže
-   body sa neposúva (posúva sa <html>), takže sa prilepenie nikdy nespustí.
-   Roletka ani prilepená mapa by nefungovali. overflow:clip oreže rovnako,
-   ale posuvný kontajner nevytvára. */
+   posuvný kontajner – prilepená mapa pri zozname sa potom vzťahuje naň,
+   lenže body sa neposúva (posúva sa <html>), takže by neprilepila vôbec.
+   overflow:clip oreže vodorovné presahy rovnako, ale posuvný kontajner
+   nevytvára. */
 .nox-art-site{
   overflow-x:clip;
 }
@@ -3396,12 +3399,6 @@ body.menu-open .site-header .brand-nox-logo {
 .nox-art-site .curtain-below{
   position:relative;
   z-index:1;
-  margin-top:-100svh;
-  padding-bottom:100svh;
-}
-.nox-art-site .curtain-below-inner{
-  position:sticky;
-  top:0;
 }
 /* Prvá sekcia pod roletkou sa už nemá na čo prekrývať – záporný odstup z
    prototypu by ju len vysunul nad horný okraj okna. */
@@ -3409,14 +3406,19 @@ body.menu-open .site-header .brand-nox-logo {
   margin-top:0;
 }
 
-/* Pri obmedzených animáciách je stránka obyčajný dokument – hero sa
-   normálne odscrolluje a obsah ide hneď za ním. */
-@media (prefers-reduced-motion: reduce){
-  .nox-art-site .curtain-below{
-    margin-top:0;
-    padding-bottom:0;
-  }
-  .nox-art-site .curtain-below-inner{
-    position:static;
+@keyframes nox-curtain-reveal{
+  from{transform:translate3d(0,-100svh,0)}
+  to{transform:translate3d(0,0,0)}
+}
+
+/* Prehliadač bez podpory animácií riadených scrollovaním stránku nijako
+   nepokazí – roletka sa jednoducho odscrolluje a obsah ide za ňou. */
+@supports (animation-timeline: scroll()){
+  @media not (prefers-reduced-motion: reduce){
+    .nox-art-site .curtain-below{
+      animation:nox-curtain-reveal linear both;
+      animation-timeline:scroll(root block);
+      animation-range:0 100svh;
+    }
   }
 }
