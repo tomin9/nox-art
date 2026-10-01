@@ -3277,3 +3277,15 @@ body.menu-open .site-header .brand-nox-logo {
   z-index:1;
   border-radius:0 0 var(--radius-xl) var(--radius-xl);
 }
+
+/* Druhý rad filtrov (spresnenie v rámci skupiny) – menší a jemnejší, aby
+   bolo na prvý pohľad jasné, že je podradený hlavnému radu. */
+.filter-bar-sub{
+  margin-top:10px;
+  padding-left:2px;
+}
+.filter-chip-sm{
+  padding:7px 14px;
+  font-size:.74rem;
+  font-weight:600;
+}

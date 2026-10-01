@@ -38,7 +38,7 @@ foreach ($diela as $d) {
     ];
 }
 
-$filtre = nox_art_filter_terms(['nox_program', 'nox_dielo']);
+$filtre = nox_art_filter_tree(['nox_program', 'nox_dielo']);
 ?>
 <section class="section program" id="program" aria-labelledby="program-title">
   <div class="section-label section-label-light reveal"><span>01</span> Program a diela</div>
@@ -48,13 +48,21 @@ $filtre = nox_art_filter_terms(['nox_program', 'nox_dielo']);
   </div>
 
   <?php if ($filtre): ?>
+  <?php /* Žiadne "Všetky" – skupiny sú rovnocenné, prvá je zapnutá pri
+           načítaní stránky. Podkategórie sa odkryjú až po zvolení skupiny,
+           ktorá ich má. */ ?>
   <div class="filter-bar filter-bar-light reveal" data-filter-group="program" role="group" aria-label="Filtrovanie programu">
-    <?php /* Žiadne "Všetky" – kategórie sú rovnocenné skupiny obsahu, prvá
-             je zapnutá pri načítaní stránky. */ ?>
-    <?php foreach ($filtre as $i => $term): ?>
+    <?php foreach ($filtre as $i => $uzol): $term = $uzol['term']; ?>
     <button class="filter-chip<?php echo $i === 0 ? ' is-active' : ''; ?>" type="button" data-filter="<?php echo esc_attr($term->slug); ?>" aria-pressed="<?php echo $i === 0 ? 'true' : 'false'; ?>"><i class="chip-pin" aria-hidden="true" style="--pin:<?php echo esc_attr(nox_art_term_color($term)); ?>"></i><?php echo esc_html($term->name); ?></button>
     <?php endforeach; ?>
   </div>
+  <?php foreach ($filtre as $i => $uzol): if (!$uzol['children']) continue; ?>
+  <div class="filter-bar filter-bar-light filter-bar-sub" data-filter-sub="<?php echo esc_attr($uzol['term']->slug); ?>" data-filter-parent="program" role="group" aria-label="Spresnenie: <?php echo esc_attr($uzol['term']->name); ?>"<?php echo $i === 0 ? '' : ' hidden'; ?>>
+    <?php foreach ($uzol['children'] as $child): ?>
+    <button class="filter-chip filter-chip-sm" type="button" data-filter="<?php echo esc_attr($child->slug); ?>" aria-pressed="false"><?php echo esc_html($child->name); ?></button>
+    <?php endforeach; ?>
+  </div>
+  <?php endforeach; ?>
   <?php endif; ?>
 
   <div class="program-layout">

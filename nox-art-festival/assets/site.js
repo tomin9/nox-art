@@ -302,21 +302,42 @@
     if (!target) return;
 
     const chips = [...bar.querySelectorAll('.filter-chip')];
+    const subBars = [...document.querySelectorAll(`[data-filter-parent="${group}"]`)];
     const items = [...target.querySelectorAll('[data-cat]')];
     const emptyNote = document.querySelector(`[data-filter-empty="${group}"]`);
 
-    const apply = (filter) => {
+    // Hlavná skupina (Diela / Sprievodný program / Podniky) a prípadné
+    // spresnenie v jej druhom rade. Položky nesú aj nadradené kategórie,
+    // takže na hlavnú skupinu sadne všetko, čo pod ňu patrí.
+    let parent = chips.find((chip) => chip.classList.contains('is-active'))?.dataset.filter || '';
+    let child = '';
+
+    const apply = () => {
+      const filter = child || parent;
       items.forEach((item) => {
-        const match = filter === '*' || (item.dataset.cat || '').split(' ').includes(filter);
+        const match = !filter || (item.dataset.cat || '').split(' ').includes(filter);
         item.classList.toggle('is-filtered-out', !match);
       });
 
       if (emptyNote) {
-        // offsetParent je null aj pre položky v skrytom paneli (dni programu),
-        // takže sa pýtame na to, čo používateľ naozaj vidí.
+        // offsetParent je null aj pre položky v skrytom kontajneri, takže sa
+        // pýtame na to, čo používateľ naozaj vidí.
         const visible = items.some((item) => !item.classList.contains('is-filtered-out') && item.offsetParent !== null);
         emptyNote.hidden = visible;
       }
+    };
+
+    const syncSubBars = () => {
+      subBars.forEach((sub) => {
+        const mine = sub.dataset.filterSub === parent;
+        sub.hidden = !mine;
+        if (!mine) {
+          sub.querySelectorAll('.filter-chip').forEach((chip) => {
+            chip.classList.remove('is-active');
+            chip.setAttribute('aria-pressed', 'false');
+          });
+        }
+      });
     };
 
     chips.forEach((chip) => {
@@ -326,13 +347,31 @@
           other.classList.toggle('is-active', active);
           other.setAttribute('aria-pressed', String(active));
         });
-        apply(chip.dataset.filter || '*');
+        parent = chip.dataset.filter || '';
+        child = '';
+        syncSubBars();
+        apply();
       });
     });
 
-    // Filtre nemajú položku "Všetky", takže hneď po načítaní treba zobraziť
-    // to, čo patrí pod prvý (zapnutý) filter.
-    const initial = chips.find((chip) => chip.classList.contains('is-active'));
-    if (initial) apply(initial.dataset.filter || '*');
+    subBars.forEach((sub) => {
+      const subChips = [...sub.querySelectorAll('.filter-chip')];
+      subChips.forEach((chip) => {
+        chip.addEventListener('click', () => {
+          // Druhé kliknutie na to isté spresnenie ho zruší a vráti celú skupinu.
+          const turnOff = chip.classList.contains('is-active');
+          subChips.forEach((other) => {
+            const active = !turnOff && other === chip;
+            other.classList.toggle('is-active', active);
+            other.setAttribute('aria-pressed', String(active));
+          });
+          child = turnOff ? '' : (chip.dataset.filter || '');
+          apply();
+        });
+      });
+    });
+
+    syncSubBars();
+    apply();
   });
 })();

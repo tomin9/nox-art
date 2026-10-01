@@ -14,7 +14,11 @@ if (!defined('ABSPATH')) exit;
  * poradie filtrov na stránke (ukladá sa do term_order cez menu_order termu).
  */
 function nox_art_default_categories() {
-    return ['Diela', 'Sprievodný program', 'Podniky'];
+    return [
+        'Diela' => ['Inštalácie', 'Nové sgrafitá', 'Živé sgrafitá', 'Galéria ulice'],
+        'Sprievodný program' => [],
+        'Podniky' => [],
+    ];
 }
 
 function nox_art_register_taxonomy() {
@@ -48,14 +52,21 @@ function nox_art_seed_categories() {
     // Verzia, nie len príznak: keď sa základná sada zmení, doplnia sa aj na
     // stránkach, kde už zakladanie raz prebehlo. Nič sa nemaže – kategórie,
     // ktoré editor nepotrebuje, si zmaže sám.
-    if ((int) get_option('nox_art_categories_seeded') >= 2) return;
+    if ((int) get_option('nox_art_categories_seeded') >= 3) return;
 
-    foreach (nox_art_default_categories() as $name) {
-        if (!term_exists($name, 'nox_kategoria')) {
-            wp_insert_term($name, 'nox_kategoria');
+    foreach (nox_art_default_categories() as $name => $children) {
+        $parent = term_exists($name, 'nox_kategoria');
+        if (!$parent) $parent = wp_insert_term($name, 'nox_kategoria');
+        if (is_wp_error($parent)) continue;
+        $parent_id = (int) (is_array($parent) ? $parent['term_id'] : $parent);
+
+        foreach ($children as $child) {
+            if (!term_exists($child, 'nox_kategoria')) {
+                wp_insert_term($child, 'nox_kategoria', ['parent' => $parent_id]);
+            }
         }
     }
-    update_option('nox_art_categories_seeded', 2);
+    update_option('nox_art_categories_seeded', 3);
 }
 add_action('init', 'nox_art_seed_categories', 20);
 
@@ -65,7 +76,18 @@ add_action('init', 'nox_art_seed_categories', 20);
 function nox_art_post_categories($post_id) {
     $terms = get_the_terms($post_id, 'nox_kategoria');
     if (!$terms || is_wp_error($terms)) return [];
-    return array_values(array_map(function($t){ return $t->slug; }, $terms));
+
+    // Pridávame aj nadradené kategórie: dielo označené ako "Inštalácie" musí
+    // vyjsť aj pod filtrom "Diela", inak by sa pri hlavnom filtri stratilo.
+    $slugs = [];
+    foreach ($terms as $term) {
+        $slugs[$term->slug] = true;
+        foreach (get_ancestors($term->term_id, 'nox_kategoria', 'taxonomy') as $ancestor_id) {
+            $ancestor = get_term($ancestor_id, 'nox_kategoria');
+            if ($ancestor && !is_wp_error($ancestor)) $slugs[$ancestor->slug] = true;
+        }
+    }
+    return array_keys($slugs);
 }
 
 /**
@@ -91,6 +113,25 @@ function nox_art_filter_terms($post_type) {
     return array_values(array_filter($terms, function($t) use ($used) {
         return isset($used[$t->slug]);
     }));
+}
+
+/**
+ * Filtre v dvoch úrovniach: hlavné skupiny (Diela, Sprievodný program,
+ * Podniky) a pod každou jej podkategórie, ktoré sa odkryjú až po jej
+ * zvolení. Vracia pole [term, children] len s tým, čo naozaj má obsah.
+ */
+function nox_art_filter_tree($post_type) {
+    $terms = nox_art_filter_terms($post_type);
+    if (!$terms) return [];
+
+    $by_parent = [];
+    foreach ($terms as $term) $by_parent[(int) $term->parent][] = $term;
+
+    $tree = [];
+    foreach ($by_parent[0] ?? [] as $term) {
+        $tree[] = ['term' => $term, 'children' => $by_parent[$term->term_id] ?? []];
+    }
+    return $tree;
 }
 
 /**
