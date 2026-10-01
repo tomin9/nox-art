@@ -774,6 +774,42 @@
 
 
 /* =========================================================================
+   Cudzie pruhy nad hlavičkou. Téma alebo iný plugin vie vložiť oznamovaciu
+   lištu hneď za <body> (nielen cez wp_body_open, aj skriptom po načítaní).
+   Festivalová stránka má vlastnú hlavičku, takže všetko, čo nie je naše
+   a stojí nad ňou, schováme. Prvky na konci stránky (cookie lišta, modály)
+   sa nedotýkame.
+   ========================================================================= */
+(() => {
+  if (!document.body.classList.contains('nox-art-site')) return;
+
+  const NASE = '.site-header, main, .site-footer, .scroll-progress, .newsletter-dock, #wpadminbar';
+  const PRESKOCIT = ['SCRIPT', 'STYLE', 'LINK', 'META', 'NOSCRIPT', 'TEMPLATE'];
+
+  const upratat = () => {
+    const header = document.querySelector('.site-header');
+    if (!header) return;
+    for (const el of [...document.body.children]) {
+      if (el === header) break;              // ďalej už je naša stránka
+      if (PRESKOCIT.includes(el.tagName)) continue;
+      if (el.matches(NASE) || el.contains(header)) continue;
+      el.hidden = true;
+      el.style.display = 'none';
+    }
+  };
+
+  upratat();
+  window.addEventListener('load', upratat);
+  // Lišta sa vie vložiť aj neskôr skriptom – chvíľu to sledujeme.
+  if ('MutationObserver' in window) {
+    const observer = new MutationObserver(upratat);
+    observer.observe(document.body, { childList: true });
+    setTimeout(() => observer.disconnect(), 10000);
+  }
+})();
+
+
+/* =========================================================================
    Skoky z menu na sekcie. Prehliadač si posun na kotvu počíta z hodnoty
    scroll-margin-top v CSS, ktorá nevie o dvoch veciach: o admin lište
    WordPressu (tá posúva fixnú hlavičku nižšie) a o tom, že niektoré sekcie

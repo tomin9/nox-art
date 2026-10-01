@@ -2897,3 +2897,9 @@ body.menu-open .site-header .brand-nox-logo {
   content-visibility: auto;
   contain-intrinsic-size: auto 900px;
 }
+/* Čokoľvek cudzie vložené nad našu hlavičku (oznamovacie lišty tém
+   a pluginov) nezobrazujeme – stránka má vlastnú hlavičku. Rovnaké
+   upratovanie robí aj site.js pre prehliadače bez :has(). */
+body.nox-art-site > *:not(.scroll-progress):not(#wpadminbar):not(script):not(style):not(link):not(noscript):has(~ .site-header) {
+  display: none !important;
+}
