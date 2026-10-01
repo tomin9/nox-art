@@ -3436,3 +3436,22 @@ body.menu-open .site-header .brand-nox-logo {
   max-width:46ch;
   margin-top:clamp(14px, 2.5vh, 28px);
 }
+
+/* Keď je prihlásený používateľ, WordPress posúva stránku o admin lištu –
+   fixná hlavička ide nižšie a prilepená mapa sa pod ňu musí posunúť tiež,
+   inak jej vrch zmizne za menu. Výšku mapy o to isté zmenšujeme. */
+.nox-art-site.admin-bar .program-layout-map{
+  top:calc(var(--header-h) + 32px + 18px);
+  height:calc(100svh - var(--header-h) - 32px - 34px);
+}
+@media (max-width: 782px){
+  .nox-art-site.admin-bar .program-layout-map{
+    top:calc(var(--header-h) + 46px + 18px);
+    height:calc(100svh - var(--header-h) - 46px - 34px);
+  }
+}
+@media (max-width: 1000px){
+  .nox-art-site.admin-bar .program-layout-map{
+    height:auto;
+  }
+}
