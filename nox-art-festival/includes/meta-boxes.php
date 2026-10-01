@@ -4,9 +4,12 @@ if (!defined('ABSPATH')) exit;
 function nox_art_add_meta_boxes() {
     add_meta_box('nox_miesto_poloha', 'Poloha', 'nox_art_render_miesto_metabox', 'nox_miesto', 'normal', 'high');
     // Podnik má vlastnú adresu aj súradnice, rovnako ako miesto.
-    add_meta_box('nox_miesto_poloha', 'Poloha', 'nox_art_render_miesto_metabox', 'nox_podnik', 'normal', 'high');
+    // Podnik môže mať vlastnú adresu a súradnice, alebo si vybrať niektoré
+    // z Miest – vtedy sa použije jeho poloha a toto políčko netreba.
+    add_meta_box('nox_miesto_poloha', 'Vlastná poloha', 'nox_art_render_miesto_metabox', 'nox_podnik', 'normal', 'high');
     add_meta_box('nox_dielo_suvislosti', 'Súvislosti diela', 'nox_art_render_dielo_metabox', 'nox_dielo', 'side', 'default');
     add_meta_box('nox_program_termin', 'Miesto', 'nox_art_render_program_metabox', 'nox_program', 'side', 'default');
+    add_meta_box('nox_program_termin', 'Miesto', 'nox_art_render_program_metabox', 'nox_podnik', 'side', 'default');
     // Čas má zmysel pri všetkom, nielen pri programe: dielo býva prístupné
     // len vo vymedzených hodinách a podnik má otváracie hodiny.
     add_meta_box('nox_termin', 'Termíny', 'nox_art_render_termin_metabox', 'nox_dielo', 'side', 'default');
@@ -274,6 +277,7 @@ function nox_art_save_program($post_id) {
     update_post_meta($post_id, '_nox_miesto_id', isset($_POST['nox_miesto_id']) ? absint($_POST['nox_miesto_id']) : 0);
 }
 add_action('save_post_nox_program', 'nox_art_save_program');
+add_action('save_post_nox_podnik', 'nox_art_save_program');
 
 /* -------------------------------------------------------------------------
  * Klikacia mini-mapa v administrácii pre výber súradníc miesta (Leaflet).

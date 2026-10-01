@@ -196,10 +196,7 @@ function nox_art_site_enqueue_assets() {
         wp_localize_script('nox-art-site-js', 'NOX_SITE_MAP', [
             'token' => $map['token'],
             'style' => $map['style'],
-            // Podniky majú vlastné súradnice, takže na mape vystupujú ako
-            // ďalšie body. ID príspevkov sa medzi typmi nikdy neopakujú,
-            // takže sa kľúče nemôžu pobiť.
-            'miesta' => array_merge(nox_art_data_miesta(), nox_art_data_podniky()),
+            'miesta' => nox_art_site_map_places(),
             'diela' => nox_art_data_diela(),
             'farby' => nox_art_category_colors(),
             'cisla' => nox_art_site_map_numbers(),
@@ -286,8 +283,9 @@ function nox_art_site_items() {
             'popis' => $p['popis'],
             'meta' => $p['adresa'],
             'work' => '',
-            'miestoId' => $p['id'],
-            'miestoNazov' => $p['adresa'],
+            // Vybrané miesto má prednosť pred vlastnými súradnicami.
+            'miestoId' => $p['miestoId'] ?: $p['id'],
+            'miestoNazov' => $p['miestoId'] ? ($miestoById[$p['miestoId']]['nazov'] ?? $p['adresa']) : $p['adresa'],
             'cislo' => $p['cislo'],
         ];
     }
@@ -431,6 +429,19 @@ function nox_art_site_category_order() {
         'partnerske-podniky',
         'podniky',            // starší slug tej istej skupiny
     ]);
+}
+
+/**
+ * Body na mape: všetky miesta a k nim podniky, ktoré si žiadne miesto
+ * nevybrali a stoja na vlastných súradniciach. ID príspevkov sa medzi typmi
+ * obsahu nikdy neopakujú, takže sa kľúče nemôžu pobiť.
+ */
+function nox_art_site_map_places() {
+    $places = nox_art_data_miesta();
+    foreach (nox_art_data_podniky() as $podnik) {
+        if (!$podnik['miestoId']) $places[] = $podnik;
+    }
+    return $places;
 }
 
 /**

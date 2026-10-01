@@ -58,6 +58,9 @@ function nox_art_data_podniky() {
             'terminy' => nox_art_get_terminy($p->ID),
             'samostatne' => (bool) get_post_meta($p->ID, '_nox_samostatne', true),
             'cislo' => (int) get_post_meta($p->ID, '_nox_cislo', true),
+            // Keď je vybrané miesto, podnik stojí na ňom a vlastné súradnice
+            // sa nepoužijú.
+            'miestoId' => (int) get_post_meta($p->ID, '_nox_miesto_id', true) ?: null,
         ];
     }, $posts);
 }
