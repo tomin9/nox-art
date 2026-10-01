@@ -2962,7 +2962,11 @@ body.menu-open .site-header .brand-nox-logo {
    totiž na značku zapisuje vlastný transform (posun po mape) a akékoľvek
    otočenie na nej by prepísal. */
 .site-marker{
-  position:relative;width:28px;height:28px;cursor:pointer;
+  /* POZOR: žiadne position – Mapbox značke sám nastavuje position:absolute
+     a vlastné súradnice. Prepísať mu to znamená, že značky prestanú držať
+     svoje miesto a pri posúvaní mapy sa rozbehnú. Absolútne umiestneným
+     deťom vnútri stačí práve to Mapboxove absolute. */
+  width:28px;height:28px;cursor:pointer;
 }
 .site-marker i{
   position:absolute;inset:1px;
