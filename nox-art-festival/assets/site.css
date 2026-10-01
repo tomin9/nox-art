@@ -3626,6 +3626,11 @@ body.menu-open .site-header .brand-nox-logo {
 /* V detaile nie je vľavo mriežka dlaždíc, s ktorou sa mapa zarovnávala –
    vytiahnutie hore by ju tak posunulo pod hlavičku. Začína preto rovno
    pri tlačidle späť. */
+/* V detaile je nad dvojstĺpcom len tlačidlo späť – odstup, ktorý v zozname
+   oddeľuje mriežku od filtrov, by mapu posunul mimo jej prilepenú polohu. */
+.nox-art-site .program.is-detail .program-layout{
+  margin-top:0;
+}
 .nox-art-site .program.is-detail .program-layout-map{
   margin-top:0;
   /* Bez vytiahnutia hore začína mapa o horné odsadenie sekcie nižšie, takže

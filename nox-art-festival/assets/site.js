@@ -427,8 +427,21 @@
       /* Detail sa otvára aj z dlaždice hlboko v zozname, takže stránku
          posunieme na začiatok sekcie – inak by človek pozeral na prázdne
          miesto pod textom a tlačidlo späť by mal nad obrazovkou.
-         O fixnú hlavičku sa stará scroll-margin-top v CSS. */
-      section?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+
+         Polohu počítame sami, nie cez scrollIntoView: to sa riadi hodnotou
+         scroll-margin-top z CSS, ktorá nevie o admin lište WordPressu. Keď
+         je používateľ prihlásený, lišta posúva hlavičku o svoju výšku nižšie
+         a sekcia by skončila pod ňou – presne o toľko, o koľko mape zmizla
+         medzera nad aj pod ňou. */
+      if (section) {
+        const styles = getComputedStyle(document.documentElement);
+        const headerH = parseFloat(styles.getPropertyValue('--header-h')) || 82;
+        const adminBar = document.body.classList.contains('admin-bar')
+          ? (window.innerWidth <= 782 ? 46 : 32)
+          : 0;
+        const top = section.getBoundingClientRect().top + window.scrollY - headerH - adminBar - 24;
+        window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
+      }
     };
 
     // Klikacia je celá dlaždica, nielen odkaz na mapu – položka bez miesta
