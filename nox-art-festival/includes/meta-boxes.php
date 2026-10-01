@@ -26,14 +26,10 @@ add_action('add_meta_boxes', 'nox_art_add_meta_boxes');
  * ---------------------------------------------------------------------- */
 function nox_art_render_miesto_metabox($post) {
     wp_nonce_field('nox_art_save_miesto', 'nox_art_miesto_nonce');
-    $adresa = get_post_meta($post->ID, '_nox_adresa', true);
     $lat = get_post_meta($post->ID, '_nox_lat', true);
     $lng = get_post_meta($post->ID, '_nox_lng', true);
     ?>
-    <p>
-        <label for="nox_adresa"><strong>Adresa</strong></label><br>
-        <input type="text" id="nox_adresa" name="nox_adresa" class="widefat" value="<?php echo esc_attr($adresa); ?>" placeholder="napr. Nábrežná 12, Prievidza">
-    </p>
+    <p class="description">Názov miesta je zároveň jeho adresa – zadávaj ju do nadpisu záznamu.</p>
     <p>
         <label><strong>Súradnice</strong></label><br>
         <span class="description">Klikni do mapy pre umiestnenie značky, alebo zadaj súradnice ručne (napr. skopírované z Google Maps).</span>
@@ -51,9 +47,6 @@ function nox_art_save_miesto($post_id) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
     if (!current_user_can('edit_post', $post_id)) return;
 
-    if (isset($_POST['nox_adresa'])) {
-        update_post_meta($post_id, '_nox_adresa', sanitize_text_field($_POST['nox_adresa']));
-    }
     if (isset($_POST['nox_lat']) && $_POST['nox_lat'] !== '') {
         update_post_meta($post_id, '_nox_lat', (float) $_POST['nox_lat']);
     } else {

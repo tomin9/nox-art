@@ -49,15 +49,73 @@ function nox_art_program_column_content($column, $post_id) {
 add_action('manage_nox_program_posts_custom_column', 'nox_art_program_column_content', 10, 2);
 
 function nox_art_miesto_columns($columns) {
-    $columns['nox_adresa'] = 'Adresa';
+    // Názov miesta je zároveň adresa, preto aj hlavička nesie tento význam.
+    if (isset($columns['title'])) $columns['title'] = 'Adresa';
+    $columns['nox_priradene'] = 'Priradené';
     $columns['nox_gps'] = 'Súradnice';
     return $columns;
 }
 add_filter('manage_nox_miesto_posts_columns', 'nox_art_miesto_columns');
 
+/**
+ * Načíta naraz všetko, čo je priradené k miestam (dielo, program, podnik),
+ * aby sa pri každom riadku zoznamu nerobil vlastný dopyt.
+ */
+function nox_art_miesto_assignments() {
+    static $mapa = null;
+    if ($mapa !== null) return $mapa;
+
+    $mapa = [];
+    $typy = [
+        'nox_dielo' => 'Dielo',
+        'nox_program' => 'Sprievodný program',
+        'nox_podnik' => 'Podnik',
+    ];
+
+    foreach ($typy as $typ => $label) {
+        $posts = get_posts([
+            'post_type' => $typ,
+            'post_status' => ['publish', 'draft', 'pending', 'future', 'private'],
+            'numberposts' => -1,
+            'orderby' => 'title',
+            'order' => 'ASC',
+            'meta_query' => [[
+                'key' => '_nox_miesto_id',
+                'value' => 0,
+                'compare' => '>',
+                'type' => 'NUMERIC',
+            ]],
+        ]);
+        foreach ($posts as $p) {
+            $miesto_id = (int) get_post_meta($p->ID, '_nox_miesto_id', true);
+            if (!$miesto_id) continue;
+            $mapa[$miesto_id][] = [
+                'id' => $p->ID,
+                'nazov' => get_the_title($p) ?: '(bez názvu)',
+                'typ' => $label,
+            ];
+        }
+    }
+
+    return $mapa;
+}
+
 function nox_art_miesto_column_content($column, $post_id) {
-    if ($column === 'nox_adresa') {
-        echo esc_html(get_post_meta($post_id, '_nox_adresa', true) ?: '—');
+    if ($column === 'nox_priradene') {
+        $mapa = nox_art_miesto_assignments();
+        $polozky = $mapa[(int) $post_id] ?? [];
+        if (!$polozky) { echo '<span style="color:#787c82">—</span>'; return; }
+
+        echo '<ul style="margin:0;list-style:none">';
+        foreach ($polozky as $polozka) {
+            printf(
+                '<li style="margin:0 0 2px"><a href="%s">%s</a> <span style="color:#787c82">· %s</span></li>',
+                esc_url(get_edit_post_link($polozka['id'])),
+                esc_html($polozka['nazov']),
+                esc_html($polozka['typ'])
+            );
+        }
+        echo '</ul>';
     }
     if ($column === 'nox_gps') {
         $lat = get_post_meta($post_id, '_nox_lat', true);

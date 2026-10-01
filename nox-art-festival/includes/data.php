@@ -24,7 +24,9 @@ function nox_art_data_miesta() {
         return [
             'id' => $p->ID,
             'nazov' => get_the_title($p),
-            'adresa' => get_post_meta($p->ID, '_nox_adresa', true) ?: '',
+            // Názov miesta je v praxi adresa – staršie samostatné pole
+            // ostáva len ako doplnok, keď je vyplnené.
+            'adresa' => get_post_meta($p->ID, '_nox_adresa', true) ?: get_the_title($p),
             'lat' => $lat !== '' ? (float) $lat : null,
             'lng' => $lng !== '' ? (float) $lng : null,
             'popis' => apply_filters('the_content', $p->post_content),

@@ -303,7 +303,7 @@ function nox_art_site_items() {
             'kategoriaNazov' => nox_art_item_category_label($m['kategorie']),
             'kategoriaSlug' => (nox_art_item_category_term($m['kategorie'])->slug ?? ''),
             'popis' => $m['popis'],
-            'meta' => $m['adresa'],
+            'meta' => $m['adresa'] !== $m['nazov'] ? $m['adresa'] : '',
             'work' => '',
             'miestoId' => $m['id'],
             'miestoNazov' => $m['adresa'],
