@@ -348,8 +348,10 @@
     const subBars = [...document.querySelectorAll(`[data-filter-parent="${group}"]`)];
     const items = [...target.querySelectorAll('[data-cat]')];
     const emptyNote = document.querySelector(`[data-filter-empty="${group}"]`);
-    // Pohľady sekcie: dlaždice ("items") a časový harmonogram.
-    const views = [...document.querySelectorAll('[data-view]')];
+    /* Pohľady sekcie: dlaždice ("items") a časový harmonogram. Hľadáme ich
+       podľa data-view-panel, nie data-view – to nesie aj samotné tlačidlo,
+       ktoré pohľad prepína, a skrývalo by sa potom samo. */
+    const views = [...document.querySelectorAll('[data-view-panel]')];
 
     // Hlavná skupina (Diela / Sprievodný program / Podniky) a prípadné
     // spresnenie v jej druhom rade. Položky nesú aj nadradené kategórie,
@@ -359,7 +361,7 @@
     let view = 'items';
 
     const apply = () => {
-      views.forEach((el) => { el.hidden = el.dataset.view !== view; });
+      views.forEach((el) => { el.hidden = el.dataset.viewPanel !== view; });
       if (view !== 'items') {
         if (emptyNote) emptyNote.hidden = true;
         return;

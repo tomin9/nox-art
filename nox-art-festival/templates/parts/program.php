@@ -40,7 +40,7 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
 
   <div class="program-layout">
   <div class="program-layout-list">
-  <div data-view="items">
+  <div data-view-panel="items">
   <div class="gallery-grid" data-filter-target="program">
     <?php if (!$polozky): ?>
     <p class="empty" style="color:var(--paper);opacity:.7">Program zatiaľ nie je zverejnený — pridaj ho v administrácii (NOX:ART &rsaquo; Program, Diela).</p>
@@ -70,7 +70,7 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
   <p class="filter-empty" data-filter-empty="program" hidden>V tejto kategórii zatiaľ nič nie je.</p>
   </div>
 
-  <div class="schedule" data-view="harmonogram" hidden>
+  <div class="schedule" data-view-panel="harmonogram" hidden>
     <?php include NOX_ART_DIR . 'templates/parts/harmonogram.php'; ?>
   </div>
   </div>
