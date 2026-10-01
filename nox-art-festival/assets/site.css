@@ -3624,3 +3624,13 @@ body.menu-open .site-header .brand-nox-logo {
 .detail-text a{
   color:var(--pink);
 }
+
+/* V detaile položky ustúpi hlavička sekcie – na obrazovke zostane mapa,
+   popis s fotkou a odkaz na návrat. */
+.nox-art-site .program.is-detail > .section-label,
+.nox-art-site .program.is-detail .program-head{
+  display:none;
+}
+.nox-art-site .program.is-detail{
+  padding-top:clamp(28px, 4vw, 60px);
+}

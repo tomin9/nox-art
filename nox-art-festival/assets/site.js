@@ -351,6 +351,8 @@
     // takže na hlavnú skupinu sadne všetko, čo pod ňu patrí.
     const details = [...document.querySelectorAll('[data-detail]')];
     const backButton = document.querySelector('[data-detail-back]');
+    // V detaile ustúpi aj hlavička sekcie – zostane mapa, popis a návrat.
+    const section = target.closest('.section');
 
     let parent = chips.find((chip) => chip.classList.contains('is-active'))?.dataset.filter || '';
     let child = '';
@@ -361,6 +363,7 @@
     const apply = () => {
       views.forEach((el) => { el.hidden = el.dataset.viewPanel !== view; });
       bar.hidden = view === 'detail';
+      section?.classList.toggle('is-detail', view === 'detail');
 
       if (view !== 'items') {
         if (emptyNote) emptyNote.hidden = true;
