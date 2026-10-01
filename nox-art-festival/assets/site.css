@@ -2958,15 +2958,22 @@ body.menu-open .site-header .brand-nox-logo {
 .site-map .mapboxgl-popup-content strong{display:block;font-size:14px;margin-bottom:4px}
 .site-map .mapboxgl-popup-content a{display:block;color:var(--pink);font-weight:700;margin-top:4px}
 .site-map .mapboxgl-popup-content a:hover{color:var(--orange)}
+/* Značka je len obal – otáča sa kvapka vnútri, nie ona samotná. Mapbox
+   totiž na značku zapisuje vlastný transform (posun po mape) a akékoľvek
+   otočenie na nej by prepísal. */
 .site-marker{
-  width:28px;height:28px;display:grid;place-items:center;
+  position:relative;width:28px;height:28px;cursor:pointer;
+}
+.site-marker i{
+  position:absolute;inset:1px;
   border-radius:50% 50% 50% 0;transform:rotate(-45deg);
   /* Farbu podľa kategórie nastavuje JS cez --pin; bez nej platí pôvodná. */
   background:var(--pin, linear-gradient(135deg, var(--pink), var(--orange)));
-  border:2px solid var(--paper);box-shadow:0 3px 10px rgba(0,0,0,.35);cursor:pointer;
+  border:2px solid var(--paper);box-shadow:0 3px 10px rgba(0,0,0,.35);
 }
-/* Číslo sa otáča späť, aby stálo rovno v naklonenej kvapke. */
-.site-marker b{transform:rotate(45deg);color:var(--paper);font-size:.72rem;font-weight:800;line-height:1}
+/* Číslo leží nad kvapkou a samo sa neotáča – stojí teda vždy rovno. */
+.site-marker b{position:absolute;inset:0;display:grid;place-items:center;
+  color:var(--paper);font-size:.72rem;font-weight:800;line-height:1}
 .installation-card.is-map-active{outline:2px solid var(--pink);outline-offset:-2px}
 
 /* =========================================================================

@@ -259,6 +259,10 @@
     pts.forEach((m) => {
       const el = document.createElement('div');
       el.className = 'site-marker';
+      /* Kvapka je samostatný vnútorný prvok, nie samotná značka: Mapbox si
+         na značku zapisuje vlastný transform (posun po mape) a prepísal by
+         tým otočenie – číslo potom zostalo šikmo. */
+      el.appendChild(document.createElement('i'));
       const color = markerColor(m);
       if (color) el.style.setProperty('--pin', color);
 
