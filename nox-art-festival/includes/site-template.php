@@ -221,6 +221,27 @@ function nox_art_site_program_by_day() {
     return $days;
 }
 
+/**
+ * Krátky popis termínu na dlaždicu: "Pia 30.10. · 18:00–22:00". Dátum aj
+ * časy sú nepovinné – bez dátumu zostane len čas (otváracie hodiny platné
+ * počas celého festivalu), bez času len deň.
+ */
+function nox_art_site_time_label($datum, $cas_od, $cas_do) {
+    $parts = [];
+
+    if ($datum) {
+        list($dayName, $dayDate) = nox_art_site_day_label($datum);
+        $parts[] = mb_substr($dayName, 0, 3) . ' ' . $dayDate;
+    }
+
+    $cas = $cas_od;
+    if ($cas_od && $cas_do) $cas = $cas_od . '–' . $cas_do;
+    elseif (!$cas_od && $cas_do) $cas = 'do ' . $cas_do;
+    if ($cas) $parts[] = $cas;
+
+    return implode(' · ', $parts);
+}
+
 function nox_art_site_day_label($datum) {
     $names = [1 => 'Pondelok', 2 => 'Utorok', 3 => 'Streda', 4 => 'Štvrtok', 5 => 'Piatok', 6 => 'Sobota', 7 => 'Nedeľa'];
     $ts = strtotime($datum);

@@ -5,6 +5,10 @@ function nox_art_add_meta_boxes() {
     add_meta_box('nox_miesto_poloha', 'Poloha', 'nox_art_render_miesto_metabox', 'nox_miesto', 'normal', 'high');
     add_meta_box('nox_dielo_suvislosti', 'Súvislosti diela', 'nox_art_render_dielo_metabox', 'nox_dielo', 'side', 'default');
     add_meta_box('nox_program_termin', 'Termín', 'nox_art_render_program_metabox', 'nox_program', 'side', 'default');
+    // Čas má zmysel pri všetkom, nielen pri programe: dielo býva prístupné
+    // len vo vymedzených hodinách a podnik má otváracie hodiny.
+    add_meta_box('nox_termin', 'Termín / čas', 'nox_art_render_termin_metabox', 'nox_dielo', 'side', 'default');
+    add_meta_box('nox_termin', 'Termín / čas', 'nox_art_render_termin_metabox', 'nox_miesto', 'side', 'default');
 }
 add_action('add_meta_boxes', 'nox_art_add_meta_boxes');
 
@@ -108,6 +112,40 @@ add_action('save_post_nox_dielo', 'nox_art_save_dielo');
 /* -------------------------------------------------------------------------
  * PROGRAM – dátum, čas, voliteľne miesto
  * ---------------------------------------------------------------------- */
+/**
+ * Dátum a časový rozsah – spoločné pre Diela a Miesta. Program má vlastné
+ * políčka v boxe "Termín", lebo k nim patrí aj výber miesta.
+ */
+function nox_art_render_termin_metabox($post) {
+    wp_nonce_field('nox_art_save_termin', 'nox_art_termin_nonce');
+    $datum = get_post_meta($post->ID, '_nox_datum', true);
+    $cas_od = get_post_meta($post->ID, '_nox_cas_od', true);
+    $cas_do = get_post_meta($post->ID, '_nox_cas_do', true);
+    ?>
+    <p>
+        <label for="nox_datum"><strong>Dátum (nepovinné)</strong></label><br>
+        <input type="date" id="nox_datum" name="nox_datum" class="widefat" value="<?php echo esc_attr($datum); ?>">
+    </p>
+    <p style="display:flex;gap:12px">
+        <label style="flex:1">Od<br><input type="time" id="nox_cas_od" name="nox_cas_od" class="widefat" value="<?php echo esc_attr($cas_od); ?>"></label>
+        <label style="flex:1">Do<br><input type="time" id="nox_cas_do" name="nox_cas_do" class="widefat" value="<?php echo esc_attr($cas_do); ?>"></label>
+    </p>
+    <p class="description">Ak dátum nevyplníš, čas sa zobrazí ako otváracie hodiny platné počas celého festivalu.</p>
+    <?php
+}
+
+function nox_art_save_termin($post_id) {
+    if (!isset($_POST['nox_art_termin_nonce']) || !wp_verify_nonce($_POST['nox_art_termin_nonce'], 'nox_art_save_termin')) return;
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (!current_user_can('edit_post', $post_id)) return;
+
+    update_post_meta($post_id, '_nox_datum', isset($_POST['nox_datum']) ? sanitize_text_field($_POST['nox_datum']) : '');
+    update_post_meta($post_id, '_nox_cas_od', isset($_POST['nox_cas_od']) ? sanitize_text_field($_POST['nox_cas_od']) : '');
+    update_post_meta($post_id, '_nox_cas_do', isset($_POST['nox_cas_do']) ? sanitize_text_field($_POST['nox_cas_do']) : '');
+}
+add_action('save_post_nox_dielo', 'nox_art_save_termin');
+add_action('save_post_nox_miesto', 'nox_art_save_termin');
+
 function nox_art_render_program_metabox($post) {
     wp_nonce_field('nox_art_save_program', 'nox_art_program_nonce');
     $datum = get_post_meta($post->ID, '_nox_datum', true);

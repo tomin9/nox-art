@@ -12,14 +12,13 @@
 $polozky = [];
 
 foreach (nox_art_data_program() as $item) {
-    list($dayName, $dayDate) = $item['datum'] ? nox_art_site_day_label($item['datum']) : ['', ''];
-    $cas = $item['casOd'] . ($item['casDo'] ? '–' . $item['casDo'] : '');
     $polozky[] = [
         'id' => 'program-' . $item['id'],
         'nazov' => $item['nazov'],
         'foto' => $item['foto'],
         'kategorie' => $item['kategorie'],
-        'meta' => trim(trim($dayName . ' ' . $dayDate) . ($cas ? ' · ' . $cas : '')),
+        'cas' => nox_art_site_time_label($item['datum'], $item['casOd'], $item['casDo']),
+        'meta' => '',
         'work' => '',
         'miestoId' => $item['miestoId'],
     ];
@@ -32,6 +31,7 @@ foreach ($diela as $d) {
         'nazov' => $d['nazov'],
         'foto' => $d['foto'],
         'kategorie' => $d['kategorie'],
+        'cas' => nox_art_site_time_label($d['datum'], $d['casOd'], $d['casDo']),
         'meta' => $u ? $u['meno'] : '',
         'work' => $d['id'],
         'miestoId' => $d['miestoId'],
@@ -48,6 +48,7 @@ foreach ($miesta as $m) {
         'nazov' => $m['nazov'],
         'foto' => $m['foto'],
         'kategorie' => $m['kategorie'],
+        'cas' => nox_art_site_time_label($m['datum'], $m['casOd'], $m['casDo']),
         'meta' => $m['adresa'],
         'work' => '',
         'miestoId' => $m['id'],
@@ -96,6 +97,9 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
       <?php endif; ?>
       <?php $pinColor = nox_art_item_color($p['kategorie']); ?>
       <span class="tile-pin" aria-hidden="true"<?php echo $pinColor ? ' style="--pin:' . esc_attr($pinColor) . '"' : ''; ?>><b><?php echo (int) ($i + 1); ?></b></span>
+      <?php if ($p['cas']): ?>
+      <span class="tile-time"><?php echo esc_html($p['cas']); ?></span>
+      <?php endif; ?>
       <div class="tile-caption">
         <h3><?php echo esc_html($p['nazov']); ?></h3>
         <?php if ($p['meta']): ?><p><?php echo esc_html($p['meta']); ?></p><?php endif; ?>

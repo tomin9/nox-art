@@ -3322,3 +3322,21 @@ body.menu-open .site-header .brand-nox-logo {
     margin:0 0 2px;
   }
 }
+
+/* Čas na dlaždici – vpravo hore, oproti kvapke s číslom. Tmavé sklíčko,
+   aby bol čitateľný nad svetlou aj tmavou fotkou. */
+.tile-time{
+  position:absolute;
+  top:14px;
+  right:14px;
+  z-index:2;
+  padding:5px 10px;
+  border-radius:999px;
+  background:rgba(8, 9, 8, .62);
+  backdrop-filter:blur(6px);
+  color:var(--paper);
+  font-size:.7rem;
+  font-weight:700;
+  letter-spacing:.01em;
+  white-space:nowrap;
+}
