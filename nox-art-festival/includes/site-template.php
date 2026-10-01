@@ -207,8 +207,8 @@ add_action('wp_enqueue_scripts', 'nox_art_site_enqueue_assets');
 
 /**
  * Jeden spoločný zoznam všetkého, čo sa zobrazuje v sekcii Program:
- * body programu (chronologicky), diela a miesta s priradenou kategóriou
- * (partnerské podniky). Stavia sa tu, a nie v šablóne, lebo to isté
+ * body programu (chronologicky), diela a partnerské podniky. Stavia sa
+ * tu, a nie v šablóne, lebo to isté
  * číslovanie potrebuje aj mapa – a tá dostáva dáta ešte pred vykreslením.
  *
  * Čísla: ručne zadané majú prednosť, zvyšku sa priradia tie, ktoré ešte

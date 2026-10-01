@@ -10,7 +10,6 @@ function nox_art_add_meta_boxes() {
     // Čas má zmysel pri všetkom, nielen pri programe: dielo býva prístupné
     // len vo vymedzených hodinách a podnik má otváracie hodiny.
     add_meta_box('nox_termin', 'Termíny', 'nox_art_render_termin_metabox', 'nox_dielo', 'side', 'default');
-    add_meta_box('nox_termin', 'Termíny', 'nox_art_render_termin_metabox', 'nox_miesto', 'side', 'default');
     add_meta_box('nox_termin', 'Termíny', 'nox_art_render_termin_metabox', 'nox_program', 'side', 'default');
     add_meta_box('nox_termin', 'Termíny', 'nox_art_render_termin_metabox', 'nox_podnik', 'side', 'default');
     // Poradové číslo na mape a na dlaždici – ručne nastaviteľné, aby si
@@ -233,7 +232,6 @@ function nox_art_save_termin($post_id) {
     update_post_meta($post_id, '_nox_cas_do', $prvy['do']);
 }
 add_action('save_post_nox_dielo', 'nox_art_save_termin');
-add_action('save_post_nox_miesto', 'nox_art_save_termin');
 add_action('save_post_nox_podnik', 'nox_art_save_termin');
 add_action('save_post_nox_program', 'nox_art_save_termin');
 
