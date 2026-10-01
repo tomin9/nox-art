@@ -22,7 +22,7 @@ function nox_art_default_categories() {
 }
 
 function nox_art_register_taxonomy() {
-    register_taxonomy('nox_kategoria', ['nox_dielo', 'nox_program', 'nox_miesto', 'nox_podnik'], [
+    register_taxonomy('nox_kategoria', ['nox_dielo', 'nox_program', 'nox_podnik'], [
         'labels' => [
             'name' => 'Kategórie',
             'singular_name' => 'Kategória',

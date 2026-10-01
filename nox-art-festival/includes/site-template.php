@@ -289,28 +289,6 @@ function nox_art_site_items() {
         ];
     }
 
-    // Miesto sa do zoznamu dostane, len keď má priradenú kategóriu – bežné
-    // miesto je nositeľom súradníc pre dielo, nie samostatná položka.
-    foreach (nox_art_data_miesta() as $m) {
-        if (!$m['kategorie']) continue;
-        $items[] = [
-            'id' => 'miesto-' . $m['id'],
-            'nazov' => $m['nazov'],
-            'foto' => $m['foto'],
-            'kategorie' => $m['kategorie'],
-            'terminy' => $m['terminy'],
-            'samostatne' => $m['samostatne'],
-            'kategoriaNazov' => nox_art_item_category_label($m['kategorie']),
-            'kategoriaSlug' => (nox_art_item_category_term($m['kategorie'])->slug ?? ''),
-            'popis' => $m['popis'],
-            'meta' => $m['adresa'] !== $m['nazov'] ? $m['adresa'] : '',
-            'work' => '',
-            'miestoId' => $m['id'],
-            'miestoNazov' => $m['adresa'],
-            'cislo' => $m['cislo'],
-        ];
-    }
-
     /* Zoradenie podľa kategórie – v tomto poradí sa aj prideľujú čísla, aby
        čísla na mape šli po skupinách a nie krížom cez ne. V rámci kategórie
        zostáva pôvodné poradie (program chronologicky, zvyšok podľa názvu). */
