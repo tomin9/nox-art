@@ -350,20 +350,19 @@
     // spresnenie v jej druhom rade. Položky nesú aj nadradené kategórie,
     // takže na hlavnú skupinu sadne všetko, čo pod ňu patrí.
     const details = [...document.querySelectorAll('[data-detail]')];
-    const backButton = document.querySelector('[data-detail-back]');
     // V detaile ustúpi aj hlavička sekcie – zostane mapa, popis a návrat.
     const section = target.closest('.section');
 
     let parent = chips.find((chip) => chip.classList.contains('is-active'))?.dataset.filter || '';
     let child = '';
     let view = 'items';
-    // Odkiaľ sa do detailu prišlo – tlačidlo späť vráti ten istý pohľad.
-    let viewBeforeDetail = 'items';
 
     const apply = () => {
       views.forEach((el) => { el.hidden = el.dataset.viewPanel !== view; });
-      bar.hidden = view === 'detail';
-      section?.classList.toggle('is-detail', view === 'detail');
+      // Filtre ustupujú v detaile aj v harmonograme – oba pohľady majú
+      // namiesto nich tlačidlo späť, takže vyzerajú rovnako.
+      bar.hidden = view !== 'items';
+      section?.classList.toggle('is-focus', view !== 'items');
 
       if (view !== 'items') {
         if (emptyNote) emptyNote.hidden = true;
@@ -410,6 +409,9 @@
         child = '';
         syncSubBars();
         apply();
+        // Harmonogram je iný pohľad na tú istú sekciu – posunieme sa naň
+        // rovnako ako pri otvorení diela, nech to sedí pod menu.
+        if (view !== 'items') scrollToSection();
       });
     });
 
@@ -435,7 +437,6 @@
       const detail = details.find((el) => el.dataset.detail === id);
       if (!detail) return;
       details.forEach((el) => { el.hidden = el !== detail; });
-      viewBeforeDetail = view;
       view = 'detail';
       syncSubBars();
       apply();
@@ -468,10 +469,12 @@
       });
     });
 
-    backButton?.addEventListener('click', () => {
-      view = viewBeforeDetail;
-      syncSubBars();
-      apply();
+    document.querySelectorAll('[data-detail-back]').forEach((button) => {
+      button.addEventListener('click', () => {
+        view = 'items';
+        syncSubBars();
+        apply();
+      });
     });
 
     subBars.forEach((sub) => {

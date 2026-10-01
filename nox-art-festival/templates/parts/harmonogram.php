@@ -8,6 +8,7 @@
  */
 $dni = nox_art_site_schedule();
 ?>
+<button class="detail-back" type="button" data-detail-back>&larr; Späť na zoznam</button>
 <?php if (!$dni): ?>
 <p class="empty" style="color:var(--paper);opacity:.7">Harmonogram zatiaľ nie je vyplnený — pridaj dielam a bodom programu čas v administrácii.</p>
 <?php endif; ?>
