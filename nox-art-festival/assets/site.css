@@ -3779,8 +3779,6 @@ body.menu-open .site-header .brand-nox-logo {
    ========================================================================= */
 .partner-group {
   margin-top: clamp(44px, 5vw, 72px);
-  padding-top: 22px;
-  border-top: 1.5px solid var(--ink);
 }
 
 .partner-group-title {
