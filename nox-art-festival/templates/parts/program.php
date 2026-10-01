@@ -77,8 +77,8 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
       <div class="route-map-stage">
         <div class="site-map-wrap"><div id="nox-site-map" class="site-map"></div></div>
       </div>
-      <p class="route-note">Klikni na značku na mape, alebo na dlaždicu v zozname.</p>
     </div>
+    <p class="route-note">Klikni na značku na mape, alebo na dlaždicu v zozname.</p>
   </aside>
   </div>
 </section>

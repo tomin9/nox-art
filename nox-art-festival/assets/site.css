@@ -3277,8 +3277,9 @@ body.menu-open .site-header .brand-nox-logo {
 .program-layout-map .route-map-stage{
   margin:12px 0 8px;
 }
+/* Popisok je pod rámčekom, nie v ňom – je to pokyn k mape, nie jej súčasť. */
 .program-layout-map .route-note{
-  margin:0;
+  margin:10px 2px 0;
 }
 
 @media (max-width: 1000px){
