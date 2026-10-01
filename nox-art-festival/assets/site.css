@@ -3028,3 +3028,37 @@ body.nox-art-site > *:not(.scroll-progress):not(#wpadminbar):not(script):not(sty
     top: calc(-1 * var(--hlavicka-presah)) !important;
   }
 }
+
+/* Rozostrené pozadie (backdrop-filter) si prehliadač kreslí do vlastnej
+   vrstvy, ktorú na mobile oreže presne na okraj okna – presah hlavičky nad
+   okraj sa tak vôbec nevykreslil a pás nad ňou zostal priehľadný. Na malých
+   obrazovkách preto rozostrenie nepoužívame, len plnú farbu. */
+@media (max-width: 900px) {
+  .nox-art-site .site-header,
+  .nox-art-site .site-header.is-scrolled {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .nox-art-site .site-header.is-scrolled {
+    background: var(--paper) !important;
+  }
+
+  /* Istota pre prípad, že by presah orezalo niečo iné: pás nad hlavičkou
+     vyplní jej vlastný "strop" nalepený na horný okraj okna. */
+  .nox-art-site .site-header::before {
+    position: fixed;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: calc(var(--hlavicka-presah, 80px) + env(safe-area-inset-top, 0px));
+    content: "";
+    background: var(--paper);
+    transform: translateY(-100%);
+  }
+
+  .nox-art-site .site-header.is-scrolled::before {
+    transform: none;
+  }
+}
