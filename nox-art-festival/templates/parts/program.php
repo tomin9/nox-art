@@ -77,7 +77,11 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
     <button class="detail-back" type="button" data-detail-back>&larr; Späť na zoznam</button>
     <?php foreach ($polozky as $p): ?>
     <article class="detail" data-detail="<?php echo esc_attr($p['id']); ?>" hidden>
-      <h3 class="detail-title"><?php echo esc_html($p['nazov']); ?></h3>
+      <?php $pinColor = nox_art_item_color($p['kategorie']); ?>
+      <h3 class="detail-title">
+        <span class="detail-pin" aria-hidden="true"<?php echo $pinColor ? ' style="--pin:' . esc_attr($pinColor) . '"' : ''; ?>><b><?php echo (int) $p['cislo']; ?></b></span>
+        <?php echo esc_html($p['nazov']); ?>
+      </h3>
       <ul class="detail-facts">
         <?php if ($p['meta']): ?><li><?php echo esc_html($p['meta']); ?></li><?php endif; ?>
         <?php if ($p['miestoNazov']): ?><li><?php echo esc_html($p['miestoNazov']); ?></li><?php endif; ?>
