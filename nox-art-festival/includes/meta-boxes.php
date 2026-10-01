@@ -14,7 +14,7 @@ function nox_art_add_meta_boxes() {
     add_meta_box('nox_termin', 'Termíny', 'nox_art_render_termin_metabox', 'nox_podnik', 'side', 'default');
     // Poradové číslo na mape a na dlaždici – ručne nastaviteľné, aby si
     // editor vedel určiť trasu festivalu.
-    foreach (['nox_dielo', 'nox_miesto', 'nox_program', 'nox_podnik'] as $typ) {
+    foreach (['nox_dielo', 'nox_program', 'nox_podnik'] as $typ) {
         add_meta_box('nox_cislo', 'Číslo na mape', 'nox_art_render_cislo_metabox', $typ, 'side', 'high');
     }
 }
@@ -141,7 +141,7 @@ function nox_art_save_cislo($post_id) {
         delete_post_meta($post_id, '_nox_cislo');
     }
 }
-foreach (['nox_dielo', 'nox_miesto', 'nox_program', 'nox_podnik'] as $nox_typ) {
+foreach (['nox_dielo', 'nox_program', 'nox_podnik'] as $nox_typ) {
     add_action('save_post_' . $nox_typ, 'nox_art_save_cislo');
 }
 

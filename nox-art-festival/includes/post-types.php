@@ -22,7 +22,9 @@ function nox_art_register_post_types() {
         'public' => false,
         'show_ui' => true,
         'show_in_menu' => 'nox-art-festival',
-        'supports' => ['title', 'editor', 'thumbnail'],
+        // Miesto je iba nositeľ polohy – nemá vlastný popis ani obrázok,
+        // tie patria dielu, programu či podniku, ktoré na ňom stoja.
+        'supports' => ['title'],
         'menu_icon' => 'dashicons-location',
         'capability_type' => 'post',
         'map_meta_cap' => true,

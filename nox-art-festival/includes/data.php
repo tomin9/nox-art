@@ -29,9 +29,6 @@ function nox_art_data_miesta() {
             'adresa' => get_post_meta($p->ID, '_nox_adresa', true) ?: get_the_title($p),
             'lat' => $lat !== '' ? (float) $lat : null,
             'lng' => $lng !== '' ? (float) $lng : null,
-            'popis' => apply_filters('the_content', $p->post_content),
-            'foto' => get_the_post_thumbnail_url($p->ID, 'large') ?: '',
-            'cislo' => (int) get_post_meta($p->ID, '_nox_cislo', true),
         ];
     }, $posts);
 }
