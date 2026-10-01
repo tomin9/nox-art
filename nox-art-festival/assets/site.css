@@ -3273,7 +3273,8 @@ body.menu-open .site-header .brand-nox-logo {
   /* Mapa je presne na výšku okna pod hlavičkou: hore sa tak nemá čím
      prekryť a dole nezostáva prázdne miesto. Rámček dopĺňa zvyšnú výšku,
      plátno mapy ju vyplní. */
-  height:calc(100svh - var(--header-h) - var(--map-gap) - 18px);
+  /* Rovnaká medzera hore aj dole – preto --map-gap dvakrát. */
+  height:calc(100svh - var(--header-h) - var(--map-gap) * 2);
   display:flex;
   flex-direction:column;
 }
@@ -3439,12 +3440,12 @@ body.menu-open .site-header .brand-nox-logo {
    inak jej vrch zmizne za menu. Výšku mapy o to isté zmenšujeme. */
 .nox-art-site.admin-bar .program-layout-map{
   top:calc(var(--header-h) + 32px + var(--map-gap));
-  height:calc(100svh - var(--header-h) - 32px - var(--map-gap) - 18px);
+  height:calc(100svh - var(--header-h) - 32px - var(--map-gap) * 2);
 }
 @media (max-width: 782px){
   .nox-art-site.admin-bar .program-layout-map{
     top:calc(var(--header-h) + 46px + var(--map-gap));
-    height:calc(100svh - var(--header-h) - 46px - var(--map-gap) - 18px);
+    height:calc(100svh - var(--header-h) - 46px - var(--map-gap) * 2);
   }
 }
 @media (max-width: 1000px){
@@ -3631,8 +3632,12 @@ body.menu-open .site-header .brand-nox-logo {
 .nox-art-site .program.is-detail .program-head{
   display:none;
 }
+/* Sekcia sa po otvorení detailu scrolluje tak, že jej vrch sedí 24px pod
+   hlavičkou (scroll-margin-top). Horné odsadenie preto doladíme presne na
+   zvyšok do --map-gap – mapa tým začína rovno vo svojej prilepenej polohe
+   a hore aj dole jej zostane rovnaká medzera. */
 .nox-art-site .program.is-detail{
-  padding-top:clamp(28px, 4vw, 60px);
+  padding-top:calc(var(--map-gap, 34px) - 24px);
 }
 
 /* V detaile nie je vľavo mriežka dlaždíc, s ktorou sa mapa zarovnávala –
@@ -3642,10 +3647,10 @@ body.menu-open .site-header .brand-nox-logo {
   margin-top:0;
   /* Bez vytiahnutia hore začína mapa o horné odsadenie sekcie nižšie, takže
      o to isté musí byť nižšia – inak by jej spodok prečnieval cez okno. */
-  height:calc(100svh - var(--header-h) - var(--map-gap) - 18px - clamp(28px, 4vw, 60px));
+  height:calc(100svh - var(--header-h) - var(--map-gap) * 2);
 }
 .nox-art-site.admin-bar .program.is-detail .program-layout-map{
-  height:calc(100svh - var(--header-h) - 32px - var(--map-gap) - 18px - clamp(28px, 4vw, 60px));
+  height:calc(100svh - var(--header-h) - 32px - var(--map-gap) * 2);
 }
 
 /* Detail je kratší než mapa vedľa neho – nech aspoň nekončí hneď pod
