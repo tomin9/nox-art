@@ -3585,11 +3585,18 @@ body.menu-open .site-header .brand-nox-logo {
   margin-right:18px;
   opacity:.6;
 }
+/* Fotka je doplnok k popisu, nie hlavný obsah – stačí jej tretina šírky.
+   Na úzkej obrazovke, kde je stĺpec sám osebe úzky, ide cez celú šírku. */
 .detail-foto{
   display:block;
-  width:100%;
+  width:min(33%, 340px);
   margin-top:clamp(18px, 3vh, 32px);
   border-radius:var(--radius-md);
+}
+@media (max-width: 620px){
+  .detail-foto{
+    width:100%;
+  }
 }
 .detail-text{
   max-width:70ch;
