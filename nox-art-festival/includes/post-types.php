@@ -74,7 +74,9 @@ function nox_art_register_post_types() {
         'public' => false,
         'show_ui' => true,
         'show_in_menu' => 'nox-art-festival',
-        'supports' => ['title', 'editor'],
+        // Náhľadový obrázok: body programu sa na stránke zobrazujú ako
+        // dlaždice v spoločnej galérii s dielami, takže majú vlastnú fotku.
+        'supports' => ['title', 'editor', 'thumbnail'],
         'capability_type' => 'post',
         'map_meta_cap' => true,
     ]);

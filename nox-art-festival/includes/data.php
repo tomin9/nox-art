@@ -71,6 +71,7 @@ function nox_art_data_program() {
             'casOd' => get_post_meta($p->ID, '_nox_cas_od', true) ?: '',
             'casDo' => get_post_meta($p->ID, '_nox_cas_do', true) ?: '',
             'miestoId' => (int) get_post_meta($p->ID, '_nox_miesto_id', true) ?: null,
+            'foto' => get_the_post_thumbnail_url($p->ID, 'large') ?: '',
             'kategorie' => nox_art_post_categories($p->ID),
         ];
     }, $posts);

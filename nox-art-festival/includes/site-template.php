@@ -20,11 +20,15 @@ if (!defined('ABSPATH')) exit;
  */
 function nox_art_site_template_map() {
     return [
-        'nox-art-site-template.php'    => ['label' => 'NOX:ART — Celá stránka (všetky sekcie)', 'sections' => ['hero', 'about', 'program', 'installations', 'info', 'partners', 'newsletter']],
+        'nox-art-site-template.php'    => ['label' => 'NOX:ART — Celá stránka (všetky sekcie)', 'sections' => ['hero', 'about', 'program', 'info', 'partners', 'newsletter']],
         'nox-art-page-domov.php'       => ['label' => 'NOX:ART — Domov (úvod)',                'sections' => ['hero', 'about', 'newsletter']],
         'nox-art-page-festival.php'    => ['label' => 'NOX:ART — O festivale',                 'sections' => ['about', 'newsletter']],
-        'nox-art-page-program.php'     => ['label' => 'NOX:ART — Program',                     'sections' => ['program', 'newsletter']],
-        'nox-art-page-diela.php'       => ['label' => 'NOX:ART — Diela',                       'sections' => ['installations', 'newsletter']],
+        // Program a diela sú jedna sekcia – program festivalu obsahuje aj
+        // diela aj sprievodný program, delia sa len kategóriami. Šablóna
+        // "Diela" zostáva zaregistrovaná ako alias, aby sa nerozbila
+        // stránka, ktorá ju už používa.
+        'nox-art-page-program.php'     => ['label' => 'NOX:ART — Program a diela',             'sections' => ['program', 'newsletter']],
+        'nox-art-page-diela.php'       => ['label' => 'NOX:ART — Program a diela (alias)',     'sections' => ['program', 'newsletter']],
         'nox-art-page-mapa.php'        => ['label' => 'NOX:ART — Mapa a info',                 'sections' => ['info', 'newsletter']],
         'nox-art-page-partneri.php'    => ['label' => 'NOX:ART — Partneri',                    'sections' => ['partners', 'newsletter']],
         'nox-art-page-kontakt.php'     => ['label' => 'NOX:ART — Kontakt / newsletter',        'sections' => ['newsletter']],
@@ -77,7 +81,6 @@ function nox_art_site_anchors() {
         'hero' => 'top',
         'about' => 'festival',
         'program' => 'program',
-        'installations' => 'instalacie',
         'info' => 'info',
         'partners' => 'partneri',
         'newsletter' => 'kontakt',
@@ -91,8 +94,7 @@ function nox_art_site_section_templates() {
     return [
         'hero' => ['nox-art-page-domov.php', 'nox-art-site-template.php'],
         'about' => ['nox-art-page-festival.php'],
-        'program' => ['nox-art-page-program.php'],
-        'installations' => ['nox-art-page-diela.php'],
+        'program' => ['nox-art-page-program.php', 'nox-art-page-diela.php'],
         'info' => ['nox-art-page-mapa.php'],
         'partners' => ['nox-art-page-partneri.php'],
         'newsletter' => ['nox-art-page-kontakt.php'],
@@ -149,8 +151,7 @@ function nox_art_site_nav_items() {
     $items = [];
     foreach ([
         'about' => 'O festivale',
-        'program' => 'Program',
-        'installations' => 'Diela',
+        'program' => 'Program a diela',
         'info' => 'Mapa + info',
         'partners' => 'Partneri',
     ] as $section => $label) {

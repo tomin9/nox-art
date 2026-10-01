@@ -68,6 +68,8 @@ function nox_art_post_categories($post_id) {
 /**
  * Kategórie pre filtrovacie tlačidlá nad zoznamom. Vracia len tie, ktoré
  * naozaj niečo obsahujú – prázdny filter by používateľa len mýlil.
+ * Prijíma jeden typ obsahu aj viac naraz (Program a Diela sú na stránke
+ * zlúčené do jedného zoznamu so spoločnými filtrami).
  */
 function nox_art_filter_terms($post_type) {
     $terms = get_terms([
@@ -79,7 +81,7 @@ function nox_art_filter_terms($post_type) {
     if (!$terms || is_wp_error($terms)) return [];
 
     $used = [];
-    foreach (get_posts(['post_type' => $post_type, 'post_status' => 'publish', 'numberposts' => -1, 'fields' => 'ids']) as $id) {
+    foreach (get_posts(['post_type' => (array) $post_type, 'post_status' => 'publish', 'numberposts' => -1, 'fields' => 'ids']) as $id) {
         foreach (nox_art_post_categories($id) as $slug) $used[$slug] = true;
     }
 
