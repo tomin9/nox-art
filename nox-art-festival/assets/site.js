@@ -744,8 +744,62 @@
       if (!hash) return;
       const section = document.getElementById(hash);
       if (!section) return;   // odkaz vedie na inú podstránku
+      // Newsletter je vysúvací panel, nie sekcia v toku – ten sa otvára,
+      // nescrolluje sa naň.
+      if (section.hasAttribute('data-newsletter-dock')) return;
       event.preventDefault();
       scrollToSection(section);
     });
   });
+})();
+
+
+/* =========================================================================
+   Vysúvací newsletter. Panel je zavretý, na okraji trčí len ucho; otvára
+   sa kliknutím naň, odkazom na #kontakt (menu, päta), zatvára krížikom,
+   klávesom Esc alebo kliknutím mimo panela.
+   ========================================================================= */
+(() => {
+  const dock = document.querySelector('[data-newsletter-dock]');
+  if (!dock) return;
+
+  const toggle = dock.querySelector('[data-newsletter-toggle]');
+  const panel = dock.querySelector('.newsletter-panel');
+
+  const nastav = (otvorene) => {
+    dock.classList.toggle('is-open', otvorene);
+    toggle?.setAttribute('aria-expanded', otvorene ? 'true' : 'false');
+    if (otvorene) panel?.querySelector('input')?.focus({ preventScroll: true });
+  };
+
+  toggle?.addEventListener('click', () => nastav(!dock.classList.contains('is-open')));
+  dock.querySelector('[data-newsletter-close]')?.addEventListener('click', () => {
+    nastav(false);
+    toggle?.focus({ preventScroll: true });
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && dock.classList.contains('is-open')) nastav(false);
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!dock.classList.contains('is-open')) return;
+    if (dock.contains(event.target)) return;
+    // Klik na odkaz, ktorý panel práve otvoril, ho nesmie hneď zavrieť.
+    if (event.target.closest?.('a[href*="#kontakt"]')) return;
+    nastav(false);
+  });
+
+  /* Odkazy "Sleduj nás" a kotvy na #kontakt panel otvoria namiesto skoku –
+     fixovaný panel nie je kam odscrollovať. */
+  document.querySelectorAll('a[href*="#kontakt"]').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      const url = new URL(link.href, window.location.href);
+      if (url.pathname !== window.location.pathname) return;  // odkaz na inú podstránku
+      event.preventDefault();
+      nastav(true);
+    });
+  });
+
+  if (window.location.hash === '#kontakt') nastav(true);
 })();

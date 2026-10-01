@@ -3685,3 +3685,136 @@ body.menu-open .site-header .brand-nox-logo {
 .site-marker.is-expanded{
   z-index:6;
 }
+
+/* =========================================================================
+   Newsletter ako vysúvací panel na pravom okraji. Zavretý stav ukazuje len
+   ucho so štítkom, otvorený vysunie okno s formulárom.
+   ========================================================================= */
+.newsletter-dock {
+  --nl-tab: 54px;
+  position: fixed;
+  z-index: 70;
+  top: 50%;
+  right: 0;
+  display: flex;
+  align-items: stretch;
+  transform: translate(calc(100% - var(--nl-tab)), -50%);
+  transition: transform .5s var(--ease);
+}
+
+.newsletter-dock.is-open {
+  transform: translate(0, -50%);
+}
+
+.newsletter-tab {
+  display: flex;
+  flex: 0 0 var(--nl-tab);
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: var(--nl-tab);
+  padding: 22px 0;
+  border: 1.5px solid var(--ink);
+  border-right: 0;
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+  color: var(--cream);
+  background: var(--pink);
+  font: inherit;
+  font-size: .74rem;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  cursor: pointer;
+  transition: background .25s var(--ease);
+}
+
+.newsletter-tab:hover {
+  background: var(--pink-deep);
+}
+
+.newsletter-tab-num {
+  color: rgba(247, 245, 232, .62);
+}
+
+.newsletter-dock.is-open .newsletter-tab-text {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.newsletter-panel {
+  position: relative;
+  width: min(430px, calc(100vw - var(--nl-tab) - 18px));
+  max-height: min(640px, calc(100svh - 120px));
+  padding: clamp(26px, 3vw, 40px);
+  overflow: auto;
+  border: 1.5px solid var(--ink);
+  border-right: 0;
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+  background: var(--paper-deep);
+  /* Zavretý panel nemá byť dostupný klávesnicou ani čítačkou obrazovky. */
+  visibility: hidden;
+  transition: visibility 0s linear .5s;
+}
+
+.newsletter-dock.is-open .newsletter-panel {
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.newsletter-panel .section-label {
+  margin: 0 0 22px;
+}
+
+.newsletter-panel h2 {
+  margin: 0 0 30px;
+  font-size: clamp(1.5rem, 2.4vw, 2.1rem);
+  line-height: 1.02;
+  text-transform: uppercase;
+}
+
+.newsletter-panel .newsletter-form input {
+  font-size: 1.05rem;
+}
+
+.newsletter-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  color: var(--ink);
+  background: transparent;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.newsletter-close:hover {
+  color: var(--cream);
+  background: var(--ink);
+}
+
+@media (max-width: 720px) {
+  .newsletter-dock {
+    --nl-tab: 44px;
+  }
+
+  .newsletter-tab {
+    gap: 10px;
+    font-size: .66rem;
+  }
+
+  .newsletter-panel {
+    max-height: calc(100svh - 150px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .newsletter-dock {
+    transition: none;
+  }
+}
