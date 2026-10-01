@@ -124,3 +124,25 @@ function nox_art_miesto_column_content($column, $post_id) {
     }
 }
 add_action('manage_nox_miesto_posts_custom_column', 'nox_art_miesto_column_content', 10, 2);
+
+function nox_art_partner_columns($columns) {
+    $columns['nox_logo'] = 'Logo';
+    $columns['nox_skupina'] = 'Skupina';
+    return $columns;
+}
+add_filter('manage_nox_partner_posts_columns', 'nox_art_partner_columns');
+
+function nox_art_partner_column_content($column, $post_id) {
+    if ($column === 'nox_logo') {
+        $url = get_the_post_thumbnail_url($post_id, 'thumbnail');
+        echo $url
+            ? '<img src="' . esc_url($url) . '" alt="" style="max-width:90px;max-height:46px;object-fit:contain">'
+            : '<span style="color:#b32d2e">chýba</span>';
+    }
+    if ($column === 'nox_skupina') {
+        $slug = get_post_meta($post_id, '_nox_partner_skupina', true) ?: 'partner';
+        $skupiny = nox_art_partner_skupiny();
+        echo esc_html($skupiny[$slug] ?? $skupiny['partner']);
+    }
+}
+add_action('manage_nox_partner_posts_custom_column', 'nox_art_partner_column_content', 10, 2);

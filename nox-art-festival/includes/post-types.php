@@ -82,6 +82,25 @@ function nox_art_register_post_types() {
         'map_meta_cap' => true,
     ]);
 
+    register_post_type('nox_partner', [
+        'labels' => [
+            'name' => 'Partneri',
+            'singular_name' => 'Partner',
+            'add_new_item' => 'Pridať partnera',
+            'edit_item' => 'Upraviť partnera',
+            'all_items' => 'Partneri',
+            'not_found' => 'Žiadni partneri',
+        ],
+        'public' => false,
+        'show_ui' => true,
+        'show_in_menu' => 'nox-art-festival',
+        // Logo je náhľadový obrázok, meno je nadpis – nič iné partner nepotrebuje.
+        'supports' => ['title', 'thumbnail', 'page-attributes'],
+        'menu_icon' => 'dashicons-awards',
+        'capability_type' => 'post',
+        'map_meta_cap' => true,
+    ]);
+
     register_post_type('nox_program', [
         'labels' => [
             'name' => 'Program',

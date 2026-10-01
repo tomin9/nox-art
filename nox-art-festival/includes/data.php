@@ -109,3 +109,32 @@ function nox_art_data_program() {
     });
     return $items;
 }
+
+/**
+ * Partneri zoradení do skupín (organizátor, generálny partner, partneri,
+ * mediálni partneri). Vracia len skupiny, v ktorých niekto je.
+ */
+function nox_art_data_partneri() {
+    $posts = get_posts([
+        'post_type' => 'nox_partner',
+        'post_status' => 'publish',
+        'numberposts' => -1,
+        'orderby' => ['menu_order' => 'ASC', 'title' => 'ASC'],
+    ]);
+
+    $skupiny = [];
+    foreach (nox_art_partner_skupiny() as $slug => $label) $skupiny[$slug] = ['nazov' => $label, 'polozky' => []];
+
+    foreach ($posts as $p) {
+        $slug = get_post_meta($p->ID, '_nox_partner_skupina', true) ?: 'partner';
+        if (!isset($skupiny[$slug])) $slug = 'partner';
+        $skupiny[$slug]['polozky'][] = [
+            'id' => $p->ID,
+            'nazov' => get_the_title($p),
+            'logo' => get_the_post_thumbnail_url($p->ID, 'large') ?: '',
+            'url' => get_post_meta($p->ID, '_nox_partner_url', true) ?: '',
+        ];
+    }
+
+    return array_filter($skupiny, fn($s) => (bool) $s['polozky']);
+}

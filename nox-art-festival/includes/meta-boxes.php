@@ -12,6 +12,7 @@ function nox_art_add_meta_boxes() {
     add_meta_box('nox_termin', 'Termíny', 'nox_art_render_termin_metabox', 'nox_dielo', 'side', 'default');
     add_meta_box('nox_termin', 'Termíny', 'nox_art_render_termin_metabox', 'nox_program', 'side', 'default');
     add_meta_box('nox_termin', 'Termíny', 'nox_art_render_termin_metabox', 'nox_podnik', 'side', 'default');
+    add_meta_box('nox_partner_zaradenie', 'Zaradenie', 'nox_art_render_partner_metabox', 'nox_partner', 'side', 'high');
     // Poradové číslo na mape a na dlaždici – ručne nastaviteľné, aby si
     // editor vedel určiť trasu festivalu.
     foreach (['nox_dielo', 'nox_program', 'nox_podnik'] as $typ) {
@@ -279,3 +280,54 @@ function nox_art_admin_enqueue($hook) {
     wp_add_inline_script('nox-art-leaflet-js', nox_art_asset('admin-picker.js'));
 }
 add_action('admin_enqueue_scripts', 'nox_art_admin_enqueue');
+
+/* -------------------------------------------------------------------------
+ * PARTNER – do ktorej skupiny patrí a kam vedie jeho logo
+ * ---------------------------------------------------------------------- */
+function nox_art_partner_skupiny() {
+    return [
+        'organizator' => 'Organizátor',
+        'generalny' => 'Generálny partner podujatia',
+        'partner' => 'Partneri podujatia',
+        'medialny' => 'Mediálni partneri podujatia',
+    ];
+}
+
+function nox_art_render_partner_metabox($post) {
+    wp_nonce_field('nox_art_save_partner', 'nox_art_partner_nonce');
+    $skupina = get_post_meta($post->ID, '_nox_partner_skupina', true) ?: 'partner';
+    $url = get_post_meta($post->ID, '_nox_partner_url', true);
+    ?>
+    <p>
+        <label for="nox_partner_skupina"><strong>Skupina</strong></label><br>
+        <select id="nox_partner_skupina" name="nox_partner_skupina" class="widefat">
+            <?php foreach (nox_art_partner_skupiny() as $slug => $label): ?>
+            <option value="<?php echo esc_attr($slug); ?>" <?php selected($skupina, $slug); ?>><?php echo esc_html($label); ?></option>
+            <?php endforeach; ?>
+        </select>
+    </p>
+    <p>
+        <label for="nox_partner_url"><strong>Odkaz (nepovinné)</strong></label><br>
+        <input type="url" id="nox_partner_url" name="nox_partner_url" class="widefat" value="<?php echo esc_attr($url); ?>" placeholder="https://">
+    </p>
+    <p class="description">Logo nahraj ako náhľadový obrázok. Poradie v skupine určuje pole Poradie (Atribúty stránky).</p>
+    <?php
+}
+
+function nox_art_save_partner($post_id) {
+    if (!isset($_POST['nox_art_partner_nonce']) || !wp_verify_nonce($_POST['nox_art_partner_nonce'], 'nox_art_save_partner')) return;
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (!current_user_can('edit_post', $post_id)) return;
+
+    $skupiny = nox_art_partner_skupiny();
+    $skupina = $_POST['nox_partner_skupina'] ?? '';
+    update_post_meta($post_id, '_nox_partner_skupina', isset($skupiny[$skupina]) ? $skupina : 'partner');
+
+    $url = esc_url_raw($_POST['nox_partner_url'] ?? '');
+    if ($url) {
+        update_post_meta($post_id, '_nox_partner_url', $url);
+    } else {
+        delete_post_meta($post_id, '_nox_partner_url');
+    }
+}
+add_action('save_post_nox_partner', 'nox_art_save_partner');
