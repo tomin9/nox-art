@@ -13,7 +13,10 @@
     </div>
   </div>
   <div class="hero-mark" aria-hidden="true" data-parallax>
-    <img src="<?php echo nox_art_site_asset('ars-preuge-ap.png'); ?>" alt="" aria-hidden="true">
+    <picture>
+      <source srcset="<?php echo nox_art_site_asset('ars-preuge-ap.webp'); ?>" type="image/webp">
+      <img src="<?php echo nox_art_site_asset('ars-preuge-ap.png'); ?>" width="204" height="204" alt="" aria-hidden="true" decoding="async">
+    </picture>
   </div>
   <p class="hero-side-note">Umenie<br>vo verejnom<br>priestore</p>
   <a class="hero-scroll" href="<?php echo nox_art_site_link('program'); ?>" aria-label="Posunúť sa nižšie">

@@ -178,18 +178,12 @@ function nox_art_site_enqueue_assets() {
     // zastaranú kešovanú verziu po tom, čo GitHub Plugin Sync nahradí súbory.
     wp_enqueue_style('nox-art-site-css', NOX_ART_URL . 'assets/site.css', [], file_exists($site_css_path) ? filemtime($site_css_path) : NOX_ART_VERSION);
 
-    // Mapbox naťahujeme len na stránkach, kde je mapa – inak sú to zbytočné
-    // ~800 kB skriptu a štýlov na každej podstránke.
-    $deps = [];
-    // Mapa je súčasťou sekcie Program (vpravo vedľa zoznamu diel).
+    // Mapbox je ~800 kB skriptu, takže ho nenaťahujeme vopred: site.js si ho
+    // dotiahne až vtedy, keď sa mapa blíži do zorného poľa. Na mobile, kde je
+    // mapa až pod zoznamom diel, sa tak pri načítaní nestiahne vôbec.
     $has_map = in_array('program', $sections, true);
-    if ($has_map) {
-        wp_enqueue_style('nox-art-mapbox-css', 'https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css', [], '3.1.2');
-        wp_enqueue_script('nox-art-mapbox-js', 'https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js', [], '3.1.2', true);
-        $deps[] = 'nox-art-mapbox-js';
-    }
 
-    wp_enqueue_script('nox-art-site-js', NOX_ART_URL . 'assets/site.js', $deps, file_exists($site_js_path) ? filemtime($site_js_path) : NOX_ART_VERSION, true);
+    wp_enqueue_script('nox-art-site-js', NOX_ART_URL . 'assets/site.js', [], file_exists($site_js_path) ? filemtime($site_js_path) : NOX_ART_VERSION, true);
 
     if ($has_map) {
         $map = nox_art_get_map_settings();
@@ -200,6 +194,8 @@ function nox_art_site_enqueue_assets() {
             'diela' => nox_art_data_diela(),
             'farby' => nox_art_category_colors(),
             'cisla' => nox_art_site_map_numbers(),
+            'mapboxJs' => 'https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js',
+            'mapboxCss' => 'https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css',
         ]);
     }
 }
@@ -232,6 +228,7 @@ function nox_art_site_items() {
             'id' => 'program-' . $item['id'],
             'nazov' => $item['nazov'],
             'foto' => $item['foto'],
+            'fotoId' => $item['fotoId'] ?? 0,
             'kategorie' => $item['kategorie'],
             'terminy' => $item['terminy'],
             'samostatne' => $item['samostatne'],
@@ -252,6 +249,7 @@ function nox_art_site_items() {
             'id' => 'work-' . $d['id'],
             'nazov' => $d['nazov'],
             'foto' => $d['foto'],
+            'fotoId' => $d['fotoId'] ?? 0,
             'kategorie' => $d['kategorie'],
             'terminy' => $d['terminy'],
             'samostatne' => $d['samostatne'],
@@ -275,6 +273,7 @@ function nox_art_site_items() {
             'id' => 'podnik-' . $p['id'],
             'nazov' => $p['nazov'],
             'foto' => $p['foto'],
+            'fotoId' => $p['fotoId'] ?? 0,
             'kategorie' => $kategorie,
             'terminy' => $p['terminy'],
             'samostatne' => $p['samostatne'],
@@ -470,3 +469,41 @@ function nox_art_site_day_label($datum) {
     // Formát 'j.n.' už bodku na konci má – pridávať ďalšiu dávalo "30.10..".
     return [$names[$n] ?? 'Deň', date('j.n.', $ts)];
 }
+
+/**
+ * Hlavička stránky: predsunutý obrázok pozadia (je to LCP prvok, inak ho
+ * prehliadač objaví až po načítaní CSS) a nadviazanie spojenia s Mapboxom,
+ * aby bolo pripravené, keď si skript mapy vypýtame.
+ */
+/**
+ * Na našich šablónach nepoužívame emoji skript WordPressu – je to zbytočný
+ * blokujúci skript navyše, ktorý na mobile stojí čas hlavného vlákna.
+ */
+function nox_art_site_trim_head() {
+    if (!nox_art_site_sections()) return;
+    remove_action('wp_head', 'print_emoji_detection_script', 7);
+    remove_action('wp_print_styles', 'print_emoji_styles');
+}
+// Až po načítaní dopytu – skôr sa nedá zistiť, ktorá šablóna sa vykreslí.
+add_action('wp', 'nox_art_site_trim_head');
+
+function nox_art_site_resource_hints() {
+    $sections = nox_art_site_sections();
+    if (!$sections) return;
+
+    if (in_array('hero', $sections, true)) {
+        printf(
+            '<link rel="preload" as="image" href="%s" type="image/webp" fetchpriority="high" media="(max-width: 760px)">' . "\n",
+            esc_url(nox_art_site_asset('pozadie-1-900.webp'))
+        );
+        printf(
+            '<link rel="preload" as="image" href="%s" type="image/webp" fetchpriority="high" media="(min-width: 761px)">' . "\n",
+            esc_url(nox_art_site_asset('pozadie-1-1600.webp'))
+        );
+    }
+
+    if (in_array('program', $sections, true)) {
+        echo '<link rel="preconnect" href="https://api.mapbox.com" crossorigin>' . "\n";
+    }
+}
+add_action('wp_head', 'nox_art_site_resource_hints', 2);

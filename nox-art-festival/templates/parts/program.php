@@ -48,7 +48,19 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto', 'nox_po
     <?php foreach ($polozky as $i => $p): $visual = $visualClasses[$i % count($visualClasses)]; $pinColorTile = nox_art_item_color($p['kategorie']); ?>
     <article class="gallery-tile reveal" id="<?php echo esc_attr($p['id']); ?>"<?php echo $p['work'] ? ' data-work="' . esc_attr($p['work']) . '"' : ''; ?> data-miesto="<?php echo esc_attr($p['miestoId'] ?: ''); ?>"<?php echo $p['terminy'] ? ' data-cas="1"' : ''; ?> data-cislo="<?php echo (int) $p['cislo']; ?>"<?php echo $pinColorTile ? ' data-pin="' . esc_attr($pinColorTile) . '"' : ''; ?> data-cat="<?php echo esc_attr(implode(' ', $p['kategorie'])); ?>">
       <?php if ($p['foto']): ?>
-      <div class="tile-media" aria-hidden="true" style="background-image:url('<?php echo esc_url($p['foto']); ?>')"></div>
+      <div class="tile-media" aria-hidden="true">
+        <?php if ($p['fotoId']): ?>
+        <?php echo wp_get_attachment_image($p['fotoId'], 'large', false, [
+            'class' => 'tile-media-img',
+            'alt' => '',
+            'loading' => 'lazy',
+            'decoding' => 'async',
+            'sizes' => '(max-width: 760px) 92vw, (max-width: 1180px) 44vw, 20vw',
+        ]); ?>
+        <?php else: ?>
+        <img class="tile-media-img" src="<?php echo esc_url($p['foto']); ?>" alt="" loading="lazy" decoding="async">
+        <?php endif; ?>
+      </div>
       <?php else: ?>
       <div class="tile-media tile-media-empty <?php echo esc_attr($visual); ?>" aria-hidden="true"><span></span><i></i><b></b></div>
       <?php endif; ?>
@@ -88,7 +100,17 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto', 'nox_po
         <?php endforeach; ?>
       </ul>
       <?php if ($p['foto']): ?>
-      <img class="detail-foto" src="<?php echo esc_url($p['foto']); ?>" alt="<?php echo esc_attr($p['nazov']); ?>" loading="lazy">
+      <?php if ($p['fotoId']): ?>
+      <?php echo wp_get_attachment_image($p['fotoId'], 'large', false, [
+          'class' => 'detail-foto',
+          'alt' => esc_attr($p['nazov']),
+          'loading' => 'lazy',
+          'decoding' => 'async',
+          'sizes' => '(max-width: 760px) 92vw, 30vw',
+      ]); ?>
+      <?php else: ?>
+      <img class="detail-foto" src="<?php echo esc_url($p['foto']); ?>" alt="<?php echo esc_attr($p['nazov']); ?>" loading="lazy" decoding="async">
+      <?php endif; ?>
       <?php endif; ?>
       <?php if ($p['popis']): ?>
       <div class="detail-text"><?php echo wp_kses_post($p['popis']); ?></div>

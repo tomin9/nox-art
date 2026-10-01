@@ -45,6 +45,8 @@ function nox_art_data_podniky() {
             'nazov' => get_the_title($p),
             'popis' => apply_filters('the_content', $p->post_content),
             'foto' => get_the_post_thumbnail_url($p->ID, 'large') ?: '',
+            // ID prílohy: šablóna z neho vyskladá responzívny <img> so srcset.
+            'fotoId' => (int) get_post_thumbnail_id($p->ID),
             'kategorie' => nox_art_post_categories($p->ID),
             'terminy' => nox_art_get_terminy($p->ID),
             'samostatne' => (bool) get_post_meta($p->ID, '_nox_samostatne', true),
@@ -64,6 +66,8 @@ function nox_art_data_umelci() {
             'meno' => get_the_title($p),
             'popis' => apply_filters('the_content', $p->post_content),
             'foto' => get_the_post_thumbnail_url($p->ID, 'medium') ?: '',
+            // ID prílohy: šablóna z neho vyskladá responzívny <img> so srcset.
+            'fotoId' => (int) get_post_thumbnail_id($p->ID),
         ];
     }, $posts);
 }
@@ -76,6 +80,8 @@ function nox_art_data_diela() {
             'nazov' => get_the_title($p),
             'popis' => apply_filters('the_content', $p->post_content),
             'foto' => get_the_post_thumbnail_url($p->ID, 'large') ?: '',
+            // ID prílohy: šablóna z neho vyskladá responzívny <img> so srcset.
+            'fotoId' => (int) get_post_thumbnail_id($p->ID),
             'umelecId' => (int) get_post_meta($p->ID, '_nox_umelec_id', true) ?: null,
             'miestoId' => (int) get_post_meta($p->ID, '_nox_miesto_id', true) ?: null,
             'typ' => get_post_meta($p->ID, '_nox_typ', true) ?: '',
@@ -99,6 +105,8 @@ function nox_art_data_program() {
             'samostatne' => (bool) get_post_meta($p->ID, '_nox_samostatne', true),
             'miestoId' => (int) get_post_meta($p->ID, '_nox_miesto_id', true) ?: null,
             'foto' => get_the_post_thumbnail_url($p->ID, 'large') ?: '',
+            // ID prílohy: šablóna z neho vyskladá responzívny <img> so srcset.
+            'fotoId' => (int) get_post_thumbnail_id($p->ID),
             'kategorie' => nox_art_post_categories($p->ID),
         ];
     }, $posts);

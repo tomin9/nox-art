@@ -37,8 +37,14 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
 
 <header class="site-header" data-header>
   <a class="brand" href="<?php echo nox_art_site_link('hero'); ?>" aria-label="NOX:ART a Ars Preuge — späť na začiatok">
-    <img class="brand-nox-logo" src="<?php echo nox_art_site_asset('noxart-official-wordmark.png'); ?>" width="561" height="111" alt="NOX:ART">
-    <img class="brand-ars-logo" src="<?php echo nox_art_site_asset('ars-preuge-logo.png'); ?>" alt="Ars Preuge">
+    <picture>
+      <source srcset="<?php echo nox_art_site_asset('noxart-official-wordmark.webp'); ?>" type="image/webp">
+      <img class="brand-nox-logo" src="<?php echo nox_art_site_asset('noxart-official-wordmark.png'); ?>" width="561" height="111" alt="NOX:ART" fetchpriority="high" decoding="async">
+    </picture>
+    <picture>
+      <source srcset="<?php echo nox_art_site_asset('ars-preuge-logo.webp'); ?>" type="image/webp">
+      <img class="brand-ars-logo" src="<?php echo nox_art_site_asset('ars-preuge-logo.png'); ?>" width="1200" height="812" alt="Ars Preuge" decoding="async">
+    </picture>
   </a>
   <button class="menu-toggle" type="button" aria-controls="main-nav" aria-expanded="false" aria-label="Otvoriť menu">
     <span></span><span></span>
@@ -60,8 +66,14 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
 <footer class="site-footer">
   <div class="footer-top">
     <a class="brand brand-footer" href="<?php echo nox_art_site_link('hero'); ?>">
-      <img class="brand-nox-logo" src="<?php echo nox_art_site_asset('noxart-official-wordmark.png'); ?>" width="561" height="111" alt="" aria-hidden="true">
-      <img class="brand-ars-logo" src="<?php echo nox_art_site_asset('ars-preuge-logo.png'); ?>" alt="Ars Preuge">
+      <picture>
+        <source srcset="<?php echo nox_art_site_asset('noxart-official-wordmark.webp'); ?>" type="image/webp">
+        <img class="brand-nox-logo" src="<?php echo nox_art_site_asset('noxart-official-wordmark.png'); ?>" width="561" height="111" alt="" aria-hidden="true" loading="lazy" decoding="async">
+      </picture>
+      <picture>
+        <source srcset="<?php echo nox_art_site_asset('ars-preuge-logo.webp'); ?>" type="image/webp">
+        <img class="brand-ars-logo" src="<?php echo nox_art_site_asset('ars-preuge-logo.png'); ?>" width="1200" height="812" alt="Ars Preuge" loading="lazy" decoding="async">
+      </picture>
     </a>
     <div class="footer-links">
       <?php foreach (nox_art_site_nav_items() as $item): ?>

@@ -186,273 +186,332 @@
   const config = window.NOX_SITE_MAP || { token: '', style: '', miesta: [], diela: [] };
   if (!mapEl) return;
 
-  // Dlaždice v zozname – zvýrazňuje sa tá, ktorá patrí k značke na mape.
-  const tiles = [...document.querySelectorAll('.gallery-tile[data-miesto]')];
+  /* Mapbox GL je ~800 kB skriptu. Nesťahujeme ho pri načítaní stránky, ale až
+     keď sa mapa blíži do zorného poľa – na mobile, kde je mapa až pod zoznamom
+     diel, sa tak pri prvom vykreslení nestiahne vôbec. Filtre môžu medzitým
+     poslať výber, preto si posledný zapamätáme a po spustení ho zopakujeme. */
+  let poslednyFilter = null;
+  const zapamatajFilter = (event) => { poslednyFilter = event.detail; };
+  window.addEventListener('nox:map-filter', zapamatajFilter);
 
-  const markers = {};
-  let map = null;
+  const nacitajMapbox = () => new Promise((resolve, reject) => {
+    if (typeof mapboxgl !== 'undefined') { resolve(); return; }
 
-  const highlightTile = (tile) => {
-    tiles.forEach((item) => item.classList.toggle('is-map-active', item === tile));
+    const css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = config.mapboxCss || 'https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css';
+    document.head.appendChild(css);
+
+    const script = document.createElement('script');
+    script.src = config.mapboxJs || 'https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js';
+    script.onload = () => resolve();
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+
+  const spustitMapu = () => {
+    window.removeEventListener('nox:map-filter', zapamatajFilter);
+    vykreslitMapu();
+    // Výber, ktorý prišiel skôr, než mapa vôbec existovala.
+    if (poslednyFilter) window.dispatchEvent(new CustomEvent('nox:map-filter', { detail: poslednyFilter }));
   };
 
-  const dielaAt = (miestoId) => config.diela.filter((d) => String(d.miestoId) === String(miestoId));
-
-  /* Farba značky podľa kategórie diela, ktoré na mieste stojí – každá
-     kategória má svoju, aby bolo na mape vidieť, o aký typ obsahu ide.
-     Miesto bez kategórie si necháva pôvodnú ružovo-oranžovú z CSS. */
-  const markerColor = (miesto) => {
-    const farby = config.farby || {};
-    // Najprv kategória samotného miesta (partnerský podnik ju má vlastnú),
-    // potom kategória diela, ktoré na mieste stojí.
-    const zdroje = [miesto, ...dielaAt(miesto.id)];
-    for (const zdroj of zdroje) {
-      for (const slug of zdroj.kategorie || []) {
-        if (farby[slug]) return farby[slug];
-      }
-    }
-    return '';
+  let nacitavanie = null;
+  const zacniNacitavat = () => {
+    if (nacitavanie) return nacitavanie;
+    nacitavanie = nacitajMapbox().then(spustitMapu).catch(() => {
+      mapEl.innerHTML = '<div style="padding:20px;font-family:monospace;font-size:12px;color:#efeedc">Mapu sa nepodarilo načítať.</div>';
+    });
+    return nacitavanie;
   };
 
-  const focusMiesto = (miestoId) => {
-    const marker = markers[miestoId];
-    if (!marker || !map) return;
-    map.flyTo({ center: marker.getLngLat(), zoom: Math.max(map.getZoom(), 16), duration: 600 });
-  };
-
-  if (!config.token || typeof mapboxgl === 'undefined') {
-    mapEl.innerHTML = '<div style="padding:20px;font-family:monospace;font-size:12px;color:#efeedc">Mapa nie je nastavená. V administrácii choď do NOX:ART &rsaquo; Nastavenia mapy a vlož Mapbox access token.</div>';
-    return;
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      observer.disconnect();
+      zacniNacitavat();
+    }, { rootMargin: '400px' });
+    observer.observe(mapEl);
+  } else {
+    zacniNacitavat();
   }
 
-  mapboxgl.accessToken = config.token;
-  const pts = config.miesta.filter((m) => m.lat != null && m.lng != null);
-  const center = pts.length ? [pts[0].lng, pts[0].lat] : [18.6045, 48.7715];
+  /* Klik v zozname (dlaždica, odkaz na mapu) mapu potrebuje tiež – ak ešte
+     nezačala sťahovať, spustíme to hneď. */
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest?.('.gallery-tile, [data-show-on-map], .schedule-row')) return;
+    zacniNacitavat();
+  }, { capture: true });
 
-  map = new mapboxgl.Map({
-    container: mapEl,
-    style: config.style || 'mapbox://styles/mapbox/dark-v11',
-    center,
-    zoom: 14,
-  });
-  map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'bottom-right');
-  map.on('click', () => zlozit());
+  const vykreslitMapu = () => {
+    // Dlaždice v zozname – zvýrazňuje sa tá, ktorá patrí k značke na mape.
+    const tiles = [...document.querySelectorAll('.gallery-tile[data-miesto]')];
 
-  // Mapa má pružnú výšku (dopĺňa zvyšné miesto v karte), takže pri zmene
-  // veľkosti okna jej treba povedať, nech si prepočíta plátno – inak by
-  // ostalo roztiahnuté v pôvodnom pomere a rozmazané.
-  let mapResizeTimer = null;
-  window.addEventListener('resize', () => {
-    clearTimeout(mapResizeTimer);
-    mapResizeTimer = setTimeout(() => map.resize(), 200);
-  });
+    const markers = {};
+    let map = null;
 
-  map.on('load', () => {
-    pts.forEach((m) => {
-      const el = document.createElement('div');
-      el.className = 'site-marker';
-      /* Kvapka je samostatný vnútorný prvok, nie samotná značka: Mapbox si
-         na značku zapisuje vlastný transform (posun po mape) a prepísal by
-         tým otočenie – číslo potom zostalo šikmo. */
-      el.appendChild(document.createElement('i'));
-      const color = markerColor(m);
-      if (color) el.style.setProperty('--pin', color);
+    const highlightTile = (tile) => {
+      tiles.forEach((item) => item.classList.toggle('is-map-active', item === tile));
+    };
 
-      // Číslo v značke je to isté, aké má položka na dlaždici – prideľuje
-      // ho server, aby sa mapa a zoznam nikdy nerozišli.
-      const cislo = (config.cisla || {})[m.id];
-      if (cislo) {
-        const label = document.createElement('b');
-        label.textContent = cislo;
-        el.appendChild(label);
-      }
-      const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
-        .setLngLat([m.lng, m.lat])
-        .addTo(map);
-      markers[m.id] = marker;
-      el.addEventListener('click', (event) => {
-        event.stopPropagation();
+    const dielaAt = (miestoId) => config.diela.filter((d) => String(d.miestoId) === String(miestoId));
 
-        /* Značka otvorí detail tej položky, ktorú práve zastupuje – na jednom
-           mieste môže stáť dielo aj bod programu. Keď ich je viac, najprv sa
-           značka rozloží, nech sa dá vybrať konkrétna vec. */
-        const polozky = vyberBodov[m.id] || [];
-        if (polozky.length > 1) {
-          rozlozit([m.lng, m.lat], polozky);
-          return;
+    /* Farba značky podľa kategórie diela, ktoré na mieste stojí – každá
+       kategória má svoju, aby bolo na mape vidieť, o aký typ obsahu ide.
+       Miesto bez kategórie si necháva pôvodnú ružovo-oranžovú z CSS. */
+    const markerColor = (miesto) => {
+      const farby = config.farby || {};
+      // Najprv kategória samotného miesta (partnerský podnik ju má vlastnú),
+      // potom kategória diela, ktoré na mieste stojí.
+      const zdroje = [miesto, ...dielaAt(miesto.id)];
+      for (const zdroj of zdroje) {
+        for (const slug of zdroj.kategorie || []) {
+          if (farby[slug]) return farby[slug];
         }
+      }
+      return '';
+    };
 
-        const first = dielaAt(m.id)[0];
-        const id = polozky[0]?.id
-          || (first && `work-${first.id}`)
-          || `miesto-${m.id}`;
-        otvorPolozku(id);
-      });
-    });
+    const focusMiesto = (miestoId) => {
+      const marker = markers[miestoId];
+      if (!marker || !map) return;
+      map.flyTo({ center: marker.getLngLat(), zoom: Math.max(map.getZoom(), 16), duration: 600 });
+    };
 
-    if (pts.length > 1) {
-      const bounds = new mapboxgl.LngLatBounds();
-      pts.forEach((m) => bounds.extend([m.lng, m.lat]));
-      map.fitBounds(bounds, { padding: 60, maxZoom: 16, duration: 0 });
-    }
-
-    // Filtrovacia časť stihla výber poslať skôr, než mapa dokončila načítanie –
-    // uplatníme ho až teraz, keď značky existujú. Výrez pritom nemeníme,
-    // zostáva ten z fitBounds vyššie.
-    pouziVyber(false);
-  });
-
-  /* Prejdenie kurzorom nad dlaždicou zvýrazní jej značku na mape – nie je
-     na to treba klikať. Značku hľadáme až pri prejdení, lebo v čase, keď
-     sa tieto poslucháče pripájajú, mapa ešte značky vytvorené nemá. */
-  const hoverMarker = (miestoId, on, tile) => {
-    const marker = markers[miestoId];
-    if (!marker) return;
-
-    const el = marker.getElement();
-    el.classList.toggle('is-hovered', on);
-
-    /* Keď značka zastupuje viac vecí, ukazuje tri bodky – pri prejdení
-       kurzorom nad dlaždicou v nej ukážeme číslo a farbu práve tej položky,
-       nech je jasné, ktorá z nich to na mape je. */
-    const polozky = vyberBodov[miestoId] || [];
-    if (polozky.length < 2) return;
-
-    const label = el.querySelector('b');
-    if (!label) return;
-
-    if (on) {
-      if (tile?.dataset.cislo) label.textContent = tile.dataset.cislo;
-      if (tile?.dataset.pin) el.style.setProperty('--pin', tile.dataset.pin);
-    } else {
-      label.textContent = '•••';
-      if (polozky[0].pin) el.style.setProperty('--pin', polozky[0].pin);
-    }
-  };
-
-  tiles.forEach((tile) => {
-    const miestoId = tile.dataset.miesto;
-    if (!miestoId) return;
-    tile.addEventListener('pointerenter', () => hoverMarker(miestoId, true, tile));
-    tile.addEventListener('pointerleave', () => hoverMarker(miestoId, false, tile));
-  });
-
-  /* Filtrovanie značiek podľa toho, čo je práve v zozname (udalosť posiela
-     filtrovacia časť). Značky neodstraňujeme, len skrývame – znovuvytváranie
-     pri každom prepnutí filtra by bolo zbytočne drahé. */
-  let vyberMiest = null;
-  let vyberBodov = {};
-
-  /* Značka s číslom (alebo s tromi bodkami, keď na mieste stojí viac vecí). */
-  const vytvorZnacku = (popis) => {
-    const el = document.createElement('div');
-    el.className = 'site-marker';
-    el.appendChild(document.createElement('i'));
-    const label = document.createElement('b');
-    label.textContent = popis.cislo;
-    el.appendChild(label);
-    if (popis.pin) el.style.setProperty('--pin', popis.pin);
-    return el;
-  };
-
-  const otvorPolozku = (id) => {
-    const tile = document.getElementById(id);
-    if (!tile) return;
-    highlightTile(tile);
-    tile.click();
-  };
-
-  /* Na jednom mieste môže stáť viac vecí – značka vtedy ukáže tri bodky a po
-     kliknutí sa rozloží do samostatných značiek s vlastnými číslami. */
-  let rozlozene = [];
-
-  const zlozit = () => {
-    rozlozene.forEach((marker) => marker.remove());
-    rozlozene = [];
-  };
-
-  const rozlozit = (lngLat, polozky) => {
-    zlozit();
-    const polomer = 52;
-    polozky.forEach((popis, i) => {
-      const uhol = (-90 + (360 / polozky.length) * i) * (Math.PI / 180);
-      const el = vytvorZnacku(popis);
-      el.classList.add('is-expanded');
-      el.addEventListener('click', (event) => {
-        event.stopPropagation();
-        otvorPolozku(popis.id);
-        zlozit();
-      });
-      rozlozene.push(
-        new mapboxgl.Marker({
-          element: el,
-          anchor: 'bottom',
-          offset: [Math.cos(uhol) * polomer, Math.sin(uhol) * polomer],
-        }).setLngLat(lngLat).addTo(map)
-      );
-    });
-  };
-
-  const pouziVyber = (prisposobVyrez) => {
-    if (!vyberMiest) return;
-    const miesta = vyberMiest;
-
-    const viditelne = [];
-    Object.keys(markers).forEach((id) => {
-      const show = !miesta.length || miesta.includes(String(id));
-      const el = markers[id].getElement();
-      el.classList.toggle('is-map-hidden', !show);
-      if (!show) return;
-      viditelne.push(markers[id]);
-
-      // Číslo a farba podľa položiek, ktoré značku do výberu dostali.
-      const polozky = vyberBodov[id] || [];
-      if (!polozky.length) return;
-      const label = el.querySelector('b');
-      const zhluk = polozky.length > 1;
-      el.classList.toggle('is-cluster', zhluk);
-      if (label) label.textContent = zhluk ? '•••' : polozky[0].cislo;
-      if (polozky[0].pin) el.style.setProperty('--pin', polozky[0].pin);
-    });
-
-    if (!map || !prisposobVyrez || !viditelne.length) return;
-
-    // Výrez prispôsobíme tomu, čo zostalo – pri jedinom bode naň priblížime.
-    if (viditelne.length === 1) {
-      map.flyTo({ center: viditelne[0].getLngLat(), zoom: Math.max(map.getZoom(), 16), duration: 600 });
+    if (!config.token || typeof mapboxgl === 'undefined') {
+      mapEl.innerHTML = '<div style="padding:20px;font-family:monospace;font-size:12px;color:#efeedc">Mapa nie je nastavená. V administrácii choď do NOX:ART &rsaquo; Nastavenia mapy a vlož Mapbox access token.</div>';
       return;
     }
-    const bounds = new mapboxgl.LngLatBounds();
-    viditelne.forEach((marker) => bounds.extend(marker.getLngLat()));
-    map.fitBounds(bounds, { padding: 60, maxZoom: 16, duration: 600 });
-  };
 
-  window.addEventListener('nox:map-filter', (event) => {
-    const miesta = event.detail?.miesta || [];
-    const rovnaky = vyberMiest && vyberMiest.join(',') === miesta.join(',');
-    vyberMiest = miesta;
-    vyberBodov = event.detail?.body || {};
-    zlozit();
-    pouziVyber(!rovnaky);
-  });
+    mapboxgl.accessToken = config.token;
+    const pts = config.miesta.filter((m) => m.lat != null && m.lng != null);
+    const center = pts.length ? [pts[0].lng, pts[0].lat] : [18.6045, 48.7715];
 
-  document.querySelectorAll('[data-show-on-map]').forEach((link) => {
-    link.addEventListener('click', (event) => {
-      /* Mapa je na tej istej stránke a pri zozname stále vidno – skok na
-         kotvu #mapa by len zbytočne odscrolloval stránku. Tento kód beží
-         len vtedy, keď mapa na stránke naozaj je (inak sa poslucháč vôbec
-         nepripojí), takže odkaz je bezpečné zastaviť vždy. */
-      event.preventDefault();
-
-      // Miesto berieme z dlaždice, v ktorej odkaz je – položka nemusí byť
-      // dielo (partnerský podnik je priamo miesto a vlastné dielo nemá).
-      const tile = link.closest('[data-miesto]');
-      const miestoId = tile?.dataset.miesto;
-      if (!miestoId) return;
-      highlightTile(tile);
-      focusMiesto(miestoId);
+    map = new mapboxgl.Map({
+      container: mapEl,
+      style: config.style || 'mapbox://styles/mapbox/dark-v11',
+      center,
+      zoom: 14,
     });
-  });
+    map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'bottom-right');
+    map.on('click', () => zlozit());
+
+    // Mapa má pružnú výšku (dopĺňa zvyšné miesto v karte), takže pri zmene
+    // veľkosti okna jej treba povedať, nech si prepočíta plátno – inak by
+    // ostalo roztiahnuté v pôvodnom pomere a rozmazané.
+    let mapResizeTimer = null;
+    window.addEventListener('resize', () => {
+      clearTimeout(mapResizeTimer);
+      mapResizeTimer = setTimeout(() => map.resize(), 200);
+    });
+
+    map.on('load', () => {
+      pts.forEach((m) => {
+        const el = document.createElement('div');
+        el.className = 'site-marker';
+        /* Kvapka je samostatný vnútorný prvok, nie samotná značka: Mapbox si
+           na značku zapisuje vlastný transform (posun po mape) a prepísal by
+           tým otočenie – číslo potom zostalo šikmo. */
+        el.appendChild(document.createElement('i'));
+        const color = markerColor(m);
+        if (color) el.style.setProperty('--pin', color);
+
+        // Číslo v značke je to isté, aké má položka na dlaždici – prideľuje
+        // ho server, aby sa mapa a zoznam nikdy nerozišli.
+        const cislo = (config.cisla || {})[m.id];
+        if (cislo) {
+          const label = document.createElement('b');
+          label.textContent = cislo;
+          el.appendChild(label);
+        }
+        const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
+          .setLngLat([m.lng, m.lat])
+          .addTo(map);
+        markers[m.id] = marker;
+        el.addEventListener('click', (event) => {
+          event.stopPropagation();
+
+          /* Značka otvorí detail tej položky, ktorú práve zastupuje – na jednom
+             mieste môže stáť dielo aj bod programu. Keď ich je viac, najprv sa
+             značka rozloží, nech sa dá vybrať konkrétna vec. */
+          const polozky = vyberBodov[m.id] || [];
+          if (polozky.length > 1) {
+            rozlozit([m.lng, m.lat], polozky);
+            return;
+          }
+
+          const first = dielaAt(m.id)[0];
+          const id = polozky[0]?.id
+            || (first && `work-${first.id}`)
+            || `miesto-${m.id}`;
+          otvorPolozku(id);
+        });
+      });
+
+      if (pts.length > 1) {
+        const bounds = new mapboxgl.LngLatBounds();
+        pts.forEach((m) => bounds.extend([m.lng, m.lat]));
+        map.fitBounds(bounds, { padding: 60, maxZoom: 16, duration: 0 });
+      }
+
+      // Filtrovacia časť stihla výber poslať skôr, než mapa dokončila načítanie –
+      // uplatníme ho až teraz, keď značky existujú. Výrez pritom nemeníme,
+      // zostáva ten z fitBounds vyššie.
+      pouziVyber(false);
+    });
+
+    /* Prejdenie kurzorom nad dlaždicou zvýrazní jej značku na mape – nie je
+       na to treba klikať. Značku hľadáme až pri prejdení, lebo v čase, keď
+       sa tieto poslucháče pripájajú, mapa ešte značky vytvorené nemá. */
+    const hoverMarker = (miestoId, on, tile) => {
+      const marker = markers[miestoId];
+      if (!marker) return;
+
+      const el = marker.getElement();
+      el.classList.toggle('is-hovered', on);
+
+      /* Keď značka zastupuje viac vecí, ukazuje tri bodky – pri prejdení
+         kurzorom nad dlaždicou v nej ukážeme číslo a farbu práve tej položky,
+         nech je jasné, ktorá z nich to na mape je. */
+      const polozky = vyberBodov[miestoId] || [];
+      if (polozky.length < 2) return;
+
+      const label = el.querySelector('b');
+      if (!label) return;
+
+      if (on) {
+        if (tile?.dataset.cislo) label.textContent = tile.dataset.cislo;
+        if (tile?.dataset.pin) el.style.setProperty('--pin', tile.dataset.pin);
+      } else {
+        label.textContent = '•••';
+        if (polozky[0].pin) el.style.setProperty('--pin', polozky[0].pin);
+      }
+    };
+
+    tiles.forEach((tile) => {
+      const miestoId = tile.dataset.miesto;
+      if (!miestoId) return;
+      tile.addEventListener('pointerenter', () => hoverMarker(miestoId, true, tile));
+      tile.addEventListener('pointerleave', () => hoverMarker(miestoId, false, tile));
+    });
+
+    /* Filtrovanie značiek podľa toho, čo je práve v zozname (udalosť posiela
+       filtrovacia časť). Značky neodstraňujeme, len skrývame – znovuvytváranie
+       pri každom prepnutí filtra by bolo zbytočne drahé. */
+    let vyberMiest = null;
+    let vyberBodov = {};
+
+    /* Značka s číslom (alebo s tromi bodkami, keď na mieste stojí viac vecí). */
+    const vytvorZnacku = (popis) => {
+      const el = document.createElement('div');
+      el.className = 'site-marker';
+      el.appendChild(document.createElement('i'));
+      const label = document.createElement('b');
+      label.textContent = popis.cislo;
+      el.appendChild(label);
+      if (popis.pin) el.style.setProperty('--pin', popis.pin);
+      return el;
+    };
+
+    const otvorPolozku = (id) => {
+      const tile = document.getElementById(id);
+      if (!tile) return;
+      highlightTile(tile);
+      tile.click();
+    };
+
+    /* Na jednom mieste môže stáť viac vecí – značka vtedy ukáže tri bodky a po
+       kliknutí sa rozloží do samostatných značiek s vlastnými číslami. */
+    let rozlozene = [];
+
+    const zlozit = () => {
+      rozlozene.forEach((marker) => marker.remove());
+      rozlozene = [];
+    };
+
+    const rozlozit = (lngLat, polozky) => {
+      zlozit();
+      const polomer = 52;
+      polozky.forEach((popis, i) => {
+        const uhol = (-90 + (360 / polozky.length) * i) * (Math.PI / 180);
+        const el = vytvorZnacku(popis);
+        el.classList.add('is-expanded');
+        el.addEventListener('click', (event) => {
+          event.stopPropagation();
+          otvorPolozku(popis.id);
+          zlozit();
+        });
+        rozlozene.push(
+          new mapboxgl.Marker({
+            element: el,
+            anchor: 'bottom',
+            offset: [Math.cos(uhol) * polomer, Math.sin(uhol) * polomer],
+          }).setLngLat(lngLat).addTo(map)
+        );
+      });
+    };
+
+    const pouziVyber = (prisposobVyrez) => {
+      if (!vyberMiest) return;
+      const miesta = vyberMiest;
+
+      const viditelne = [];
+      Object.keys(markers).forEach((id) => {
+        const show = !miesta.length || miesta.includes(String(id));
+        const el = markers[id].getElement();
+        el.classList.toggle('is-map-hidden', !show);
+        if (!show) return;
+        viditelne.push(markers[id]);
+
+        // Číslo a farba podľa položiek, ktoré značku do výberu dostali.
+        const polozky = vyberBodov[id] || [];
+        if (!polozky.length) return;
+        const label = el.querySelector('b');
+        const zhluk = polozky.length > 1;
+        el.classList.toggle('is-cluster', zhluk);
+        if (label) label.textContent = zhluk ? '•••' : polozky[0].cislo;
+        if (polozky[0].pin) el.style.setProperty('--pin', polozky[0].pin);
+      });
+
+      if (!map || !prisposobVyrez || !viditelne.length) return;
+
+      // Výrez prispôsobíme tomu, čo zostalo – pri jedinom bode naň priblížime.
+      if (viditelne.length === 1) {
+        map.flyTo({ center: viditelne[0].getLngLat(), zoom: Math.max(map.getZoom(), 16), duration: 600 });
+        return;
+      }
+      const bounds = new mapboxgl.LngLatBounds();
+      viditelne.forEach((marker) => bounds.extend(marker.getLngLat()));
+      map.fitBounds(bounds, { padding: 60, maxZoom: 16, duration: 600 });
+    };
+
+    window.addEventListener('nox:map-filter', (event) => {
+      const miesta = event.detail?.miesta || [];
+      const rovnaky = vyberMiest && vyberMiest.join(',') === miesta.join(',');
+      vyberMiest = miesta;
+      vyberBodov = event.detail?.body || {};
+      zlozit();
+      pouziVyber(!rovnaky);
+    });
+
+    document.querySelectorAll('[data-show-on-map]').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        /* Mapa je na tej istej stránke a pri zozname stále vidno – skok na
+           kotvu #mapa by len zbytočne odscrolloval stránku. Tento kód beží
+           len vtedy, keď mapa na stránke naozaj je (inak sa poslucháč vôbec
+           nepripojí), takže odkaz je bezpečné zastaviť vždy. */
+        event.preventDefault();
+
+        // Miesto berieme z dlaždice, v ktorej odkaz je – položka nemusí byť
+        // dielo (partnerský podnik je priamo miesto a vlastné dielo nemá).
+        const tile = link.closest('[data-miesto]');
+        const miestoId = tile?.dataset.miesto;
+        if (!miestoId) return;
+        highlightTile(tile);
+        focusMiesto(miestoId);
+      });
+    });
+  };
 })();
 
 
