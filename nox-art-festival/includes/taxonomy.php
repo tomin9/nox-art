@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) exit;
  * poradie filtrov na stránke (ukladá sa do term_order cez menu_order termu).
  */
 function nox_art_default_categories() {
-    return ['Inštalácie', 'Nové sgrafitá', 'Živé sgrafitá', 'Galéria ulice', 'Sprievodný program'];
+    return ['Diela', 'Sprievodný program', 'Podniky'];
 }
 
 function nox_art_register_taxonomy() {
@@ -45,14 +45,17 @@ add_action('init', 'nox_art_register_taxonomy', 5);
  * neskôr premenuje alebo zmaže, plugin mu ich nebude vracať späť.
  */
 function nox_art_seed_categories() {
-    if (get_option('nox_art_categories_seeded')) return;
+    // Verzia, nie len príznak: keď sa základná sada zmení, doplnia sa aj na
+    // stránkach, kde už zakladanie raz prebehlo. Nič sa nemaže – kategórie,
+    // ktoré editor nepotrebuje, si zmaže sám.
+    if ((int) get_option('nox_art_categories_seeded') >= 2) return;
 
-    foreach (nox_art_default_categories() as $i => $name) {
+    foreach (nox_art_default_categories() as $name) {
         if (!term_exists($name, 'nox_kategoria')) {
             wp_insert_term($name, 'nox_kategoria');
         }
     }
-    update_option('nox_art_categories_seeded', 1);
+    update_option('nox_art_categories_seeded', 2);
 }
 add_action('init', 'nox_art_seed_categories', 20);
 
@@ -116,6 +119,16 @@ function nox_art_color_palette() {
 function nox_art_term_color($term) {
     $custom = get_term_meta($term->term_id, '_nox_farba', true);
     if ($custom) return 'linear-gradient(135deg, ' . $custom . ', ' . $custom . ')';
+
+    // Základné kategórie majú farbu viazanú na slug, nie na poradie – inak by
+    // sa im farba posunula len preto, že pribudla iná kategória.
+    $fixed = [
+        'diela' => 'linear-gradient(135deg, #ff2d87, #ff5c3d)',
+        'instalacie' => 'linear-gradient(135deg, #ff2d87, #ff5c3d)',
+        'sprievodny-program' => 'linear-gradient(135deg, #4f8bff, #7b5cff)',
+        'podniky' => 'linear-gradient(135deg, #ffb627, #ff7a1a)',
+    ];
+    if (isset($fixed[$term->slug])) return $fixed[$term->slug];
 
     $palette = nox_art_color_palette();
     $order = array_search($term->term_id, nox_art_term_order(), true);

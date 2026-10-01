@@ -329,5 +329,10 @@
         apply(chip.dataset.filter || '*');
       });
     });
+
+    // Filtre nemajú položku "Všetky", takže hneď po načítaní treba zobraziť
+    // to, čo patrí pod prvý (zapnutý) filter.
+    const initial = chips.find((chip) => chip.classList.contains('is-active'));
+    if (initial) apply(initial.dataset.filter || '*');
   });
 })();

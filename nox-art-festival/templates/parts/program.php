@@ -44,14 +44,15 @@ $filtre = nox_art_filter_terms(['nox_program', 'nox_dielo']);
   <div class="section-label section-label-light reveal"><span>01</span> Program a diela</div>
   <div class="program-head reveal">
     <h2 id="program-title">Dve noci.<br>Jedna svetelná trasa.</h2>
-    <p>Program budeme odhaľovať postupne. <?php echo (int) $dielaCount; ?> diel, sgrafitá v uliciach a sprievodný program nájdeš pokope — filtrom si vyberieš, čo ťa zaujíma.</p>
+    <p>Program budeme odhaľovať postupne. <?php echo (int) $dielaCount; ?> diel, sprievodný program a podniky s festivalovým menu — prepni si, čo ťa práve zaujíma.</p>
   </div>
 
   <?php if ($filtre): ?>
   <div class="filter-bar filter-bar-light reveal" data-filter-group="program" role="group" aria-label="Filtrovanie programu">
-    <button class="filter-chip is-active" type="button" data-filter="*" aria-pressed="true"><i class="chip-pin" aria-hidden="true"></i>Všetky</button>
-    <?php foreach ($filtre as $term): ?>
-    <button class="filter-chip" type="button" data-filter="<?php echo esc_attr($term->slug); ?>" aria-pressed="false"><i class="chip-pin" aria-hidden="true" style="--pin:<?php echo esc_attr(nox_art_term_color($term)); ?>"></i><?php echo esc_html($term->name); ?></button>
+    <?php /* Žiadne "Všetky" – kategórie sú rovnocenné skupiny obsahu, prvá
+             je zapnutá pri načítaní stránky. */ ?>
+    <?php foreach ($filtre as $i => $term): ?>
+    <button class="filter-chip<?php echo $i === 0 ? ' is-active' : ''; ?>" type="button" data-filter="<?php echo esc_attr($term->slug); ?>" aria-pressed="<?php echo $i === 0 ? 'true' : 'false'; ?>"><i class="chip-pin" aria-hidden="true" style="--pin:<?php echo esc_attr(nox_art_term_color($term)); ?>"></i><?php echo esc_html($term->name); ?></button>
     <?php endforeach; ?>
   </div>
   <?php endif; ?>
