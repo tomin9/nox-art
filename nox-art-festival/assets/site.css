@@ -3460,25 +3460,30 @@ body.menu-open .site-header .brand-nox-logo {
 }
 
 /* =========================================================================
-   Časový harmonogram – riadky zoradené podľa času, po dňoch.
+   Časový harmonogram – druhý pohľad sekcie Program a diela. Je na tmavom
+   podklade sekcie, takže farby sú svetlé.
    ========================================================================= */
-.schedule-day{
+.schedule{
+  margin-top:clamp(18px, 3vh, 34px);
+}
+.schedule-day + .schedule-day{
   margin-top:clamp(26px, 4vh, 52px);
 }
 .schedule-day-title{
   display:flex;
   align-items:baseline;
   gap:12px;
-  margin:0 0 10px;
+  margin:0 0 6px;
   padding-bottom:10px;
-  border-bottom:1px solid var(--line);
+  border-bottom:1px solid rgba(239, 238, 220, .3);
+  color:var(--paper);
   font-size:clamp(1rem, 1.3vw, 1.2rem);
   font-weight:800;
   letter-spacing:.06em;
   text-transform:uppercase;
 }
 .schedule-day-title span{
-  color:var(--muted);
+  color:rgba(239, 238, 220, .55);
   font-size:.82rem;
   font-weight:700;
   letter-spacing:.04em;
@@ -3488,19 +3493,19 @@ body.menu-open .site-header .brand-nox-logo {
   padding:0;
   list-style:none;
 }
-/* Riadok: čas, farebná bodka kategórie, názov, doplnok. Na úzkej obrazovke
-   sa doplnok presunie pod názov, čas zostáva vľavo. */
+/* Riadok: čas, farebná kvapka kategórie, názov, doplnok. Pod 700px sa
+   doplnok presunie pod názov, čas zostáva vľavo. */
 .schedule-row{
   display:grid;
   grid-template-columns:auto auto 1fr;
   align-items:baseline;
   gap:4px 12px;
-  padding:9px 2px;
-  border-bottom:1px solid rgba(8, 9, 8, .09);
+  padding:10px 2px;
+  border-bottom:1px solid rgba(239, 238, 220, .12);
+  color:var(--paper);
 }
 .schedule-time{
   min-width:7.5em;
-  color:var(--ink);
   font-size:.86rem;
   font-weight:800;
   font-variant-numeric:tabular-nums;
@@ -3518,7 +3523,7 @@ body.menu-open .site-header .brand-nox-logo {
 }
 .schedule-meta{
   grid-column:3;
-  color:var(--muted);
+  color:rgba(239, 238, 220, .6);
   font-size:.86rem;
 }
 @media (min-width: 701px){

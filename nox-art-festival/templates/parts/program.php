@@ -25,6 +25,9 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
     <?php foreach ($filtre as $i => $uzol): $term = $uzol['term']; ?>
     <button class="filter-chip<?php echo $i === 0 ? ' is-active' : ''; ?>" type="button" data-filter="<?php echo esc_attr($term->slug); ?>" aria-pressed="<?php echo $i === 0 ? 'true' : 'false'; ?>"><i class="chip-pin" aria-hidden="true" style="--pin:<?php echo esc_attr(nox_art_term_color($term)); ?>"></i><?php echo esc_html($term->name); ?></button>
     <?php endforeach; ?>
+    <?php /* Posledné tlačidlo neprepína kategóriu, ale celý pohľad – namiesto
+             dlaždíc ukáže ten istý obsah zoradený podľa času. */ ?>
+    <button class="filter-chip" type="button" data-view="harmonogram" aria-pressed="false"><?php echo esc_html('Časový harmonogram'); ?></button>
   </div>
   <?php foreach ($filtre as $i => $uzol): if (!$uzol['children']) continue; ?>
   <div class="filter-bar filter-bar-light filter-bar-sub" data-filter-sub="<?php echo esc_attr($uzol['term']->slug); ?>" data-filter-parent="program" role="group" aria-label="Spresnenie: <?php echo esc_attr($uzol['term']->name); ?>"<?php echo $i === 0 ? '' : ' hidden'; ?>>
@@ -37,6 +40,7 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
 
   <div class="program-layout">
   <div class="program-layout-list">
+  <div data-view="items">
   <div class="gallery-grid" data-filter-target="program">
     <?php if (!$polozky): ?>
     <p class="empty" style="color:var(--paper);opacity:.7">Program zatiaľ nie je zverejnený — pridaj ho v administrácii (NOX:ART &rsaquo; Program, Diela).</p>
@@ -64,6 +68,11 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
     <?php endforeach; ?>
   </div>
   <p class="filter-empty" data-filter-empty="program" hidden>V tejto kategórii zatiaľ nič nie je.</p>
+  </div>
+
+  <div class="schedule" data-view="harmonogram" hidden>
+    <?php include NOX_ART_DIR . 'templates/parts/harmonogram.php'; ?>
+  </div>
   </div>
 
   <?php /* Mapa drží krok so zoznamom – na veľkej obrazovke je prilepená

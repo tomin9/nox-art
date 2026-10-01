@@ -2,7 +2,7 @@
 <section class="newsletter" id="kontakt" aria-labelledby="newsletter-title">
   <div class="newsletter-art" aria-hidden="true"><span></span><i></i><b></b></div>
   <div class="newsletter-copy reveal">
-    <p class="section-label"><span>05</span> Zostaň v obraze</p>
+    <p class="section-label"><span>04</span> Zostaň v obraze</p>
     <h2 id="newsletter-title">Program, autori a nové diela priamo do e-mailu.</h2>
     <form class="newsletter-form" data-newsletter-form>
       <label class="sr-only" for="email">E-mailová adresa</label>

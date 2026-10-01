@@ -20,14 +20,14 @@ if (!defined('ABSPATH')) exit;
  */
 function nox_art_site_template_map() {
     return [
-        'nox-art-site-template.php'    => ['label' => 'NOX:ART — Celá stránka (všetky sekcie)', 'sections' => ['hero', 'program', 'harmonogram', 'about', 'partners', 'newsletter']],
+        'nox-art-site-template.php'    => ['label' => 'NOX:ART — Celá stránka (všetky sekcie)', 'sections' => ['hero', 'program', 'about', 'partners', 'newsletter']],
         'nox-art-page-domov.php'       => ['label' => 'NOX:ART — Domov (úvod)',                'sections' => ['hero', 'about', 'newsletter']],
         'nox-art-page-festival.php'    => ['label' => 'NOX:ART — O festivale',                 'sections' => ['about', 'newsletter']],
         // Program a diela sú jedna sekcia – program festivalu obsahuje aj
         // diela aj sprievodný program, delia sa len kategóriami. Šablóna
         // "Diela" zostáva zaregistrovaná ako alias, aby sa nerozbila
         // stránka, ktorá ju už používa.
-        'nox-art-page-program.php'     => ['label' => 'NOX:ART — Program a diela',             'sections' => ['program', 'harmonogram', 'newsletter']],
+        'nox-art-page-program.php'     => ['label' => 'NOX:ART — Program a diela',             'sections' => ['program', 'newsletter']],
         'nox-art-page-diela.php'       => ['label' => 'NOX:ART — Program a diela (alias)',     'sections' => ['program', 'newsletter']],
         // Mapa je dnes súčasťou sekcie Program, samostatná sekcia s mapou
         // a praktickým infom zanikla – šablóna zostáva ako alias, aby sa

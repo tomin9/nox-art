@@ -348,14 +348,23 @@
     const subBars = [...document.querySelectorAll(`[data-filter-parent="${group}"]`)];
     const items = [...target.querySelectorAll('[data-cat]')];
     const emptyNote = document.querySelector(`[data-filter-empty="${group}"]`);
+    // Pohľady sekcie: dlaždice ("items") a časový harmonogram.
+    const views = [...document.querySelectorAll('[data-view]')];
 
     // Hlavná skupina (Diela / Sprievodný program / Podniky) a prípadné
     // spresnenie v jej druhom rade. Položky nesú aj nadradené kategórie,
     // takže na hlavnú skupinu sadne všetko, čo pod ňu patrí.
     let parent = chips.find((chip) => chip.classList.contains('is-active'))?.dataset.filter || '';
     let child = '';
+    let view = 'items';
 
     const apply = () => {
+      views.forEach((el) => { el.hidden = el.dataset.view !== view; });
+      if (view !== 'items') {
+        if (emptyNote) emptyNote.hidden = true;
+        return;
+      }
+
       const filter = child || parent;
       items.forEach((item) => {
         const match = !filter || (item.dataset.cat || '').split(' ').includes(filter);
@@ -372,7 +381,8 @@
 
     const syncSubBars = () => {
       subBars.forEach((sub) => {
-        const mine = sub.dataset.filterSub === parent;
+        // V harmonograme sa nefiltruje podľa podkategórií – druhý rad je preč.
+        const mine = view === 'items' && sub.dataset.filterSub === parent;
         sub.hidden = !mine;
         if (!mine) {
           sub.querySelectorAll('.filter-chip').forEach((chip) => {
@@ -390,7 +400,8 @@
           other.classList.toggle('is-active', active);
           other.setAttribute('aria-pressed', String(active));
         });
-        parent = chip.dataset.filter || '';
+        view = chip.dataset.view || 'items';
+        parent = chip.dataset.filter || parent;
         child = '';
         syncSubBars();
         apply();
