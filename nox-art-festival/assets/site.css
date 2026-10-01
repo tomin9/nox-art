@@ -3260,3 +3260,18 @@ body.menu-open .site-header .brand-nox-logo {
   flex-wrap:wrap;
   gap:12px;
 }
+
+/* =========================================================================
+   Prekrytie sekcií: prvá strana leží NAD druhou. Hero má zaoblené spodné
+   rohy a presahuje cez vrch tmavej sekcie – tá preto nesmie mať zaoblený
+   vrch (inak by boli vidieť dva zaoblené okraje nad sebou) a musí byť
+   v nižšej vrstve.
+   ========================================================================= */
+.nox-art-site .hero{
+  position:relative;
+  z-index:2;
+}
+.nox-art-site .program{
+  z-index:1;
+  border-radius:0 0 var(--radius-xl) var(--radius-xl);
+}
