@@ -3379,6 +3379,14 @@ body.menu-open .site-header .brand-nox-logo {
    nižší než jeho rodič, takže prilepený zostane presne jednu obrazovku –
    dovtedy, kým roletka neodíde.
    ========================================================================= */
+/* KĽÚČOVÉ: prototyp má na <body> overflow-x:hidden. Tým sa z neho stáva
+   posuvný kontajner, a prilepenie (sticky) sa potom vzťahuje naň – lenže
+   body sa neposúva (posúva sa <html>), takže sa prilepenie nikdy nespustí.
+   Roletka ani prilepená mapa by nefungovali. overflow:clip oreže rovnako,
+   ale posuvný kontajner nevytvára. */
+.nox-art-site{
+  overflow-x:clip;
+}
 .nox-art-site .curtain{
   position:relative;
   z-index:5;
