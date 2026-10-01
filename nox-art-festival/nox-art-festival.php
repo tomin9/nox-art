@@ -2,14 +2,14 @@
 /**
  * Plugin Name: NOX:ART Festival
  * Description: Podstránka festivalu NOX:ART – miesta, kde je možné vidieť diela, popisky diel a program festivalu. Interaktívna mapa cez shortcode [nox_art]. Obsah sa spravuje priamo vo WordPress administrácii (žiadna externá databáza).
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: Ars Preuge
  * Text Domain: nox-art-festival
  */
 
 if (!defined('ABSPATH')) exit;
 
-define('NOX_ART_VERSION', '1.0.0');
+define('NOX_ART_VERSION', '1.1.0');
 define('NOX_ART_DIR', plugin_dir_path(__FILE__));
 define('NOX_ART_URL', plugin_dir_url(__FILE__));
 
