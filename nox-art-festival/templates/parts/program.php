@@ -41,7 +41,7 @@ foreach ($diela as $d) {
 $filtre = nox_art_filter_terms(['nox_program', 'nox_dielo']);
 ?>
 <section class="section program" id="program" aria-labelledby="program-title">
-  <div class="section-label section-label-light reveal"><span>02</span> Program a diela</div>
+  <div class="section-label section-label-light reveal"><span>01</span> Program a diela</div>
   <div class="program-head reveal">
     <h2 id="program-title">Dve noci.<br>Jedna svetelná trasa.</h2>
     <p>Program budeme odhaľovať postupne. <?php echo (int) $dielaCount; ?> diel, sgrafitá v uliciach a sprievodný program nájdeš pokope — filtrom si vyberieš, čo ťa zaujíma.</p>

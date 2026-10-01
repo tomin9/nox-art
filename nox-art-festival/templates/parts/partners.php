@@ -1,6 +1,6 @@
 <?php if (!defined('ABSPATH')) exit; ?>
 <section class="section partners" id="partneri" aria-labelledby="partners-title">
-  <div class="section-label reveal"><span>05</span> Partneri</div>
+  <div class="section-label reveal"><span>03</span> Partneri</div>
   <div class="partners-head reveal">
     <h2 id="partners-title">Festival vzniká vďaka ľuďom a organizáciám, ktoré veria verejnému priestoru.</h2>
     <p>Ďakujeme všetkým, ktorí pomáhajú dostať súčasné umenie do verejného priestoru.</p>

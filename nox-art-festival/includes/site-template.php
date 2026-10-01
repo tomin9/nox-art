@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) exit;
  */
 function nox_art_site_template_map() {
     return [
-        'nox-art-site-template.php'    => ['label' => 'NOX:ART — Celá stránka (všetky sekcie)', 'sections' => ['hero', 'about', 'program', 'partners', 'newsletter']],
+        'nox-art-site-template.php'    => ['label' => 'NOX:ART — Celá stránka (všetky sekcie)', 'sections' => ['hero', 'program', 'about', 'partners', 'newsletter']],
         'nox-art-page-domov.php'       => ['label' => 'NOX:ART — Domov (úvod)',                'sections' => ['hero', 'about', 'newsletter']],
         'nox-art-page-festival.php'    => ['label' => 'NOX:ART — O festivale',                 'sections' => ['about', 'newsletter']],
         // Program a diela sú jedna sekcia – program festivalu obsahuje aj
@@ -151,8 +151,8 @@ function nox_art_site_nav_items() {
     $current = nox_art_site_sections();
     $items = [];
     foreach ([
-        'about' => 'O festivale',
         'program' => 'Program a diela',
+        'about' => 'O festivale',
         'partners' => 'Partneri',
     ] as $section => $label) {
         $items[] = [

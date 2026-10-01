@@ -16,7 +16,7 @@
     <img src="<?php echo nox_art_site_asset('ars-preuge-ap.png'); ?>" alt="" aria-hidden="true">
   </div>
   <p class="hero-side-note">Umenie<br>vo verejnom<br>priestore</p>
-  <a class="hero-scroll" href="<?php echo nox_art_site_link('about'); ?>" aria-label="Posunúť sa nižšie">
+  <a class="hero-scroll" href="<?php echo nox_art_site_link('program'); ?>" aria-label="Posunúť sa nižšie">
     <span>#NOXART26</span><b aria-hidden="true">↓</b>
   </a>
 </section>
