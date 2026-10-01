@@ -3232,9 +3232,10 @@ body.menu-open .site-header .brand-nox-logo {
    prehliadače tento riadok ignorujú a zostane im pôvodné hidden. */
 .nox-art-site .program{
   overflow:clip;
-  /* Medzi hero a sekciou je aj tak veľký odstup, nemusí ho zdvojovať ešte
-     odsadenie samotnej sekcie. */
-  padding-top:clamp(40px, 5vw, 84px);
+  /* Prvých --radius-xl pixelov sekcie je zasunutých pod hero, takže z
+     odsadenia toľko "ujde" – pripočítavame ich, aby bola viditeľná medzera
+     naozaj taká, akú tu nastavíme. */
+  padding-top:calc(var(--radius-xl) + clamp(34px, 4vw, 70px));
   padding-bottom:clamp(40px, 5vw, 90px);
   /* Tmavá sekcia musí siahať až za celý oblúk zaoblených rohov hero, inak
      v nich presvitá pozadie stránky. Prototyp ju podsúval len o 20px, čo je
@@ -3619,7 +3620,7 @@ body.menu-open .site-header .brand-nox-logo {
    prekrýva vyššou vrstvou), takže obsah detailu musí začínať až za tým –
    inak hero prekryje tlačidlo späť aj vrch mapy. */
 .nox-art-site .program.is-detail{
-  padding-top:calc(var(--radius-xl) + 10px);
+  padding-top:calc(var(--radius-xl) + var(--map-gap, 34px));
 }
 
 /* V detaile nie je vľavo mriežka dlaždíc, s ktorou sa mapa zarovnávala –
