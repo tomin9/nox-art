@@ -426,5 +426,6 @@ function nox_art_site_day_label($datum) {
     $ts = strtotime($datum);
     if (!$ts) return ['Deň', $datum];
     $n = (int) date('N', $ts);
-    return [$names[$n] ?? 'Deň', date('j.n.', $ts) . '.'];
+    // Formát 'j.n.' už bodku na konci má – pridávať ďalšiu dávalo "30.10..".
+    return [$names[$n] ?? 'Deň', date('j.n.', $ts)];
 }
