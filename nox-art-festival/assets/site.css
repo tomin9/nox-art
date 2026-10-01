@@ -3610,38 +3610,39 @@ body.menu-open .site-header .brand-nox-logo {
   color:var(--pink);
 }
 
-/* V detaile aj v harmonograme ustúpi hlavička sekcie – na obrazovke zostane
-   mapa a samotný obsah. */
-.nox-art-site .program.is-focus > .section-label,
-.nox-art-site .program.is-focus .program-head{
+/* V detaile položky ustúpi hlavička sekcie – na obrazovke zostane mapa,
+   popis s fotkou a odkaz na návrat. */
+.nox-art-site .program.is-detail > .section-label,
+.nox-art-site .program.is-detail .program-head{
   display:none;
 }
 
-/* V týchto pohľadoch nie je vľavo mriežka dlaždíc, s ktorou sa mapa
-   zarovnávala – vytiahnutie hore by ju tak posunulo pod hlavičku. */
+/* V detaile nie je vľavo mriežka dlaždíc, s ktorou sa mapa zarovnávala –
+   vytiahnutie hore by ju tak posunulo pod hlavičku. Začína preto rovno
+   pri tlačidle späť. */
 /* V detaile je nad dvojstĺpcom len tlačidlo späť – odstup, ktorý v zozname
    oddeľuje mriežku od filtrov, by mapu posunul mimo jej prilepenú polohu. */
-.nox-art-site .program.is-focus .program-layout{
+.nox-art-site .program.is-detail .program-layout{
   margin-top:0;
 }
-.nox-art-site .program.is-focus .program-layout-map{
+.nox-art-site .program.is-detail .program-layout-map{
   margin-top:0;
   /* V detaile sa stránka zarovná tak, že vrch tmavej sekcie sedí pod menu –
      mapa teda začína o jej horné odsadenie nižšie a musí byť o to isté
      nižšia, aby jej pod spodkom zostala rovnaká medzera ako inde. */
   height:calc(100svh - var(--header-h) - clamp(34px, 4vw, 70px) - var(--map-gap));
 }
-.nox-art-site.admin-bar .program.is-focus .program-layout-map{
+.nox-art-site.admin-bar .program.is-detail .program-layout-map{
   height:calc(100svh - var(--header-h) - 32px - clamp(34px, 4vw, 70px) - var(--map-gap));
 }
 
 /* Detail je kratší než mapa vedľa neho – nech aspoň nekončí hneď pod
    textom a stĺpce pôsobia ako jeden celok. */
-.nox-art-site .program.is-focus .program-layout-list{
+.nox-art-site .program.is-detail .program-layout-list{
   display:flex;
   flex-direction:column;
 }
-.nox-art-site .program.is-focus [data-view-panel]:not([hidden]){
+.nox-art-site .program.is-detail [data-view-panel="detail"]{
   flex:1;
 }
 
