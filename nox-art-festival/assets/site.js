@@ -783,8 +783,11 @@
     link.setAttribute('aria-expanded', 'false');
     link.addEventListener('click', (event) => {
       event.preventDefault();
+      // Druhý klik na ten istý odkaz panel zase zasunie.
+      const otvorene = dock.classList.contains('is-open');
       poslednySpust = link;
-      nastav(true);
+      nastav(!otvorene);
+      if (otvorene) link.focus({ preventScroll: true });
     });
   });
 
