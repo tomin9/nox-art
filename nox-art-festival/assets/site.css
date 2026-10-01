@@ -2970,10 +2970,18 @@ body.menu-open .site-header .brand-nox-logo {
 }
 .site-marker i{
   position:absolute;inset:1px;
+  transition:transform .2s var(--ease), box-shadow .2s ease;
   border-radius:50% 50% 50% 0;transform:rotate(-45deg);
   /* Farbu podľa kategórie nastavuje JS cez --pin; bez nej platí pôvodná. */
   background:var(--pin, linear-gradient(135deg, var(--pink), var(--orange)));
   border:2px solid var(--paper);box-shadow:0 3px 10px rgba(0,0,0,.35);
+}
+/* Prejdenie kurzorom nad dlaždicou v zozname zväčší jej značku na mape.
+   z-index dvíha značku nad susedné, aby ju v zhluku nezakryli. */
+.site-marker.is-hovered{z-index:5}
+.site-marker.is-hovered i{
+  transform:rotate(-45deg) scale(1.35);
+  box-shadow:0 5px 16px rgba(0,0,0,.45);
 }
 /* Číslo leží nad kvapkou a samo sa neotáča – stojí teda vždy rovno. */
 .site-marker b{position:absolute;inset:0;display:grid;place-items:center;

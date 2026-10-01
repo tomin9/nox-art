@@ -297,6 +297,21 @@
     }
   });
 
+  /* Prejdenie kurzorom nad dlaždicou zvýrazní jej značku na mape – nie je
+     na to treba klikať. Značku hľadáme až pri prejdení, lebo v čase, keď
+     sa tieto poslucháče pripájajú, mapa ešte značky vytvorené nemá. */
+  const hoverMarker = (miestoId, on) => {
+    const marker = markers[miestoId];
+    if (marker) marker.getElement().classList.toggle('is-hovered', on);
+  };
+
+  tiles.forEach((tile) => {
+    const miestoId = tile.dataset.miesto;
+    if (!miestoId) return;
+    tile.addEventListener('pointerenter', () => hoverMarker(miestoId, true));
+    tile.addEventListener('pointerleave', () => hoverMarker(miestoId, false));
+  });
+
   document.querySelectorAll('[data-show-on-map]').forEach((link) => {
     link.addEventListener('click', (event) => {
       /* Mapa je na tej istej stránke a pri zozname stále vidno – skok na
