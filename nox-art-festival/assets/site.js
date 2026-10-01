@@ -186,7 +186,7 @@
   const config = window.NOX_SITE_MAP || { token: '', style: '', miesta: [], diela: [] };
   if (!mapEl) return;
 
-  const cards = [...document.querySelectorAll('.installation-card[data-work]')];
+  const cards = [...document.querySelectorAll('[data-work]')];
   const cardByWork = new Map(cards.map((card) => [card.dataset.work, card]));
 
   const markers = {};
@@ -273,3 +273,46 @@
   });
 })();
 
+
+
+/* =========================================================================
+   Filtrovanie podľa kategórie (Všetky / Inštalácie / Nové sgrafitá / …).
+   Všetky položky sú vyrenderované už na serveri – prepínanie len skrýva
+   a odkrýva, takže je okamžité, bez načítavania a bez AJAX volaní.
+   ========================================================================= */
+(() => {
+  document.querySelectorAll('[data-filter-group]').forEach((bar) => {
+    const group = bar.dataset.filterGroup;
+    const target = document.querySelector(`[data-filter-target="${group}"]`);
+    if (!target) return;
+
+    const chips = [...bar.querySelectorAll('.filter-chip')];
+    const items = [...target.querySelectorAll('[data-cat]')];
+    const emptyNote = document.querySelector(`[data-filter-empty="${group}"]`);
+
+    const apply = (filter) => {
+      items.forEach((item) => {
+        const match = filter === '*' || (item.dataset.cat || '').split(' ').includes(filter);
+        item.classList.toggle('is-filtered-out', !match);
+      });
+
+      if (emptyNote) {
+        // offsetParent je null aj pre položky v skrytom paneli (dni programu),
+        // takže sa pýtame na to, čo používateľ naozaj vidí.
+        const visible = items.some((item) => !item.classList.contains('is-filtered-out') && item.offsetParent !== null);
+        emptyNote.hidden = visible;
+      }
+    };
+
+    chips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        chips.forEach((other) => {
+          const active = other === chip;
+          other.classList.toggle('is-active', active);
+          other.setAttribute('aria-pressed', String(active));
+        });
+        apply(chip.dataset.filter || '*');
+      });
+    });
+  });
+})();

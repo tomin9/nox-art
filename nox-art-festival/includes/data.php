@@ -55,6 +55,7 @@ function nox_art_data_diela() {
             'umelecId' => (int) get_post_meta($p->ID, '_nox_umelec_id', true) ?: null,
             'miestoId' => (int) get_post_meta($p->ID, '_nox_miesto_id', true) ?: null,
             'typ' => get_post_meta($p->ID, '_nox_typ', true) ?: '',
+            'kategorie' => nox_art_post_categories($p->ID),
         ];
     }, $posts);
 }
@@ -70,6 +71,7 @@ function nox_art_data_program() {
             'casOd' => get_post_meta($p->ID, '_nox_cas_od', true) ?: '',
             'casDo' => get_post_meta($p->ID, '_nox_cas_do', true) ?: '',
             'miestoId' => (int) get_post_meta($p->ID, '_nox_miesto_id', true) ?: null,
+            'kategorie' => nox_art_post_categories($p->ID),
         ];
     }, $posts);
     usort($items, function($a, $b){

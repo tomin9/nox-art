@@ -3024,3 +3024,177 @@ body.menu-open .site-header .brand-nox-logo {
 .nox-art-site .hero{
   min-height:100svh;
 }
+
+/* =========================================================================
+   Filtrovanie podľa kategórie + galéria diel (dlaždice s číslom miesta
+   a názvom priamo na fotke). Rovnaký filtrovací pruh používa Program aj
+   Diela – líši sa len farebným variantom pre svetlý/tmavý podklad.
+   ========================================================================= */
+.filter-bar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:clamp(22px, 4vh, 44px);
+}
+.filter-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:11px 20px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:transparent;
+  color:var(--ink);
+  font:inherit;
+  font-size:.82rem;
+  font-weight:700;
+  letter-spacing:.01em;
+  cursor:pointer;
+  transition:background .2s ease, color .2s ease, border-color .2s ease;
+}
+.filter-chip:hover{
+  border-color:var(--ink);
+}
+.filter-chip.is-active{
+  background:var(--ink);
+  border-color:var(--ink);
+  color:var(--paper);
+}
+/* Kvapka pri "Všetky" – rovnaký tvar ako značka na mape, aby bolo vidieť,
+   že filter pracuje s miestami na mape. */
+.chip-pin{
+  width:11px;
+  height:11px;
+  border-radius:50% 50% 50% 0;
+  transform:rotate(-45deg);
+  background:linear-gradient(135deg, var(--pink), var(--orange));
+}
+
+/* Variant na tmavom podklade (sekcia Program). */
+.filter-bar-light .filter-chip{
+  border-color:rgba(239, 238, 220, .3);
+  color:var(--paper);
+}
+.filter-bar-light .filter-chip:hover{
+  border-color:var(--paper);
+}
+.filter-bar-light .filter-chip.is-active{
+  background:var(--paper);
+  border-color:var(--paper);
+  color:var(--ink);
+}
+
+.is-filtered-out{
+  display:none !important;
+}
+.filter-empty{
+  margin-top:28px;
+  color:var(--muted);
+  font-size:.92rem;
+}
+.program .filter-empty{
+  color:var(--paper);
+  opacity:.7;
+}
+
+/* --- Galéria diel ------------------------------------------------------ */
+.gallery-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
+  gap:clamp(10px, 1.2vw, 18px);
+  margin-top:clamp(18px, 3vh, 34px);
+}
+.gallery-tile{
+  position:relative;
+  aspect-ratio:4 / 3;
+  border-radius:var(--radius-md);
+  overflow:hidden;
+  background:var(--ink);
+  isolation:isolate;
+}
+.tile-media{
+  position:absolute;
+  inset:0;
+  background-size:cover;
+  background-position:center;
+  transition:transform .5s var(--ease);
+}
+.gallery-tile:hover .tile-media{
+  transform:scale(1.04);
+}
+.tile-media-empty{
+  display:grid;
+  place-items:center;
+}
+/* Tmavý prechod pod názvom – bez neho by sa biely text stratil na svetlej
+   fotke. Kryje len spodnú tretinu, aby fotka zostala čitateľná. */
+.gallery-tile::after{
+  content:"";
+  position:absolute;
+  inset:auto 0 0;
+  height:62%;
+  background:linear-gradient(to top, rgba(8,9,8,.88), rgba(8,9,8,.45) 42%, transparent);
+  pointer-events:none;
+}
+.tile-pin{
+  position:absolute;
+  top:14px;
+  left:14px;
+  z-index:2;
+  display:grid;
+  place-items:center;
+  width:30px;
+  height:30px;
+  border-radius:50% 50% 50% 0;
+  transform:rotate(-45deg);
+  background:linear-gradient(135deg, var(--pink), var(--orange));
+  box-shadow:0 3px 10px rgba(0,0,0,.35);
+}
+.tile-pin b{
+  transform:rotate(45deg);
+  color:var(--paper);
+  font-size:.78rem;
+  font-weight:800;
+  line-height:1;
+}
+.tile-caption{
+  position:absolute;
+  inset:auto 16px 14px;
+  z-index:2;
+}
+.tile-caption h3{
+  margin:0;
+  color:var(--paper);
+  font-size:clamp(.95rem, 1.1vw, 1.08rem);
+  font-weight:700;
+  line-height:1.25;
+}
+.tile-caption p{
+  margin:4px 0 0;
+  color:rgba(239, 238, 220, .72);
+  font-size:.78rem;
+}
+/* Odkaz kryje celú dlaždicu – kliknúť sa dá kdekoľvek, nielen na text. */
+.tile-link{
+  position:absolute;
+  inset:0;
+  z-index:3;
+}
+.gallery-tile:focus-within{
+  outline:2px solid var(--pink);
+  outline-offset:2px;
+}
+.gallery-tile.is-map-active{
+  outline:2px solid var(--pink);
+  outline-offset:-2px;
+}
+
+@media (max-width: 620px){
+  .gallery-grid{
+    grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));
+  }
+  .filter-chip{
+    padding:9px 15px;
+    font-size:.75rem;
+  }
+}

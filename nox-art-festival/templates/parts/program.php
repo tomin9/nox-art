@@ -1,10 +1,19 @@
 <?php if (!defined('ABSPATH')) exit; ?>
+<?php $programFiltre = nox_art_filter_terms('nox_program'); ?>
 <section class="section program" id="program" aria-labelledby="program-title">
   <div class="section-label section-label-light reveal"><span>02</span> Program</div>
   <div class="program-head reveal">
     <h2 id="program-title">Dve noci.<br>Jedna svetelná trasa.</h2>
     <p>Program budeme odhaľovať postupne. Finálny harmonogram, miesta a mená autorov zverejníme pred festivalom.</p>
   </div>
+  <?php if ($programFiltre): ?>
+  <div class="filter-bar filter-bar-light reveal" data-filter-group="program" role="group" aria-label="Filtrovanie programu">
+    <button class="filter-chip is-active" type="button" data-filter="*" aria-pressed="true"><i class="chip-pin" aria-hidden="true"></i>Všetky</button>
+    <?php foreach ($programFiltre as $term): ?>
+    <button class="filter-chip" type="button" data-filter="<?php echo esc_attr($term->slug); ?>" aria-pressed="false"><?php echo esc_html($term->name); ?></button>
+    <?php endforeach; ?>
+  </div>
+  <?php endif; ?>
   <?php if ($programByDay): ?>
   <div class="program-tabs reveal" role="tablist" aria-label="Festivalové dni">
     <?php $i = 0; foreach ($programByDay as $datum => $items): list($dayName, $dayDate) = nox_art_site_day_label($datum); $panelId = 'day-' . sanitize_title($datum); ?>
@@ -13,11 +22,11 @@
     </button>
     <?php $i++; endforeach; ?>
   </div>
-  <div class="program-panels reveal">
+  <div class="program-panels reveal" data-filter-target="program">
     <?php $i = 0; foreach ($programByDay as $datum => $items): $panelId = 'day-' . sanitize_title($datum); ?>
     <div class="program-panel<?php echo $i === 0 ? ' is-active' : ''; ?>" id="<?php echo esc_attr($panelId); ?>" role="tabpanel" aria-labelledby="tab-<?php echo esc_attr($panelId); ?>"<?php echo $i === 0 ? '' : ' hidden'; ?>>
       <?php foreach ($items as $ri => $item): ?>
-      <article class="program-row">
+      <article class="program-row" data-cat="<?php echo esc_attr(implode(' ', $item['kategorie'])); ?>">
         <time><?php echo esc_html($item['casOd']); ?><?php echo $item['casDo'] ? '&ndash;' . esc_html($item['casDo']) : ''; ?></time>
         <div>
           <h3><?php echo esc_html($item['nazov']); ?></h3>
@@ -29,6 +38,7 @@
     </div>
     <?php $i++; endforeach; ?>
   </div>
+  <p class="filter-empty" data-filter-empty="program" hidden>V tejto kategórii zatiaľ nie je žiadny bod programu.</p>
   <?php else: ?>
   <div class="empty" style="color:var(--paper);opacity:.7">Program zatiaľ nie je zverejnený.</div>
   <?php endif; ?>

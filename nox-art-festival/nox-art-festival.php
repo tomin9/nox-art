@@ -22,6 +22,7 @@ function nox_art_asset($filename) {
 }
 
 require_once NOX_ART_DIR . 'includes/post-types.php';
+require_once NOX_ART_DIR . 'includes/taxonomy.php';
 require_once NOX_ART_DIR . 'includes/meta-boxes.php';
 require_once NOX_ART_DIR . 'includes/admin-columns.php';
 require_once NOX_ART_DIR . 'includes/map-settings.php';
