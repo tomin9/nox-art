@@ -9,6 +9,11 @@ function nox_art_add_meta_boxes() {
     // len vo vymedzených hodinách a podnik má otváracie hodiny.
     add_meta_box('nox_termin', 'Termín / čas', 'nox_art_render_termin_metabox', 'nox_dielo', 'side', 'default');
     add_meta_box('nox_termin', 'Termín / čas', 'nox_art_render_termin_metabox', 'nox_miesto', 'side', 'default');
+    // Poradové číslo na mape a na dlaždici – ručne nastaviteľné, aby si
+    // editor vedel určiť trasu festivalu.
+    foreach (['nox_dielo', 'nox_miesto', 'nox_program'] as $typ) {
+        add_meta_box('nox_cislo', 'Číslo na mape', 'nox_art_render_cislo_metabox', $typ, 'side', 'high');
+    }
 }
 add_action('add_meta_boxes', 'nox_art_add_meta_boxes');
 
@@ -112,6 +117,38 @@ add_action('save_post_nox_dielo', 'nox_art_save_dielo');
 /* -------------------------------------------------------------------------
  * PROGRAM – dátum, čas, voliteľne miesto
  * ---------------------------------------------------------------------- */
+/**
+ * Poradové číslo, ktoré sa zobrazuje v kvapke na dlaždici aj v značke na
+ * mape. Nevyplnené čísla sa doplnia automaticky – prideľujú sa tie, ktoré
+ * ešte nie sú ručne obsadené, takže sa nikdy nezdvojia.
+ */
+function nox_art_render_cislo_metabox($post) {
+    wp_nonce_field('nox_art_save_cislo', 'nox_art_cislo_nonce');
+    $cislo = get_post_meta($post->ID, '_nox_cislo', true);
+    ?>
+    <p>
+        <input type="number" id="nox_cislo" name="nox_cislo" class="widefat" min="1" step="1" value="<?php echo esc_attr($cislo); ?>" placeholder="automaticky">
+    </p>
+    <p class="description">Nechaj prázdne a číslo sa pridelí automaticky podľa poradia.</p>
+    <?php
+}
+
+function nox_art_save_cislo($post_id) {
+    if (!isset($_POST['nox_art_cislo_nonce']) || !wp_verify_nonce($_POST['nox_art_cislo_nonce'], 'nox_art_save_cislo')) return;
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (!current_user_can('edit_post', $post_id)) return;
+
+    $cislo = isset($_POST['nox_cislo']) ? absint($_POST['nox_cislo']) : 0;
+    if ($cislo > 0) {
+        update_post_meta($post_id, '_nox_cislo', $cislo);
+    } else {
+        delete_post_meta($post_id, '_nox_cislo');
+    }
+}
+foreach (['nox_dielo', 'nox_miesto', 'nox_program'] as $nox_typ) {
+    add_action('save_post_' . $nox_typ, 'nox_art_save_cislo');
+}
+
 /**
  * Dátum a časový rozsah – spoločné pre Diela a Miesta. Program má vlastné
  * políčka v boxe "Termín", lebo k nim patrí aj výber miesta.

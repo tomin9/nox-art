@@ -261,6 +261,15 @@
       el.className = 'site-marker';
       const color = markerColor(m);
       if (color) el.style.setProperty('--pin', color);
+
+      // Číslo v značke je to isté, aké má položka na dlaždici – prideľuje
+      // ho server, aby sa mapa a zoznam nikdy nerozišli.
+      const cislo = (config.cisla || {})[m.id];
+      if (cislo) {
+        const label = document.createElement('b');
+        label.textContent = cislo;
+        el.appendChild(label);
+      }
       const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
         .setLngLat([m.lng, m.lat])
         .setPopup(new mapboxgl.Popup({ offset: 26 }).setHTML(popupHtml(m)))

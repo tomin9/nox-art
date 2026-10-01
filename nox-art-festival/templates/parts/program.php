@@ -3,58 +3,11 @@
 /**
  * Program a diela v jednom zozname. Program festivalu obsahuje aj diela aj
  * sprievodný program, takže ich nemá zmysel deliť na dve sekcie – rozlišujú
- * sa kategóriami (Inštalácie, Nové sgrafitá, Živé sgrafitá, Galéria ulice,
- * Sprievodný program), podľa ktorých sa dá filtrovať.
- *
- * Poradie: najprv body s dátumom (chronologicky, tie už pole program má),
- * potom diela bez dátumu.
+ * sa kategóriami, podľa ktorých sa dá filtrovať. Samotný zoznam aj jeho
+ * číslovanie stavia nox_art_site_items(), lebo tie isté čísla potrebuje aj
+ * mapa (dostáva dáta ešte pred vykreslením šablóny).
  */
-$polozky = [];
-
-foreach (nox_art_data_program() as $item) {
-    $polozky[] = [
-        'id' => 'program-' . $item['id'],
-        'nazov' => $item['nazov'],
-        'foto' => $item['foto'],
-        'kategorie' => $item['kategorie'],
-        'cas' => nox_art_site_time_label($item['datum'], $item['casOd'], $item['casDo']),
-        'meta' => '',
-        'work' => '',
-        'miestoId' => $item['miestoId'],
-    ];
-}
-
-foreach ($diela as $d) {
-    $u = $umelecById[$d['umelecId']] ?? null;
-    $polozky[] = [
-        'id' => 'work-' . $d['id'],
-        'nazov' => $d['nazov'],
-        'foto' => $d['foto'],
-        'kategorie' => $d['kategorie'],
-        'cas' => nox_art_site_time_label($d['datum'], $d['casOd'], $d['casDo']),
-        'meta' => $u ? $u['meno'] : '',
-        'work' => $d['id'],
-        'miestoId' => $d['miestoId'],
-    ];
-}
-
-/* Miesta sa do zoznamu dostanú, len keď majú priradenú kategóriu – bežné
-   miesto je nositeľom súradníc pre dielo, nie samostatná položka programu.
-   Partnerský podnik naopak kategóriu má, a tak sa zobrazí ako dlaždica. */
-foreach ($miesta as $m) {
-    if (!$m['kategorie']) continue;
-    $polozky[] = [
-        'id' => 'miesto-' . $m['id'],
-        'nazov' => $m['nazov'],
-        'foto' => $m['foto'],
-        'kategorie' => $m['kategorie'],
-        'cas' => nox_art_site_time_label($m['datum'], $m['casOd'], $m['casDo']),
-        'meta' => $m['adresa'],
-        'work' => '',
-        'miestoId' => $m['id'],
-    ];
-}
-
+$polozky = nox_art_site_items();
 $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
 ?>
 <section class="section program" id="program" aria-labelledby="program-title">
@@ -96,7 +49,7 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
       <div class="tile-media tile-media-empty <?php echo esc_attr($visual); ?>" aria-hidden="true"><span></span><i></i><b></b></div>
       <?php endif; ?>
       <?php $pinColor = nox_art_item_color($p['kategorie']); ?>
-      <span class="tile-pin" aria-hidden="true"<?php echo $pinColor ? ' style="--pin:' . esc_attr($pinColor) . '"' : ''; ?>><b><?php echo (int) ($i + 1); ?></b></span>
+      <span class="tile-pin" aria-hidden="true"<?php echo $pinColor ? ' style="--pin:' . esc_attr($pinColor) . '"' : ''; ?>><b><?php echo (int) $p['cislo']; ?></b></span>
       <?php if ($p['cas']): ?>
       <span class="tile-time"><?php echo esc_html($p['cas']); ?></span>
       <?php endif; ?>

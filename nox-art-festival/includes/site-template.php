@@ -199,6 +199,7 @@ function nox_art_site_enqueue_assets() {
             'miesta' => nox_art_data_miesta(),
             'diela' => nox_art_data_diela(),
             'farby' => nox_art_category_colors(),
+            'cisla' => nox_art_site_map_numbers(),
         ]);
     }
 }
@@ -219,6 +220,102 @@ function nox_art_site_program_by_day() {
         $days[$key][] = $item;
     }
     return $days;
+}
+
+/**
+ * Jeden spoločný zoznam všetkého, čo sa zobrazuje v sekcii Program:
+ * body programu (chronologicky), diela a miesta s priradenou kategóriou
+ * (partnerské podniky). Stavia sa tu, a nie v šablóne, lebo to isté
+ * číslovanie potrebuje aj mapa – a tá dostáva dáta ešte pred vykreslením.
+ *
+ * Čísla: ručne zadané majú prednosť, zvyšku sa priradia tie, ktoré ešte
+ * nie sú obsadené – vďaka tomu sa dve položky nikdy netrafia na to isté
+ * číslo, aj keď editor očísluje len niektoré.
+ */
+function nox_art_site_items() {
+    static $items = null;
+    if ($items !== null) return $items;
+
+    $items = [];
+
+    foreach (nox_art_data_program() as $item) {
+        $items[] = [
+            'id' => 'program-' . $item['id'],
+            'nazov' => $item['nazov'],
+            'foto' => $item['foto'],
+            'kategorie' => $item['kategorie'],
+            'cas' => nox_art_site_time_label($item['datum'], $item['casOd'], $item['casDo']),
+            'meta' => '',
+            'work' => '',
+            'miestoId' => $item['miestoId'],
+            'cislo' => $item['cislo'],
+        ];
+    }
+
+    $umelecById = [];
+    foreach (nox_art_data_umelci() as $u) $umelecById[$u['id']] = $u;
+
+    foreach (nox_art_data_diela() as $d) {
+        $u = $umelecById[$d['umelecId']] ?? null;
+        $items[] = [
+            'id' => 'work-' . $d['id'],
+            'nazov' => $d['nazov'],
+            'foto' => $d['foto'],
+            'kategorie' => $d['kategorie'],
+            'cas' => nox_art_site_time_label($d['datum'], $d['casOd'], $d['casDo']),
+            'meta' => $u ? $u['meno'] : '',
+            'work' => $d['id'],
+            'miestoId' => $d['miestoId'],
+            'cislo' => $d['cislo'],
+        ];
+    }
+
+    // Miesto sa do zoznamu dostane, len keď má priradenú kategóriu – bežné
+    // miesto je nositeľom súradníc pre dielo, nie samostatná položka.
+    foreach (nox_art_data_miesta() as $m) {
+        if (!$m['kategorie']) continue;
+        $items[] = [
+            'id' => 'miesto-' . $m['id'],
+            'nazov' => $m['nazov'],
+            'foto' => $m['foto'],
+            'kategorie' => $m['kategorie'],
+            'cas' => nox_art_site_time_label($m['datum'], $m['casOd'], $m['casDo']),
+            'meta' => $m['adresa'],
+            'work' => '',
+            'miestoId' => $m['id'],
+            'cislo' => $m['cislo'],
+        ];
+    }
+
+    $obsadene = [];
+    foreach ($items as $item) {
+        if ($item['cislo'] > 0) $obsadene[$item['cislo']] = true;
+    }
+
+    $dalsie = 1;
+    foreach ($items as &$item) {
+        if ($item['cislo'] > 0) continue;
+        while (isset($obsadene[$dalsie])) $dalsie++;
+        $item['cislo'] = $dalsie;
+        $obsadene[$dalsie] = true;
+    }
+    unset($item);
+
+    return $items;
+}
+
+/**
+ * Čísla značiek na mape: pre každé miesto číslo prvej položky, ktorá naň
+ * ukazuje. Mapa a dlaždice tak ukazujú to isté číslo.
+ */
+function nox_art_site_map_numbers() {
+    $numbers = [];
+    foreach (nox_art_site_items() as $item) {
+        if ($item['miestoId'] && !isset($numbers[$item['miestoId']])) {
+            $numbers[$item['miestoId']] = $item['cislo'];
+        }
+    }
+    return $numbers;
 }
 
 /**
