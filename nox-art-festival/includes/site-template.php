@@ -287,6 +287,28 @@ function nox_art_site_items() {
         ];
     }
 
+    /* Zoradenie podľa kategórie – v tomto poradí sa aj prideľujú čísla, aby
+       čísla na mape šli po skupinách a nie krížom cez ne. V rámci kategórie
+       zostáva pôvodné poradie (program chronologicky, zvyšok podľa názvu). */
+    $poradie = nox_art_site_category_order();
+    $rank = function($kategorie) use ($poradie) {
+        $best = count($poradie);
+        foreach ($kategorie as $slug) {
+            $i = array_search($slug, $poradie, true);
+            if ($i !== false && $i < $best) $best = $i;
+        }
+        return $best;
+    };
+    foreach ($items as $i => &$item) {
+        $item['_rank'] = [$rank($item['kategorie']), $i];
+    }
+    unset($item);
+    usort($items, function($a, $b) {
+        return $a['_rank'] <=> $b['_rank'];
+    });
+    foreach ($items as &$item) unset($item['_rank']);
+    unset($item);
+
     $obsadene = [];
     foreach ($items as $item) {
         if ($item['cislo'] > 0) $obsadene[$item['cislo']] = true;
@@ -302,6 +324,23 @@ function nox_art_site_items() {
     unset($item);
 
     return $items;
+}
+
+/**
+ * Poradie kategórií v zozname a v číslovaní. Riadi sa slugmi, takže
+ * premenovanie kategórie ho nerozhodí; neznáme kategórie idú na koniec.
+ */
+function nox_art_site_category_order() {
+    return apply_filters('nox_art_site_category_order', [
+        'instalacie',
+        'nove-sgrafita',
+        'galeria-ulice',
+        'zive-sgrafita',
+        'diela',              // dielo bez podkategórie
+        'sprievodny-program',
+        'partnerske-podniky',
+        'podniky',            // starší slug tej istej skupiny
+    ]);
 }
 
 /**

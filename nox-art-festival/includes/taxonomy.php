@@ -155,9 +155,24 @@ function nox_art_filter_tree($post_type) {
         return $ia <=> $ib;
     });
 
+    // Podkategórie zoradíme rovnako, ako idú položky v zozname – filtre tak
+    // kopírujú poradie obsahu.
+    $poradie = function_exists('nox_art_site_category_order') ? nox_art_site_category_order() : [];
+    $sort_children = function($terms) use ($poradie) {
+        usort($terms, function($a, $b) use ($poradie) {
+            $ia = array_search($a->slug, $poradie, true);
+            $ib = array_search($b->slug, $poradie, true);
+            if ($ia === false) $ia = count($poradie) + $a->term_id;
+            if ($ib === false) $ib = count($poradie) + $b->term_id;
+            return $ia <=> $ib;
+        });
+        return $terms;
+    };
+
     $tree = [];
     foreach ($groups as $term) {
-        $tree[] = ['term' => $term, 'children' => $by_parent[$term->term_id] ?? []];
+        $children = $by_parent[$term->term_id] ?? [];
+        $tree[] = ['term' => $term, 'children' => $children ? $sort_children($children) : []];
     }
     return $tree;
 }
