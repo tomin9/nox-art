@@ -400,7 +400,6 @@
     // Odkiaľ sa do detailu prišlo – tlačidlo späť vráti ten istý pohľad
     // aj miesto v zozname, kde človek pred otvorením bol.
     let viewBeforeDetail = 'items';
-    let scrollBeforeDetail = null;
 
     /* Mapa ukazuje len to, čo je práve v zozname: pri skupine jej položky,
        v detaile jediný bod, v harmonograme všetko, čo má čas. Zoznam miest
@@ -493,6 +492,18 @@
       window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
     };
 
+    /* Zarovnanie filtrovacieho pruhu tesne pod hlavičku – tak je zoznam hneď
+       použiteľný, bez nadpisu nad ním. */
+    const scrollToFilters = () => {
+      const styles = getComputedStyle(document.documentElement);
+      const headerH = parseFloat(styles.getPropertyValue('--header-h')) || 82;
+      const adminBar = document.body.classList.contains('admin-bar')
+        ? (window.innerWidth <= 782 ? 46 : 32)
+        : 0;
+      const top = bar.getBoundingClientRect().top + window.scrollY - headerH - adminBar - 24;
+      window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
+    };
+
     /* Detail položky. Je vykreslený na serveri pri každej dlaždici, takže sa
        len prepína viditeľnosť – otvorenie je okamžité. */
     const openDetail = (id) => {
@@ -500,7 +511,6 @@
       if (!detail) return;
       details.forEach((el) => { el.hidden = el !== detail; });
       viewBeforeDetail = view;
-      scrollBeforeDetail = window.scrollY;
       view = 'detail';
       syncSubBars();
       apply();
@@ -566,18 +576,13 @@
       syncSubBars();
       apply();
 
-      /* Vrátime aj miesto, na ktorom človek v zozname bol – inak by skončil
-         na začiatku sekcie a dlaždicu, z ktorej odišiel, by musel hľadať. */
-      if (scrollBeforeDetail !== null) {
-        const ciel = scrollBeforeDetail;
-        scrollBeforeDetail = null;
-        /* Až po prekreslení: zoznam je oveľa vyšší než detail a prehliadač si
-           po zmene výšky polohu sám dorovnáva – keby sme skrolovali hneď,
-           prepísal by nás. */
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => window.scrollTo({ top: ciel, behavior: 'smooth' }));
-        });
-      }
+      /* Po návrate zarovnáme filtre pod hlavičku, nech je zoznam hneď po ruke
+         – nadpis sekcie v tej chvíli nemá čo povedať. Až po prekreslení:
+         zoznam je oveľa vyšší než detail a prehliadač si po zmene výšky
+         polohu sám dorovnáva. */
+      requestAnimationFrame(() => {
+        requestAnimationFrame(scrollToFilters);
+      });
     });
 
     subBars.forEach((sub) => {
