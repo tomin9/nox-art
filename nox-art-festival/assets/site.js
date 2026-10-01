@@ -198,6 +198,19 @@
 
   const dielaAt = (miestoId) => config.diela.filter((d) => String(d.miestoId) === String(miestoId));
 
+  /* Farba značky podľa kategórie diela, ktoré na mieste stojí – každá
+     kategória má svoju, aby bolo na mape vidieť, o aký typ obsahu ide.
+     Miesto bez kategórie si necháva pôvodnú ružovo-oranžovú z CSS. */
+  const markerColor = (miestoId) => {
+    const farby = config.farby || {};
+    for (const dielo of dielaAt(miestoId)) {
+      for (const slug of dielo.kategorie || []) {
+        if (farby[slug]) return farby[slug];
+      }
+    }
+    return '';
+  };
+
   const popupHtml = (miesto) => {
     const items = dielaAt(miesto.id);
     const list = items.length
@@ -243,6 +256,8 @@
     pts.forEach((m) => {
       const el = document.createElement('div');
       el.className = 'site-marker';
+      const color = markerColor(m.id);
+      if (color) el.style.setProperty('--pin', color);
       const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
         .setLngLat([m.lng, m.lat])
         .setPopup(new mapboxgl.Popup({ offset: 26 }).setHTML(popupHtml(m)))

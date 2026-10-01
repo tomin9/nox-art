@@ -198,6 +198,7 @@ function nox_art_site_enqueue_assets() {
             'style' => $map['style'],
             'miesta' => nox_art_data_miesta(),
             'diela' => nox_art_data_diela(),
+            'farby' => nox_art_category_colors(),
         ]);
     }
 }

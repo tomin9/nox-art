@@ -51,7 +51,7 @@ $filtre = nox_art_filter_terms(['nox_program', 'nox_dielo']);
   <div class="filter-bar filter-bar-light reveal" data-filter-group="program" role="group" aria-label="Filtrovanie programu">
     <button class="filter-chip is-active" type="button" data-filter="*" aria-pressed="true"><i class="chip-pin" aria-hidden="true"></i>Všetky</button>
     <?php foreach ($filtre as $term): ?>
-    <button class="filter-chip" type="button" data-filter="<?php echo esc_attr($term->slug); ?>" aria-pressed="false"><?php echo esc_html($term->name); ?></button>
+    <button class="filter-chip" type="button" data-filter="<?php echo esc_attr($term->slug); ?>" aria-pressed="false"><i class="chip-pin" aria-hidden="true" style="--pin:<?php echo esc_attr(nox_art_term_color($term)); ?>"></i><?php echo esc_html($term->name); ?></button>
     <?php endforeach; ?>
   </div>
   <?php endif; ?>
@@ -69,7 +69,8 @@ $filtre = nox_art_filter_terms(['nox_program', 'nox_dielo']);
       <?php else: ?>
       <div class="tile-media tile-media-empty <?php echo esc_attr($visual); ?>" aria-hidden="true"><span></span><i></i><b></b></div>
       <?php endif; ?>
-      <span class="tile-pin" aria-hidden="true"><b><?php echo (int) ($i + 1); ?></b></span>
+      <?php $pinColor = nox_art_item_color($p['kategorie']); ?>
+      <span class="tile-pin" aria-hidden="true"<?php echo $pinColor ? ' style="--pin:' . esc_attr($pinColor) . '"' : ''; ?>><b><?php echo (int) ($i + 1); ?></b></span>
       <div class="tile-caption">
         <h3><?php echo esc_html($p['nazov']); ?></h3>
         <?php if ($p['meta']): ?><p><?php echo esc_html($p['meta']); ?></p><?php endif; ?>
