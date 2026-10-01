@@ -214,19 +214,10 @@
     return '';
   };
 
-  const popupHtml = (miesto) => {
-    const items = dielaAt(miesto.id);
-    const list = items.length
-      ? items.map((d) => `<a href="#work-${d.id}">${d.nazov}</a>`).join('')
-      : '';
-    return `<strong>${miesto.nazov}</strong>${miesto.adresa ? `<span>${miesto.adresa}</span>` : ''}${list}`;
-  };
-
   const focusMiesto = (miestoId) => {
     const marker = markers[miestoId];
     if (!marker || !map) return;
     map.flyTo({ center: marker.getLngLat(), zoom: Math.max(map.getZoom(), 16), duration: 600 });
-    if (!marker.getPopup().isOpen()) marker.togglePopup();
   };
 
   if (!config.token || typeof mapboxgl === 'undefined') {
@@ -276,17 +267,19 @@
       }
       const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
         .setLngLat([m.lng, m.lat])
-        .setPopup(new mapboxgl.Popup({ offset: 26 }).setHTML(popupHtml(m)))
         .addTo(map);
       markers[m.id] = marker;
       el.addEventListener('click', () => {
-        // Dlaždicou miesta je buď prvé dielo na ňom, alebo samotné miesto
-        // (partnerský podnik), podľa toho, čo je v zozname.
+        /* Značka otvorí detail tej istej položky ako kliknutie na dlaždicu –
+           bublina s náhľadom tu už nie je, detail v ľavom stĺpci povie
+           podstatne viac. Dlaždicou miesta je buď prvé dielo na ňom, alebo
+           samotné miesto (partnerský podnik). */
         const first = dielaAt(m.id)[0];
-        highlightTile(
-          (first && document.getElementById(`work-${first.id}`)) ||
-          document.getElementById(`miesto-${m.id}`)
-        );
+        const tile = (first && document.getElementById(`work-${first.id}`)) ||
+          document.getElementById(`miesto-${m.id}`);
+        if (!tile) return;
+        highlightTile(tile);
+        tile.click();
       });
     });
 

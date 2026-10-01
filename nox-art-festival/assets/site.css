@@ -2951,13 +2951,6 @@ body.menu-open .site-header .brand-nox-logo {
 .site-map{position:absolute;inset:0}
 .site-map .mapboxgl-canvas{outline:none}
 .site-map .mapboxgl-ctrl-logo{opacity:.55}
-.site-map .mapboxgl-popup-content{
-  font-family:Arial, Helvetica, sans-serif;font-size:13px;color:var(--ink);
-  border-radius:14px;padding:12px 14px;
-}
-.site-map .mapboxgl-popup-content strong{display:block;font-size:14px;margin-bottom:4px}
-.site-map .mapboxgl-popup-content a{display:block;color:var(--pink);font-weight:700;margin-top:4px}
-.site-map .mapboxgl-popup-content a:hover{color:var(--orange)}
 /* Značka je len obal – otáča sa kvapka vnútri, nie ona samotná. Mapbox
    totiž na značku zapisuje vlastný transform (posun po mape) a akékoľvek
    otočenie na nej by prepísal. */
