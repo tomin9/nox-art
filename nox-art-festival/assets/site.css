@@ -3260,7 +3260,21 @@ body.menu-open .site-header .brand-nox-logo {
   flex-direction:column;
 }
 .program-layout-map .site-map-wrap{
-  min-height:min(62vh, 620px);
+  min-height:min(70vh, 720px);
+}
+/* Rámček mal okolo mapy zbytočne veľa miesta – samotná mapa je tu obsah,
+   nie ozdoba, tak nech ho využije. */
+.program-layout-map .route-map{
+  padding:clamp(12px, 1.2vw, 18px);
+}
+.program-layout-map .route-map-head{
+  padding-bottom:12px;
+}
+.program-layout-map .route-map-stage{
+  margin:12px 0 8px;
+}
+.program-layout-map .route-note{
+  margin:0;
 }
 
 @media (max-width: 1000px){
