@@ -3273,6 +3273,23 @@ body.menu-open .site-header .brand-nox-logo {
      skladá z odsadenia rámčeka a pevnej časti (nadpis + medzery), takže
      drží aj keď sa odsadenie so šírkou okna mení. */
   margin-top:calc(-1 * (clamp(12px, 1.2vw, 18px) + 50px));
+  /* Mapa je presne na výšku okna pod hlavičkou: hore sa tak nemá čím
+     prekryť a dole nezostáva prázdne miesto. Rámček dopĺňa zvyšnú výšku,
+     plátno mapy ju vyplní. */
+  height:calc(100svh - var(--header-h) - 34px);
+  display:flex;
+  flex-direction:column;
+}
+.program-layout-map .route-map{
+  flex:1;
+  min-height:0;
+}
+.program-layout-map .route-map-stage{
+  flex:1;
+  min-height:0;
+}
+.program-layout-map .site-map-wrap{
+  height:100%;
 }
 .program-layout-map .route-map{
   display:flex;
@@ -3289,9 +3306,6 @@ body.menu-open .site-header .brand-nox-logo {
 .program-layout-map .route-map-stage{
   margin:12px 0 8px;
 }
-.program-layout-map .site-map-wrap{
-  min-height:min(70vh, 720px);
-}
 /* Popisok je pod rámčekom, nie v ňom – je to pokyn k mape, nie jej súčasť.
    Vodorovne lícuje s plátnom mapy, teda o odsadenie rámčeka a jeho linku
    dovnútra, nie s okrajom rámčeka. */
@@ -3306,12 +3320,14 @@ body.menu-open .site-header .brand-nox-logo {
   }
   .program-layout-map{
     position:static;
+    height:auto;
     /* V jednom stĺpci mapa nasleduje za dlaždicami, takže vytiahnutie hore
        (ktoré ju v dvojstĺpci zarovnávalo s prvým radom) by ju naňho
        posunulo – tu naopak potrebuje odstup. */
     margin-top:clamp(28px, 5vh, 60px);
   }
   .program-layout-map .site-map-wrap{
+    height:auto;
     min-height:420px;
   }
 }
