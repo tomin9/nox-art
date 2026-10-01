@@ -3616,12 +3616,6 @@ body.menu-open .site-header .brand-nox-logo {
 .nox-art-site .program.is-detail .program-head{
   display:none;
 }
-/* Tmavá sekcia je zasunutá pod hero o polomer jeho zaoblenia (hero ju
-   prekrýva vyššou vrstvou), takže obsah detailu musí začínať až za tým –
-   inak hero prekryje tlačidlo späť aj vrch mapy. */
-.nox-art-site .program.is-detail{
-  padding-top:calc(var(--radius-xl) + var(--map-gap, 34px));
-}
 
 /* V detaile nie je vľavo mriežka dlaždíc, s ktorou sa mapa zarovnávala –
    vytiahnutie hore by ju tak posunulo pod hlavičku. Začína preto rovno
