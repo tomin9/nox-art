@@ -89,6 +89,14 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
   </div>
   <div class="footer-wordmark" aria-hidden="true">NOX<span>:</span>ART&rsquo;26</div>
   <div class="footer-bottom">
+    <?php /* Kontrola, či web naozaj beží na poslednej verzii súborov:
+             stačí k adrese pridať ?nox-debug=1 a dole sa vypíše čas
+             poslednej zmeny štýlov a skriptu. */ ?>
+    <?php if (isset($_GET['nox-debug'])): ?>
+    <span>build <?php echo esc_html(NOX_ART_VERSION); ?> ·
+      css <?php echo esc_html(date('j.n. H:i', (int) @filemtime(NOX_ART_DIR . 'assets/site.css'))); ?> ·
+      js <?php echo esc_html(date('j.n. H:i', (int) @filemtime(NOX_ART_DIR . 'assets/site.js'))); ?></span>
+    <?php endif; ?>
     <span>© <?php echo esc_html(date('Y')); ?> Ars Preuge</span>
     <span>Prievidza / Slovensko</span>
     <a href="#top">Hore ↑</a>
