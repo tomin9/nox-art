@@ -3794,27 +3794,24 @@ body.menu-open .site-header .brand-nox-logo {
 .partner-logos {
   display: flex;
   flex-wrap: wrap;
-  gap: 18px;
+  align-items: center;
+  gap: clamp(28px, 4vw, 56px);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+/* Logá stoja voľne vedľa seba – žiadne rámčeky ani dlaždice. */
 .partner-logo {
   display: flex;
-  flex: 0 1 auto;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  min-width: 170px;
-  padding: 20px 28px;
-  border: 1.5px solid var(--ink);
-  border-radius: var(--radius-md);
-  background: var(--cream);
-  transition: background .25s ease, color .25s ease;
+  transition: opacity .25s ease;
 }
 
 .partner-logo:hover {
-  background: var(--paper-deep);
+  opacity: .62;
 }
 
 .partner-logo a {
@@ -3842,15 +3839,11 @@ body.menu-open .site-header .brand-nox-logo {
 /* Organizátor a generálny partner dostanú väčší priestor, mediálni menší. */
 .partner-group[data-skupina="organizator"] .partner-logo,
 .partner-group[data-skupina="generalny"] .partner-logo {
-  --logo-h: 92px;
-  min-width: 230px;
-  padding: 26px 36px;
+  --logo-h: 96px;
 }
 
 .partner-group[data-skupina="medialny"] .partner-logo {
-  --logo-h: 46px;
-  min-width: 140px;
-  padding: 16px 22px;
+  --logo-h: 48px;
 }
 
 .partners-empty {
@@ -3861,19 +3854,19 @@ body.menu-open .site-header .brand-nox-logo {
 
 @media (max-width: 720px) {
   .partner-logos {
-    gap: 12px;
+    gap: 26px;
   }
 
   .partner-logo {
-    flex: 1 1 140px;
-    min-width: 0;
-    padding: 16px 18px;
+    --logo-h: 48px;
   }
 
   .partner-group[data-skupina="organizator"] .partner-logo,
   .partner-group[data-skupina="generalny"] .partner-logo {
-    --logo-h: 68px;
-    min-width: 0;
-    padding: 20px 24px;
+    --logo-h: 66px;
+  }
+
+  .partner-group[data-skupina="medialny"] .partner-logo {
+    --logo-h: 38px;
   }
 }
