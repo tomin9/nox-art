@@ -11,6 +11,8 @@ $polozky = nox_art_site_items();
 $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
 ?>
 <section class="section program" id="program" aria-labelledby="program-title">
+  <div class="program-layout">
+  <div class="program-layout-list">
   <div class="section-label section-label-light reveal"><span>01</span> Program a diela</div>
   <div class="program-head reveal">
     <h2 id="program-title">Dve noci.<br>Jedna svetelná trasa.</h2>
@@ -35,8 +37,6 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
   <?php endforeach; ?>
   <?php endif; ?>
 
-  <div class="program-layout">
-  <div class="program-layout-list">
   <div class="gallery-grid" data-filter-target="program">
     <?php if (!$polozky): ?>
     <p class="empty" style="color:var(--paper);opacity:.7">Program zatiaľ nie je zverejnený — pridaj ho v administrácii (NOX:ART &rsaquo; Program, Diela).</p>
