@@ -3259,8 +3259,11 @@ body.menu-open .site-header .brand-nox-logo {
 }
 .program-layout-list .gallery-grid{
   margin-top:0;
-  /* Užší stĺpec než celá stránka – dlaždice nesmú byť také široké ako inde. */
-  grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));
+  /* Najviac päť dlaždíc v rade. Minimálna šírka stĺpca je väčšia z 200px a
+     pätiny riadku – keď sa teda zmestí viac stĺpcov, pätina ich zhora
+     obmedzí na päť, a na užších obrazovkách sa ich počet prirodzene znižuje
+     podľa tých 200px. */
+  grid-template-columns:repeat(auto-fill, minmax(max(200px, calc((100% - 4 * clamp(10px, 1.2vw, 18px)) / 5)), 1fr));
 }
 .program-layout-map{
   position:sticky;
