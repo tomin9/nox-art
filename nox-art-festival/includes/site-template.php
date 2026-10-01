@@ -483,6 +483,15 @@ function nox_art_site_trim_head() {
     if (!nox_art_site_sections()) return;
     remove_action('wp_head', 'print_emoji_detection_script', 7);
     remove_action('wp_print_styles', 'print_emoji_styles');
+
+    /* Oznamovacie lišty tém a pluginov sa vkladajú hneď za <body> cez hák
+       wp_body_open. Festivalová stránka má vlastnú hlavičku a takýto pruh
+       nad ňou rozbíja rozloženie, preto ho tu nepúšťame. Keby tadiaľ niečo
+       potrebné predsa len malo ísť (napr. meracie kódy), stačí filter:
+       add_filter('nox_art_zachovat_wp_body_open', '__return_true'); */
+    if (!apply_filters('nox_art_zachovat_wp_body_open', false)) {
+        remove_all_actions('wp_body_open');
+    }
 }
 // Až po načítaní dopytu – skôr sa nedá zistiť, ktorá šablóna sa vykreslí.
 add_action('wp', 'nox_art_site_trim_head');
