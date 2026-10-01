@@ -459,18 +459,12 @@
        otvorený detail, zavrieme ho. Bez toho by kliknutie na "Program a
        diela" len odscrollovalo na detail, v ktorom človek už je. */
     document.querySelectorAll('.main-nav a[href*="#"], .footer-links a[href*="#"]').forEach((link) => {
-      link.addEventListener('click', (event) => {
+      link.addEventListener('click', () => {
         const hash = (link.getAttribute('href') || '').split('#')[1];
-        if (!section || hash !== section.id) return;
-
-        if (view === 'detail') {
-          view = 'items';
-          syncSubBars();
-          apply();
-        }
-
-        event.preventDefault();
-        scrollToSection();
+        if (!section || hash !== section.id || view !== 'detail') return;
+        view = 'items';
+        syncSubBars();
+        apply();
       });
     });
 
@@ -504,3 +498,40 @@
 
 
 
+
+
+/* =========================================================================
+   Skoky z menu na sekcie. Prehliadač si posun na kotvu počíta z hodnoty
+   scroll-margin-top v CSS, ktorá nevie o dvoch veciach: o admin lište
+   WordPressu (tá posúva fixnú hlavičku nižšie) a o tom, že niektoré sekcie
+   sú záporným odstupom zasunuté pod predchádzajúcu. Pod menu tak zostával
+   pruh predošlej sekcie. Počítame to preto sami, pre všetky sekcie rovnako.
+   ========================================================================= */
+(() => {
+  const links = [...document.querySelectorAll('.main-nav a[href*="#"], .footer-links a[href*="#"]')];
+  if (!links.length) return;
+
+  const scrollToSection = (section) => {
+    const styles = getComputedStyle(document.documentElement);
+    const headerH = parseFloat(styles.getPropertyValue('--header-h')) || 82;
+    // Zasunutie pod predchádzajúcu sekciu je záporný odstup – odpočítaním
+    // záporného čísla sa cieľ posunie práve o toľko.
+    const prekryv = parseFloat(getComputedStyle(section).marginTop) || 0;
+    const adminBar = document.body.classList.contains('admin-bar')
+      ? (window.innerWidth <= 782 ? 46 : 32)
+      : 0;
+    const top = section.getBoundingClientRect().top + window.scrollY - prekryv - headerH - adminBar;
+    window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
+  };
+
+  links.forEach((link) => {
+    link.addEventListener('click', (event) => {
+      const hash = (link.getAttribute('href') || '').split('#')[1];
+      if (!hash) return;
+      const section = document.getElementById(hash);
+      if (!section) return;   // odkaz vedie na inú podstránku
+      event.preventDefault();
+      scrollToSection(section);
+    });
+  });
+})();
