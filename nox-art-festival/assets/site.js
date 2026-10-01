@@ -413,6 +413,22 @@
       });
     });
 
+    /* Posun na viditeľnú hranu sekcie. Prehliadačov skok na kotvu sa riadi
+       hodnotou scroll-margin-top z CSS, ktorá nevie o admin lište ani o tom,
+       že vrch tmavej sekcie je zasunutý pod hero – počítame si to teda sami,
+       nech zoznam aj detail končia na tom istom mieste. */
+    const scrollToSection = () => {
+      if (!section) return;
+      const styles = getComputedStyle(document.documentElement);
+      const headerH = parseFloat(styles.getPropertyValue('--header-h')) || 82;
+      const prekryv = parseFloat(getComputedStyle(section).marginTop) || 0;   // záporný
+      const adminBar = document.body.classList.contains('admin-bar')
+        ? (window.innerWidth <= 782 ? 46 : 32)
+        : 0;
+      const top = section.getBoundingClientRect().top + window.scrollY - prekryv - headerH - adminBar;
+      window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
+    };
+
     /* Detail položky. Je vykreslený na serveri pri každej dlaždici, takže sa
        len prepína viditeľnosť – otvorenie je okamžité. */
     const openDetail = (id) => {
@@ -426,25 +442,8 @@
 
       /* Detail sa otvára aj z dlaždice hlboko v zozname, takže stránku
          posunieme na začiatok sekcie – inak by človek pozeral na prázdne
-         miesto pod textom a tlačidlo späť by mal nad obrazovkou.
-
-         Polohu počítame sami, nie cez scrollIntoView: to sa riadi hodnotou
-         scroll-margin-top z CSS, ktorá nevie o admin lište WordPressu. Keď
-         je používateľ prihlásený, lišta posúva hlavičku o svoju výšku nižšie
-         a sekcia by skončila pod ňou – presne o toľko, o koľko mape zmizla
-         medzera nad aj pod ňou. */
-      /* Cieľ počítame z mapy, nie zo sekcie: mapa má presne takú výšku, aby
-         sa aj s medzerami zmestila do okna, takže keď ju posunieme na jej
-         prilepenú polohu, sedí všetko ostatné samo. Sekcia sa na to nehodí –
-         je zasunutá pod hero a jej vrch je prekrytý. */
-      const anchor = document.querySelector('.program-layout-map') || section;
-      if (anchor) {
-        const styles = getComputedStyle(anchor);
-        const stickyTop = parseFloat(styles.top);
-        const offset = Number.isFinite(stickyTop) ? stickyTop : 120;
-        const top = anchor.getBoundingClientRect().top + window.scrollY - offset;
-        window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
-      }
+         miesto pod textom a tlačidlo späť by mal nad obrazovkou. */
+      scrollToSection();
     };
 
     // Klikacia je celá dlaždica, nielen odkaz na mapu – položka bez miesta
@@ -470,19 +469,8 @@
           apply();
         }
 
-        /* Skok na kotvu si posun počíta z CSS (scroll-margin-top), ktoré nevie
-           o admin lište ani o tom, že vrch sekcie je zasunutý pod hero – pod
-           menu tak zostal pruh hero. Posúvame preto sami, na viditeľnú hranu
-           tmavej sekcie. */
         event.preventDefault();
-        const styles = getComputedStyle(document.documentElement);
-        const headerH = parseFloat(styles.getPropertyValue('--header-h')) || 82;
-        const prekryv = parseFloat(getComputedStyle(section).marginTop) || 0;  // záporný
-        const adminBar = document.body.classList.contains('admin-bar')
-          ? (window.innerWidth <= 782 ? 46 : 32)
-          : 0;
-        const top = section.getBoundingClientRect().top + window.scrollY - prekryv - headerH - adminBar;
-        window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
+        scrollToSection();
       });
     });
 

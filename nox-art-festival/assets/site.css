@@ -3627,12 +3627,13 @@ body.menu-open .site-header .brand-nox-logo {
 }
 .nox-art-site .program.is-detail .program-layout-map{
   margin-top:0;
-  /* Bez vytiahnutia hore začína mapa o horné odsadenie sekcie nižšie, takže
-     o to isté musí byť nižšia – inak by jej spodok prečnieval cez okno. */
-  height:calc(100svh - var(--header-h) - var(--map-gap) * 2);
+  /* V detaile sa stránka zarovná tak, že vrch tmavej sekcie sedí pod menu –
+     mapa teda začína o jej horné odsadenie nižšie a musí byť o to isté
+     nižšia, aby jej pod spodkom zostala rovnaká medzera ako inde. */
+  height:calc(100svh - var(--header-h) - clamp(34px, 4vw, 70px) - var(--map-gap));
 }
 .nox-art-site.admin-bar .program.is-detail .program-layout-map{
-  height:calc(100svh - var(--header-h) - 32px - var(--map-gap) * 2);
+  height:calc(100svh - var(--header-h) - 32px - clamp(34px, 4vw, 70px) - var(--map-gap));
 }
 
 /* Detail je kratší než mapa vedľa neho – nech aspoň nekončí hneď pod
