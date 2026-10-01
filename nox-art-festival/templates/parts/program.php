@@ -38,7 +38,23 @@ foreach ($diela as $d) {
     ];
 }
 
-$filtre = nox_art_filter_tree(['nox_program', 'nox_dielo']);
+/* Miesta sa do zoznamu dostanú, len keď majú priradenú kategóriu – bežné
+   miesto je nositeľom súradníc pre dielo, nie samostatná položka programu.
+   Partnerský podnik naopak kategóriu má, a tak sa zobrazí ako dlaždica. */
+foreach ($miesta as $m) {
+    if (!$m['kategorie']) continue;
+    $polozky[] = [
+        'id' => 'miesto-' . $m['id'],
+        'nazov' => $m['nazov'],
+        'foto' => $m['foto'],
+        'kategorie' => $m['kategorie'],
+        'meta' => $m['adresa'],
+        'work' => '',
+        'miestoId' => $m['id'],
+    ];
+}
+
+$filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
 ?>
 <section class="section program" id="program" aria-labelledby="program-title">
   <div class="section-label section-label-light reveal"><span>01</span> Program a diela</div>
@@ -72,7 +88,7 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo']);
     <p class="empty" style="color:var(--paper);opacity:.7">Program zatiaľ nie je zverejnený — pridaj ho v administrácii (NOX:ART &rsaquo; Program, Diela).</p>
     <?php endif; ?>
     <?php foreach ($polozky as $i => $p): $visual = $visualClasses[$i % count($visualClasses)]; ?>
-    <article class="gallery-tile reveal" id="<?php echo esc_attr($p['id']); ?>"<?php echo $p['work'] ? ' data-work="' . esc_attr($p['work']) . '"' : ''; ?> data-cat="<?php echo esc_attr(implode(' ', $p['kategorie'])); ?>">
+    <article class="gallery-tile reveal" id="<?php echo esc_attr($p['id']); ?>"<?php echo $p['work'] ? ' data-work="' . esc_attr($p['work']) . '"' : ''; ?> data-miesto="<?php echo esc_attr($p['miestoId'] ?: ''); ?>" data-cat="<?php echo esc_attr(implode(' ', $p['kategorie'])); ?>">
       <?php if ($p['foto']): ?>
       <div class="tile-media" aria-hidden="true" style="background-image:url('<?php echo esc_url($p['foto']); ?>')"></div>
       <?php else: ?>
@@ -85,7 +101,7 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo']);
         <?php if ($p['meta']): ?><p><?php echo esc_html($p['meta']); ?></p><?php endif; ?>
       </div>
       <?php if ($p['miestoId']): ?>
-      <a class="tile-link" href="<?php echo nox_art_site_link('program', 'mapa'); ?>"<?php echo $p['work'] ? ' data-show-on-map="' . esc_attr($p['work']) . '"' : ''; ?>><span class="sr-only">Ukázať <?php echo esc_html($p['nazov']); ?> na mape</span></a>
+      <a class="tile-link" href="<?php echo nox_art_site_link('program', 'mapa'); ?>" data-show-on-map="<?php echo esc_attr($p['work'] ?: $p['miestoId']); ?>"><span class="sr-only">Ukázať <?php echo esc_html($p['nazov']); ?> na mape</span></a>
       <?php endif; ?>
     </article>
     <?php endforeach; ?>

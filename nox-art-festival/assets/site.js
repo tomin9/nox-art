@@ -186,14 +186,14 @@
   const config = window.NOX_SITE_MAP || { token: '', style: '', miesta: [], diela: [] };
   if (!mapEl) return;
 
-  const cards = [...document.querySelectorAll('[data-work]')];
-  const cardByWork = new Map(cards.map((card) => [card.dataset.work, card]));
+  // Dlaždice v zozname – zvýrazňuje sa tá, ktorá patrí k značke na mape.
+  const tiles = [...document.querySelectorAll('.gallery-tile[data-miesto]')];
 
   const markers = {};
   let map = null;
 
-  const highlightCard = (workId) => {
-    cards.forEach((card) => card.classList.toggle('is-map-active', card.dataset.work === workId));
+  const highlightTile = (tile) => {
+    tiles.forEach((item) => item.classList.toggle('is-map-active', item === tile));
   };
 
   const dielaAt = (miestoId) => config.diela.filter((d) => String(d.miestoId) === String(miestoId));
@@ -201,10 +201,13 @@
   /* Farba značky podľa kategórie diela, ktoré na mieste stojí – každá
      kategória má svoju, aby bolo na mape vidieť, o aký typ obsahu ide.
      Miesto bez kategórie si necháva pôvodnú ružovo-oranžovú z CSS. */
-  const markerColor = (miestoId) => {
+  const markerColor = (miesto) => {
     const farby = config.farby || {};
-    for (const dielo of dielaAt(miestoId)) {
-      for (const slug of dielo.kategorie || []) {
+    // Najprv kategória samotného miesta (partnerský podnik ju má vlastnú),
+    // potom kategória diela, ktoré na mieste stojí.
+    const zdroje = [miesto, ...dielaAt(miesto.id)];
+    for (const zdroj of zdroje) {
+      for (const slug of zdroj.kategorie || []) {
         if (farby[slug]) return farby[slug];
       }
     }
@@ -256,7 +259,7 @@
     pts.forEach((m) => {
       const el = document.createElement('div');
       el.className = 'site-marker';
-      const color = markerColor(m.id);
+      const color = markerColor(m);
       if (color) el.style.setProperty('--pin', color);
       const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
         .setLngLat([m.lng, m.lat])
@@ -264,8 +267,13 @@
         .addTo(map);
       markers[m.id] = marker;
       el.addEventListener('click', () => {
+        // Dlaždicou miesta je buď prvé dielo na ňom, alebo samotné miesto
+        // (partnerský podnik), podľa toho, čo je v zozname.
         const first = dielaAt(m.id)[0];
-        if (first) highlightCard(String(first.id));
+        highlightTile(
+          (first && document.getElementById(`work-${first.id}`)) ||
+          document.getElementById(`miesto-${m.id}`)
+        );
       });
     });
 
@@ -278,11 +286,12 @@
 
   document.querySelectorAll('[data-show-on-map]').forEach((link) => {
     link.addEventListener('click', (event) => {
-      const workId = link.dataset.showOnMap;
-      const card = cardByWork.get(workId);
-      const miestoId = card?.dataset.miesto;
+      // Miesto berieme z dlaždice, v ktorej odkaz je – položka nemusí byť
+      // dielo (partnerský podnik je priamo miesto a vlastné dielo nemá).
+      const tile = link.closest('[data-miesto]');
+      const miestoId = tile?.dataset.miesto;
       if (!miestoId) { event.preventDefault(); return; }
-      highlightCard(workId);
+      highlightTile(tile);
       focusMiesto(miestoId);
     });
   });

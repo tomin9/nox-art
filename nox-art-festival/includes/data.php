@@ -28,6 +28,7 @@ function nox_art_data_miesta() {
             'lng' => $lng !== '' ? (float) $lng : null,
             'popis' => apply_filters('the_content', $p->post_content),
             'foto' => get_the_post_thumbnail_url($p->ID, 'large') ?: '',
+            'kategorie' => nox_art_post_categories($p->ID),
         ];
     }, $posts);
 }

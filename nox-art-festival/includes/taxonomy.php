@@ -2,7 +2,7 @@
 if (!defined('ABSPATH')) exit;
 
 /**
- * Spoločná kategória pre Diela aj Program – podľa nej sa na stránke filtruje
+ * Spoločná kategória pre Diela, Program aj Miesta – podľa nej sa filtruje
  * (Všetky / Inštalácie / Nové sgrafitá / Živé sgrafitá / Galéria ulice /
  * Sprievodný program). Je to obyčajná WP taxonómia, takže kategórie sa dajú
  * kedykoľvek premenovať, doplniť alebo prehádzať v administrácii bez zásahu
@@ -22,7 +22,7 @@ function nox_art_default_categories() {
 }
 
 function nox_art_register_taxonomy() {
-    register_taxonomy('nox_kategoria', ['nox_dielo', 'nox_program'], [
+    register_taxonomy('nox_kategoria', ['nox_dielo', 'nox_program', 'nox_miesto'], [
         'labels' => [
             'name' => 'Kategórie',
             'singular_name' => 'Kategória',
