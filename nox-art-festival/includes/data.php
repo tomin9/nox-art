@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) exit;
 function nox_art_build_data() {
     return [
         'miesta' => nox_art_data_miesta(),
+        'podniky' => nox_art_data_podniky(),
         'diela' => nox_art_data_diela(),
         'umelci' => nox_art_data_umelci(),
         'program' => nox_art_data_program(),
@@ -32,6 +33,31 @@ function nox_art_data_miesta() {
             'cislo' => (int) get_post_meta($p->ID, '_nox_cislo', true),
             'terminy' => nox_art_get_terminy($p->ID),
             'samostatne' => (bool) get_post_meta($p->ID, '_nox_samostatne', true),
+        ];
+    }, $posts);
+}
+
+/**
+ * Podniky s festivalovým menu – vlastný typ obsahu s adresou aj súradnicami,
+ * takže na mape vystupujú ako samostatné body.
+ */
+function nox_art_data_podniky() {
+    $posts = get_posts(['post_type' => 'nox_podnik', 'post_status' => 'publish', 'numberposts' => -1, 'orderby' => 'title', 'order' => 'ASC']);
+    return array_map(function($p){
+        $lat = get_post_meta($p->ID, '_nox_lat', true);
+        $lng = get_post_meta($p->ID, '_nox_lng', true);
+        return [
+            'id' => $p->ID,
+            'nazov' => get_the_title($p),
+            'adresa' => get_post_meta($p->ID, '_nox_adresa', true) ?: '',
+            'lat' => $lat !== '' ? (float) $lat : null,
+            'lng' => $lng !== '' ? (float) $lng : null,
+            'popis' => apply_filters('the_content', $p->post_content),
+            'foto' => get_the_post_thumbnail_url($p->ID, 'large') ?: '',
+            'kategorie' => nox_art_post_categories($p->ID),
+            'terminy' => nox_art_get_terminy($p->ID),
+            'samostatne' => (bool) get_post_meta($p->ID, '_nox_samostatne', true),
+            'cislo' => (int) get_post_meta($p->ID, '_nox_cislo', true),
         ];
     }, $posts);
 }

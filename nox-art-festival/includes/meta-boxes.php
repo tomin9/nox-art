@@ -3,6 +3,8 @@ if (!defined('ABSPATH')) exit;
 
 function nox_art_add_meta_boxes() {
     add_meta_box('nox_miesto_poloha', 'Poloha', 'nox_art_render_miesto_metabox', 'nox_miesto', 'normal', 'high');
+    // Podnik má vlastnú adresu aj súradnice, rovnako ako miesto.
+    add_meta_box('nox_miesto_poloha', 'Poloha', 'nox_art_render_miesto_metabox', 'nox_podnik', 'normal', 'high');
     add_meta_box('nox_dielo_suvislosti', 'Súvislosti diela', 'nox_art_render_dielo_metabox', 'nox_dielo', 'side', 'default');
     add_meta_box('nox_program_termin', 'Miesto', 'nox_art_render_program_metabox', 'nox_program', 'side', 'default');
     // Čas má zmysel pri všetkom, nielen pri programe: dielo býva prístupné
@@ -10,9 +12,10 @@ function nox_art_add_meta_boxes() {
     add_meta_box('nox_termin', 'Termíny', 'nox_art_render_termin_metabox', 'nox_dielo', 'side', 'default');
     add_meta_box('nox_termin', 'Termíny', 'nox_art_render_termin_metabox', 'nox_miesto', 'side', 'default');
     add_meta_box('nox_termin', 'Termíny', 'nox_art_render_termin_metabox', 'nox_program', 'side', 'default');
+    add_meta_box('nox_termin', 'Termíny', 'nox_art_render_termin_metabox', 'nox_podnik', 'side', 'default');
     // Poradové číslo na mape a na dlaždici – ručne nastaviteľné, aby si
     // editor vedel určiť trasu festivalu.
-    foreach (['nox_dielo', 'nox_miesto', 'nox_program'] as $typ) {
+    foreach (['nox_dielo', 'nox_miesto', 'nox_program', 'nox_podnik'] as $typ) {
         add_meta_box('nox_cislo', 'Číslo na mape', 'nox_art_render_cislo_metabox', $typ, 'side', 'high');
     }
 }
@@ -63,6 +66,7 @@ function nox_art_save_miesto($post_id) {
     }
 }
 add_action('save_post_nox_miesto', 'nox_art_save_miesto');
+add_action('save_post_nox_podnik', 'nox_art_save_miesto');
 
 /* -------------------------------------------------------------------------
  * DIELO – väzba na miesto a umelca (výber z existujúcich záznamov)
@@ -146,7 +150,7 @@ function nox_art_save_cislo($post_id) {
         delete_post_meta($post_id, '_nox_cislo');
     }
 }
-foreach (['nox_dielo', 'nox_miesto', 'nox_program'] as $nox_typ) {
+foreach (['nox_dielo', 'nox_miesto', 'nox_program', 'nox_podnik'] as $nox_typ) {
     add_action('save_post_' . $nox_typ, 'nox_art_save_cislo');
 }
 
@@ -238,6 +242,7 @@ function nox_art_save_termin($post_id) {
 }
 add_action('save_post_nox_dielo', 'nox_art_save_termin');
 add_action('save_post_nox_miesto', 'nox_art_save_termin');
+add_action('save_post_nox_podnik', 'nox_art_save_termin');
 add_action('save_post_nox_program', 'nox_art_save_termin');
 
 /**
@@ -275,7 +280,8 @@ add_action('save_post_nox_program', 'nox_art_save_program');
  * ---------------------------------------------------------------------- */
 function nox_art_admin_enqueue($hook) {
     global $post_type;
-    if (!in_array($hook, ['post.php', 'post-new.php'], true) || $post_type !== 'nox_miesto') return;
+    if (!in_array($hook, ['post.php', 'post-new.php'], true)) return;
+    if (!in_array($post_type, ['nox_miesto', 'nox_podnik'], true)) return;
 
     wp_enqueue_style('nox-art-leaflet-css', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', [], '1.9.4');
     wp_enqueue_script('nox-art-leaflet-js', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', [], '1.9.4', true);

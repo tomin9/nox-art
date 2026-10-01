@@ -22,7 +22,7 @@ function nox_art_default_categories() {
 }
 
 function nox_art_register_taxonomy() {
-    register_taxonomy('nox_kategoria', ['nox_dielo', 'nox_program', 'nox_miesto'], [
+    register_taxonomy('nox_kategoria', ['nox_dielo', 'nox_program', 'nox_miesto', 'nox_podnik'], [
         'labels' => [
             'name' => 'Kategórie',
             'singular_name' => 'Kategória',
@@ -342,4 +342,16 @@ function nox_art_item_category_term($slugs) {
 function nox_art_item_category_label($slugs) {
     $term = nox_art_item_category_term($slugs);
     return $term ? $term->name : '';
+}
+
+/**
+ * Skupina, pod ktorú spadá podnik bez vlastnej kategórie – aby sa objavil
+ * v zozname aj vtedy, keď mu ju editor zabudne zaškrtnúť.
+ */
+function nox_art_podnik_default_categories() {
+    foreach (['partnerske-podniky', 'podniky'] as $slug) {
+        $term = get_term_by('slug', $slug, 'nox_kategoria');
+        if ($term && !is_wp_error($term)) return [$term->slug];
+    }
+    return [];
 }

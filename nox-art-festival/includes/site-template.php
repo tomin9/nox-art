@@ -196,7 +196,10 @@ function nox_art_site_enqueue_assets() {
         wp_localize_script('nox-art-site-js', 'NOX_SITE_MAP', [
             'token' => $map['token'],
             'style' => $map['style'],
-            'miesta' => nox_art_data_miesta(),
+            // Podniky majú vlastné súradnice, takže na mape vystupujú ako
+            // ďalšie body. ID príspevkov sa medzi typmi nikdy neopakujú,
+            // takže sa kľúče nemôžu pobiť.
+            'miesta' => array_merge(nox_art_data_miesta(), nox_art_data_podniky()),
             'diela' => nox_art_data_diela(),
             'farby' => nox_art_category_colors(),
             'cisla' => nox_art_site_map_numbers(),
@@ -263,6 +266,29 @@ function nox_art_site_items() {
             'miestoId' => $d['miestoId'],
             'miestoNazov' => $miestoById[$d['miestoId']]['nazov'] ?? '',
             'cislo' => $d['cislo'],
+        ];
+    }
+
+    // Podniky sú vlastný typ obsahu, takže idú do zoznamu vždy.
+    foreach (nox_art_data_podniky() as $p) {
+        // Bez zaškrtnutej kategórie by podnik vypadol zo všetkých filtrov –
+        // priradíme ho teda aspoň do jeho vlastnej skupiny.
+        $kategorie = $p['kategorie'] ?: nox_art_podnik_default_categories();
+        $items[] = [
+            'id' => 'podnik-' . $p['id'],
+            'nazov' => $p['nazov'],
+            'foto' => $p['foto'],
+            'kategorie' => $kategorie,
+            'terminy' => $p['terminy'],
+            'samostatne' => $p['samostatne'],
+            'kategoriaNazov' => nox_art_item_category_label($kategorie),
+            'kategoriaSlug' => (nox_art_item_category_term($kategorie)->slug ?? ''),
+            'popis' => $p['popis'],
+            'meta' => $p['adresa'],
+            'work' => '',
+            'miestoId' => $p['id'],
+            'miestoNazov' => $p['adresa'],
+            'cislo' => $p['cislo'],
         ];
     }
 

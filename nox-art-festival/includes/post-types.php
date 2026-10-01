@@ -62,6 +62,24 @@ function nox_art_register_post_types() {
         'map_meta_cap' => true,
     ]);
 
+    register_post_type('nox_podnik', [
+        'labels' => [
+            'name' => 'Podniky',
+            'singular_name' => 'Podnik',
+            'add_new_item' => 'Pridať nový podnik',
+            'edit_item' => 'Upraviť podnik',
+            'all_items' => 'Podniky',
+            'not_found' => 'Žiadne podniky',
+        ],
+        'public' => false,
+        'show_ui' => true,
+        'show_in_menu' => 'nox-art-festival',
+        'supports' => ['title', 'editor', 'thumbnail'],
+        'menu_icon' => 'dashicons-store',
+        'capability_type' => 'post',
+        'map_meta_cap' => true,
+    ]);
+
     register_post_type('nox_program', [
         'labels' => [
             'name' => 'Program',
@@ -104,7 +122,7 @@ function nox_art_admin_landing() {
     ?>
     <div class="wrap">
         <h1>NOX:ART Festival</h1>
-        <p>Obsah podstránky festivalu spravuješ cez položky nižšie v menu: <strong>Miesta</strong>, <strong>Diela</strong>, <strong>Umelci</strong> a <strong>Program</strong>.</p>
+        <p>Obsah podstránky festivalu spravuješ cez položky nižšie v menu: <strong>Miesta</strong>, <strong>Diela</strong>, <strong>Umelci</strong>, <strong>Program</strong> a <strong>Podniky</strong>.</p>
         <p>Na stránku, kde chceš zobraziť interaktívnu mapu a zoznamy, vlož shortcode:</p>
         <p><code>[nox_art]</code></p>
 

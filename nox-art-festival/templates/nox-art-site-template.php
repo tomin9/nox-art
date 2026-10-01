@@ -14,7 +14,9 @@ if (!defined('ABSPATH')) exit;
 $sections = nox_art_site_sections();
 
 $diela = nox_art_data_diela();
-$miesta = nox_art_data_miesta();
+// Na mape sú body miest aj podnikov, nech počet v hlavičke sedí s tým,
+// čo je na nej naozaj vidieť.
+$miesta = array_merge(nox_art_data_miesta(), nox_art_data_podniky());
 $umelci = nox_art_data_umelci();
 $visualClasses = ['visual-one', 'visual-two', 'visual-three', 'visual-four', 'visual-five', 'visual-six', 'visual-seven', 'visual-eight'];
 $dielaCount = count($diela);

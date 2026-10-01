@@ -8,7 +8,7 @@
  * mapa (dostáva dáta ešte pred vykreslením šablóny).
  */
 $polozky = nox_art_site_items();
-$filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto']);
+$filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto', 'nox_podnik']);
 ?>
 <section class="section program" id="program" aria-labelledby="program-title">
   <div class="section-label section-label-light reveal"><span>01</span> Program a diela</div>
