@@ -1,17 +1,13 @@
 <?php if (!defined('ABSPATH')) exit; ?>
 <?php
 /**
- * Newsletter ako vysúvací panel: na pravom okraji trčí len úzke ucho
- * "Zostaň v obraze", po kliknutí sa vysunie celé okno s formulárom.
- * Panel je fixovaný, takže na stránke nezaberá miesto a je po ruke
- * v ktorejkoľvek časti stránky.
+ * Newsletter ako vysúvací panel: na stránke nie je vidieť nič, okno
+ * s formulárom sa vysunie sprava po kliknutí na "Sleduj nás" (alebo na
+ * ľubovoľný odkaz na #kontakt). Panel je fixovaný, takže na stránke
+ * nezaberá miesto a je po ruke v ktorejkoľvek jej časti.
  */
 ?>
 <aside class="newsletter-dock" id="kontakt" data-newsletter-dock>
-  <button class="newsletter-tab" type="button" data-newsletter-toggle aria-expanded="false" aria-controls="newsletter-panel">
-    <span class="newsletter-tab-num" aria-hidden="true">04</span>
-    <span class="newsletter-tab-text">Zostaň v obraze</span>
-  </button>
   <div class="newsletter-panel" id="newsletter-panel" role="dialog" aria-labelledby="newsletter-title">
     <button class="newsletter-close" type="button" data-newsletter-close aria-label="Zavrieť panel">×</button>
     <p class="section-label"><span>04</span> Zostaň v obraze</p>

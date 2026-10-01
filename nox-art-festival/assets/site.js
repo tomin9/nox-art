@@ -755,27 +755,42 @@
 
 
 /* =========================================================================
-   Vysúvací newsletter. Panel je zavretý, na okraji trčí len ucho; otvára
-   sa kliknutím naň, odkazom na #kontakt (menu, päta), zatvára krížikom,
-   klávesom Esc alebo kliknutím mimo panela.
+   Vysúvací newsletter. Na stránke nie je vidieť nič; okno sa vysunie sprava
+   po kliknutí na "Sleduj nás" (akýkoľvek odkaz na #kontakt) a zatvára sa
+   krížikom, klávesom Esc alebo kliknutím mimo panela.
    ========================================================================= */
 (() => {
   const dock = document.querySelector('[data-newsletter-dock]');
   if (!dock) return;
 
-  const toggle = dock.querySelector('[data-newsletter-toggle]');
   const panel = dock.querySelector('.newsletter-panel');
+  // Odkazy "Sleduj nás" a kotvy na #kontakt panel otvárajú – fixovaný panel
+  // nie je kam odscrollovať, takže skok na kotvu nahrádzame vysunutím.
+  const spuste = [...document.querySelectorAll('a[href*="#kontakt"]')].filter((link) => {
+    const url = new URL(link.href, window.location.href);
+    return url.pathname === window.location.pathname;   // inak odkaz vedie na inú podstránku
+  });
+  let poslednySpust = null;
 
   const nastav = (otvorene) => {
     dock.classList.toggle('is-open', otvorene);
-    toggle?.setAttribute('aria-expanded', otvorene ? 'true' : 'false');
+    spuste.forEach((link) => link.setAttribute('aria-expanded', otvorene ? 'true' : 'false'));
     if (otvorene) panel?.querySelector('input')?.focus({ preventScroll: true });
   };
 
-  toggle?.addEventListener('click', () => nastav(!dock.classList.contains('is-open')));
+  spuste.forEach((link) => {
+    link.setAttribute('aria-controls', 'newsletter-panel');
+    link.setAttribute('aria-expanded', 'false');
+    link.addEventListener('click', (event) => {
+      event.preventDefault();
+      poslednySpust = link;
+      nastav(true);
+    });
+  });
+
   dock.querySelector('[data-newsletter-close]')?.addEventListener('click', () => {
     nastav(false);
-    toggle?.focus({ preventScroll: true });
+    poslednySpust?.focus({ preventScroll: true });
   });
 
   document.addEventListener('keydown', (event) => {
@@ -788,17 +803,6 @@
     // Klik na odkaz, ktorý panel práve otvoril, ho nesmie hneď zavrieť.
     if (event.target.closest?.('a[href*="#kontakt"]')) return;
     nastav(false);
-  });
-
-  /* Odkazy "Sleduj nás" a kotvy na #kontakt panel otvoria namiesto skoku –
-     fixovaný panel nie je kam odscrollovať. */
-  document.querySelectorAll('a[href*="#kontakt"]').forEach((link) => {
-    link.addEventListener('click', (event) => {
-      const url = new URL(link.href, window.location.href);
-      if (url.pathname !== window.location.pathname) return;  // odkaz na inú podstránku
-      event.preventDefault();
-      nastav(true);
-    });
   });
 
   if (window.location.hash === '#kontakt') nastav(true);
