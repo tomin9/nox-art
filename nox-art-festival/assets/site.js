@@ -1,3 +1,13 @@
+/* Spodná hrana fixnej hlavičky v súradniciach okna. Zahŕňa všetko, čo nad
+   obsahom stojí: samotnú hlavičku, bezpečnú zónu telefónu, presah hlavičky
+   nad okraj okna aj admin lištu WordPressu, ak je fixovaná. Podľa tohto
+   čísla zarovnávame skoky na sekcie. */
+function vyskaHlavicky() {
+  const header = document.querySelector('.site-header');
+  if (!header) return 82;
+  return Math.max(header.getBoundingClientRect().bottom, 0);
+}
+
 (() => {
   const body = document.body;
   const header = document.querySelector('[data-header]');
@@ -644,29 +654,15 @@
        nech zoznam aj detail končia na tom istom mieste. */
     const scrollToSection = () => {
       if (!section) return;
-      const styles = getComputedStyle(document.documentElement);
-      // Skutočná výška hlavičky – na telefónoch ju zväčšuje bezpečná zóna.
-      const headerH = document.querySelector('.site-header')?.getBoundingClientRect().height
-        || parseFloat(styles.getPropertyValue('--header-h')) || 82;
       const prekryv = parseFloat(getComputedStyle(section).marginTop) || 0;   // záporný
-      const adminBar = document.body.classList.contains('admin-bar')
-        ? (window.innerWidth <= 600 ? 0 : (window.innerWidth <= 782 ? 46 : 32))
-        : 0;
-      const top = section.getBoundingClientRect().top + window.scrollY - prekryv - headerH - adminBar;
+      const top = section.getBoundingClientRect().top + window.scrollY - prekryv - vyskaHlavicky();
       window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
     };
 
     /* Zarovnanie filtrovacieho pruhu tesne pod hlavičku – tak je zoznam hneď
        použiteľný, bez nadpisu nad ním. */
     const scrollToFilters = () => {
-      const styles = getComputedStyle(document.documentElement);
-      // Skutočná výška hlavičky – na telefónoch ju zväčšuje bezpečná zóna.
-      const headerH = document.querySelector('.site-header')?.getBoundingClientRect().height
-        || parseFloat(styles.getPropertyValue('--header-h')) || 82;
-      const adminBar = document.body.classList.contains('admin-bar')
-        ? (window.innerWidth <= 600 ? 0 : (window.innerWidth <= 782 ? 46 : 32))
-        : 0;
-      const top = bar.getBoundingClientRect().top + window.scrollY - headerH - adminBar - 56;
+      const top = bar.getBoundingClientRect().top + window.scrollY - vyskaHlavicky() - 56;
       window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
     };
 
@@ -825,17 +821,10 @@
   if (!links.length) return;
 
   const scrollToSection = (section) => {
-    const styles = getComputedStyle(document.documentElement);
-    // Skutočná výška hlavičky – na telefónoch ju zväčšuje bezpečná zóna.
-      const headerH = document.querySelector('.site-header')?.getBoundingClientRect().height
-        || parseFloat(styles.getPropertyValue('--header-h')) || 82;
     // Zasunutie pod predchádzajúcu sekciu je záporný odstup – odpočítaním
     // záporného čísla sa cieľ posunie práve o toľko.
     const prekryv = parseFloat(getComputedStyle(section).marginTop) || 0;
-    const adminBar = document.body.classList.contains('admin-bar')
-      ? (window.innerWidth <= 600 ? 0 : (window.innerWidth <= 782 ? 46 : 32))
-      : 0;
-    const top = section.getBoundingClientRect().top + window.scrollY - prekryv - headerH - adminBar;
+    const top = section.getBoundingClientRect().top + window.scrollY - prekryv - vyskaHlavicky();
     window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
   };
 

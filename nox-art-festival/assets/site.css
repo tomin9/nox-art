@@ -2996,3 +2996,35 @@ body.nox-art-site > *:not(.scroll-progress):not(#wpadminbar):not(script):not(sty
     top: calc(var(--header-h) + var(--map-gap));
   }
 }
+
+/* =========================================================================
+   Mobil: hlavička presahuje nad okraj okna. Telefóny (iOS Safari) kreslia
+   stránku aj pod stavový riadok, kde sa fixná hlavička s top:0 už
+   nenachádza – v tom páse presvital obsah. Hlavička preto začína nad
+   okrajom okna a o rovnako veľkú výplň má posunutý obsah: viditeľná časť
+   ostáva na mieste, presah navyše prekryje stavový riadok.
+   ========================================================================= */
+@media (max-width: 900px) {
+  .nox-art-site .site-header {
+    --hlavicka-presah: 80px;
+    top: calc(-1 * var(--hlavicka-presah)) !important;
+    padding-top: calc(var(--hlavicka-presah) + 10px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  /* 601–782 px: admin lišta je ešte fixovaná, hlavička patrí pod ňu. */
+  .nox-art-site.admin-bar .site-header {
+    top: calc(46px - var(--hlavicka-presah)) !important;
+  }
+
+  /* Pozadie musí byť nepriehľadné – cez priesvitné by presah nepomohol. */
+  .nox-art-site .site-header.is-scrolled {
+    background: var(--paper);
+  }
+}
+
+@media (max-width: 600px) {
+  /* Admin lišta je tu odrolovateľná, hlavička teda ide úplne nahor. */
+  .nox-art-site.admin-bar .site-header {
+    top: calc(-1 * var(--hlavicka-presah)) !important;
+  }
+}
