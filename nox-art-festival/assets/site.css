@@ -3235,6 +3235,9 @@ body.menu-open .site-header .brand-nox-logo {
    prehliadače tento riadok ignorujú a zostane im pôvodné hidden. */
 .nox-art-site .program{
   overflow:clip;
+  /* Medzi hero a sekciou je aj tak veľký odstup, nemusí ho zdvojovať ešte
+     odsadenie samotnej sekcie. */
+  padding-top:clamp(40px, 5vw, 84px);
 }
 .program-layout{
   display:grid;
