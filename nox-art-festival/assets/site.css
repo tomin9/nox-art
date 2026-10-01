@@ -3363,86 +3363,10 @@ body.menu-open .site-header .brand-nox-logo {
   white-space:nowrap;
 }
 
-/* =========================================================================
-   Hero ako roletka: scrollovaním sa vysunie hore, zatiaľ čo Program a diela
-   pod ňou stoja na mieste; po prvej obrazovke pokračuje stránka úplne
-   normálne.
-
-   Prečo práve takto:
-   • Skript, ktorý obsah dorovnával pri každom snímku, vždy bežal snímok za
-     scrollovaním – spodná stránka viditeľne poskakovala.
-   • Prilepenie (sticky) tu nepomôže: prehliadač neprilepí prvok, ktorý je
-     vyšší než okno, a obsah stránky taký je. Preto sa roletka predtým
-     hýbala aj s obsahom.
-   Zostáva animácia riadená scrollovaním: prehliadač ju počíta priamo pri
-   posune, rovnako ako samotné scrollovanie, takže sa nemajú ako rozísť.
-
-   Mechanika: hero je v normálnom toku a odscrolluje sa sám. Obsah pod ním
-   je na začiatku vytiahnutý o obrazovku hore (teda presne pod roletku) a
-   počas prvej obrazovky sa vracia na svoje miesto – výsledkom je, že stojí.
-   Potom je posun nulový a všetko ide normálne.
-   ========================================================================= */
-/* KĽÚČOVÉ: prototyp má na <body> overflow-x:hidden. Tým sa z neho stáva
-   posuvný kontajner – prilepená mapa pri zozname sa potom vzťahuje naň,
-   lenže body sa neposúva (posúva sa <html>), takže by neprilepila vôbec.
-   overflow:clip oreže vodorovné presahy rovnako, ale posuvný kontajner
-   nevytvára. */
+/* Prototyp má na <body> overflow-x:hidden. Tým sa z neho stáva posuvný
+   kontajner – prilepená mapa pri zozname sa potom vzťahuje naň, lenže body
+   sa neposúva (posúva sa <html>), takže by neprilepila vôbec. overflow:clip
+   oreže vodorovné presahy rovnako, ale posuvný kontajner nevytvára. */
 .nox-art-site{
   overflow-x:clip;
-}
-.nox-art-site .curtain{
-  position:relative;
-  z-index:5;
-  height:100svh;
-  min-height:0;
-}
-.nox-art-site .curtain-below{
-  position:relative;
-  z-index:1;
-}
-/* Prvá sekcia pod roletkou sa už nemá na čo prekrývať – záporný odstup z
-   prototypu by ju len vysunul nad horný okraj okna. */
-.nox-art-site .curtain-below .section:first-child{
-  margin-top:0;
-}
-
-/* Roletka neodchádza rovnomerne – spočiatku sa akoby zdráha a čím je
-   vyššie, tým ide rýchlejšie. Keyframy držia jej zdržanie oproti bežnému
-   scrollovaniu: je nulové na začiatku aj na konci (tam musí sedieť presne)
-   a najväčšie v polovici. Krivka je parabola E·(p − p²) s E = 0,5, len
-   rozpísaná po desatinách – CSS mocninu zapísať nevie. */
-@keyframes nox-curtain-lift{
-  0%{transform:translate3d(0,0,0)}
-  10%{transform:translate3d(0,4.5svh,0)}
-  20%{transform:translate3d(0,8svh,0)}
-  30%{transform:translate3d(0,10.5svh,0)}
-  40%{transform:translate3d(0,12svh,0)}
-  50%{transform:translate3d(0,12.5svh,0)}
-  60%{transform:translate3d(0,12svh,0)}
-  70%{transform:translate3d(0,10.5svh,0)}
-  80%{transform:translate3d(0,8svh,0)}
-  90%{transform:translate3d(0,4.5svh,0)}
-  100%{transform:translate3d(0,0,0)}
-}
-
-@keyframes nox-curtain-reveal{
-  from{transform:translate3d(0,-100svh,0)}
-  to{transform:translate3d(0,0,0)}
-}
-
-/* Prehliadač bez podpory animácií riadených scrollovaním stránku nijako
-   nepokazí – roletka sa jednoducho odscrolluje a obsah ide za ňou. */
-@supports (animation-timeline: scroll()){
-  @media not (prefers-reduced-motion: reduce){
-    .nox-art-site .curtain-below{
-      animation:nox-curtain-reveal linear both;
-      animation-timeline:scroll(root block);
-      animation-range:0 100svh;
-    }
-    .nox-art-site .curtain{
-      animation:nox-curtain-lift linear both;
-      animation-timeline:scroll(root block);
-      animation-range:0 100svh;
-    }
-  }
 }

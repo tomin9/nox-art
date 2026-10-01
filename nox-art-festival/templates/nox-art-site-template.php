@@ -53,23 +53,9 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
 </header>
 
 <main>
-<?php
-/* Hero funguje ako roletka: scrollovaním sa vysunie hore, zatiaľ čo obsah
-   pod ňou stojí (viď .curtain-below v site.css). Keď hero na stránke nie
-   je, nič sa nebalí. */
-$hasHero = in_array('hero', $sections, true);
-$below = array_values(array_diff($sections, ['hero']));
-?>
-<?php if ($hasHero): ?>
-<?php include NOX_ART_DIR . 'templates/parts/hero.php'; ?>
-<div class="curtain-below">
-<?php endif; ?>
-<?php foreach ($below as $section): ?>
+<?php foreach ($sections as $section): ?>
 <?php include NOX_ART_DIR . 'templates/parts/' . $section . '.php'; ?>
 <?php endforeach; ?>
-<?php if ($hasHero): ?>
-</div>
-<?php endif; ?>
 </main>
 
 <footer class="site-footer">
