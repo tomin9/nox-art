@@ -3634,3 +3634,13 @@ body.menu-open .site-header .brand-nox-logo {
 .nox-art-site .program.is-detail{
   padding-top:clamp(28px, 4vw, 60px);
 }
+
+/* Detail je kratší než mapa vedľa neho – nech aspoň nekončí hneď pod
+   textom a stĺpce pôsobia ako jeden celok. */
+.nox-art-site .program.is-detail .program-layout-list{
+  display:flex;
+  flex-direction:column;
+}
+.nox-art-site .program.is-detail [data-view-panel="detail"]{
+  flex:1;
+}

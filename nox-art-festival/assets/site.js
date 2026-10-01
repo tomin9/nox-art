@@ -423,6 +423,12 @@
       view = 'detail';
       syncSubBars();
       apply();
+
+      /* Detail sa otvára aj z dlaždice hlboko v zozname, takže stránku
+         posunieme na začiatok sekcie – inak by človek pozeral na prázdne
+         miesto pod textom a tlačidlo späť by mal nad obrazovkou.
+         O fixnú hlavičku sa stará scroll-margin-top v CSS. */
+      section?.scrollIntoView({ block: 'start', behavior: 'smooth' });
     };
 
     // Klikacia je celá dlaždica, nielen odkaz na mapu – položka bez miesta
