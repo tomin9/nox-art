@@ -648,7 +648,7 @@
       const headerH = parseFloat(styles.getPropertyValue('--header-h')) || 82;
       const prekryv = parseFloat(getComputedStyle(section).marginTop) || 0;   // záporný
       const adminBar = document.body.classList.contains('admin-bar')
-        ? (window.innerWidth <= 782 ? 46 : 32)
+        ? (window.innerWidth <= 600 ? 0 : (window.innerWidth <= 782 ? 46 : 32))
         : 0;
       const top = section.getBoundingClientRect().top + window.scrollY - prekryv - headerH - adminBar;
       window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
@@ -660,7 +660,7 @@
       const styles = getComputedStyle(document.documentElement);
       const headerH = parseFloat(styles.getPropertyValue('--header-h')) || 82;
       const adminBar = document.body.classList.contains('admin-bar')
-        ? (window.innerWidth <= 782 ? 46 : 32)
+        ? (window.innerWidth <= 600 ? 0 : (window.innerWidth <= 782 ? 46 : 32))
         : 0;
       const top = bar.getBoundingClientRect().top + window.scrollY - headerH - adminBar - 56;
       window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
@@ -827,7 +827,7 @@
     // záporného čísla sa cieľ posunie práve o toľko.
     const prekryv = parseFloat(getComputedStyle(section).marginTop) || 0;
     const adminBar = document.body.classList.contains('admin-bar')
-      ? (window.innerWidth <= 782 ? 46 : 32)
+      ? (window.innerWidth <= 600 ? 0 : (window.innerWidth <= 782 ? 46 : 32))
       : 0;
     const top = section.getBoundingClientRect().top + window.scrollY - prekryv - headerH - adminBar;
     window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });

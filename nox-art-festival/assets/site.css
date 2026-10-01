@@ -2903,3 +2903,96 @@ body.menu-open .site-header .brand-nox-logo {
 body.nox-art-site > *:not(.scroll-progress):not(#wpadminbar):not(script):not(style):not(link):not(noscript):has(~ .site-header) {
   display: none !important;
 }
+
+/* =========================================================================
+   Mobil: hlavička a tlačidlo menu
+   ========================================================================= */
+
+/* Na telefónoch s "celoobrazovkovým" prehliadačom siaha stránka až pod
+   stavový riadok – pruh nad hlavičkou, v ktorom presvital obsah. Hlavička
+   si preto o túto bezpečnú zónu rozšíri vlastnú výplň aj pozadie. */
+.nox-art-site .site-header {
+  padding-top: calc(14px + env(safe-area-inset-top, 0px));
+}
+
+@media (max-width: 760px) {
+  .nox-art-site .site-header {
+    padding-top: calc(10px + env(safe-area-inset-top, 0px));
+  }
+}
+
+/* Pozadie hlavičky po odrolovaní musí prekryť aj tú bezpečnú zónu, inak
+   cez ňu presvitá obsah stránky. */
+.nox-art-site .site-header.is-scrolled {
+  background: rgba(239, 238, 220, .92);
+}
+
+/* Tlačidlo menu: téma webu má vlastné štýly pre <button> (rozmery, rámček,
+   polomer, farba), ktoré nám z koliečka robili veľký ružový obdĺžnik.
+   Vynucujeme si vlastný vzhľad. */
+.nox-art-site .menu-toggle {
+  width: 46px !important;
+  height: 46px !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 1.5px solid currentColor !important;
+  border-radius: 50% !important;
+  color: var(--ink) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  text-transform: none !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+.nox-art-site .menu-toggle span {
+  left: 12px !important;
+  width: 22px !important;
+  height: 2px !important;
+  border-radius: 2px !important;
+  background: currentColor !important;
+}
+
+.nox-art-site .menu-toggle span:first-child { top: 17px !important; }
+.nox-art-site .menu-toggle span:last-child { top: 27px !important; }
+
+.nox-art-site.menu-open .menu-toggle {
+  color: var(--paper) !important;
+}
+
+.nox-art-site.menu-open .menu-toggle span:first-child {
+  top: 22px !important;
+  transform: rotate(45deg);
+}
+
+.nox-art-site.menu-open .menu-toggle span:last-child {
+  top: 22px !important;
+  transform: rotate(-45deg);
+}
+
+/* Otvorené menu musí rovnako prekryť bezpečnú zónu a začínať pod hlavičkou. */
+@media (max-width: 900px) {
+  .nox-art-site .main-nav {
+    padding-top: calc(90px + env(safe-area-inset-top, 0px));
+  }
+}
+
+/* Admin lišta WordPressu je do šírky 600 px odrolovateľná (position:absolute),
+   takže hlavička nad ňu nesmie byť odsadená – inak nad ňou zostal pruh, cez
+   ktorý presvital obsah stránky. */
+@media (max-width: 600px) {
+  .nox-art-site.admin-bar .site-header {
+    top: 0 !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .nox-art-site.admin-bar .program-layout-map {
+    top: calc(var(--header-h) + var(--map-gap));
+  }
+}
