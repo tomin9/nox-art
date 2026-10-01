@@ -645,7 +645,9 @@
     const scrollToSection = () => {
       if (!section) return;
       const styles = getComputedStyle(document.documentElement);
-      const headerH = parseFloat(styles.getPropertyValue('--header-h')) || 82;
+      // Skutočná výška hlavičky – na telefónoch ju zväčšuje bezpečná zóna.
+      const headerH = document.querySelector('.site-header')?.getBoundingClientRect().height
+        || parseFloat(styles.getPropertyValue('--header-h')) || 82;
       const prekryv = parseFloat(getComputedStyle(section).marginTop) || 0;   // záporný
       const adminBar = document.body.classList.contains('admin-bar')
         ? (window.innerWidth <= 600 ? 0 : (window.innerWidth <= 782 ? 46 : 32))
@@ -658,7 +660,9 @@
        použiteľný, bez nadpisu nad ním. */
     const scrollToFilters = () => {
       const styles = getComputedStyle(document.documentElement);
-      const headerH = parseFloat(styles.getPropertyValue('--header-h')) || 82;
+      // Skutočná výška hlavičky – na telefónoch ju zväčšuje bezpečná zóna.
+      const headerH = document.querySelector('.site-header')?.getBoundingClientRect().height
+        || parseFloat(styles.getPropertyValue('--header-h')) || 82;
       const adminBar = document.body.classList.contains('admin-bar')
         ? (window.innerWidth <= 600 ? 0 : (window.innerWidth <= 782 ? 46 : 32))
         : 0;
@@ -822,7 +826,9 @@
 
   const scrollToSection = (section) => {
     const styles = getComputedStyle(document.documentElement);
-    const headerH = parseFloat(styles.getPropertyValue('--header-h')) || 82;
+    // Skutočná výška hlavičky – na telefónoch ju zväčšuje bezpečná zóna.
+      const headerH = document.querySelector('.site-header')?.getBoundingClientRect().height
+        || parseFloat(styles.getPropertyValue('--header-h')) || 82;
     // Zasunutie pod predchádzajúcu sekciu je záporný odstup – odpočítaním
     // záporného čísla sa cieľ posunie práve o toľko.
     const prekryv = parseFloat(getComputedStyle(section).marginTop) || 0;

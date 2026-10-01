@@ -24,7 +24,9 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
 <html <?php language_attributes(); ?>>
 <head>
 <meta charset="<?php bloginfo('charset'); ?>">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<?php /* viewport-fit=cover: stránka siaha až pod stavový riadok telefónu, takže
+   fixná hlavička ho prekryje vlastným pozadím (výplň dopĺňa env(safe-area-inset-top)). */ ?>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="NOX:ART — medzinárodný festival súčasného umenia na sídlisku Píly v Prievidzi, 30.–31. októbra 2026.">
 <meta name="theme-color" content="#efeedc">
 <title><?php echo esc_html(get_the_title() ?: 'NOX:ART — Sídlisko Píly, Prievidza'); ?></title>
