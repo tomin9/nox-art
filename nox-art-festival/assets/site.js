@@ -608,6 +608,24 @@ function vyskaHlavicky() {
     /* Mapa ukazuje len to, čo je práve v zozname: pri skupine jej položky,
        v detaile jediný bod, v harmonograme všetko, čo má čas. Zoznam miest
        posielame mape udalosťou, aby o sebe tie dve časti nemuseli vedieť. */
+    /* Počítadlo nad mapou: koľko položiek je práve vo výbere a v akom tvare
+       ("20 diel", "10 podujatí", "6 inštalácií"). Tvary slov podľa kategórie
+       posiela server v NOX_SITE_MAP.pocty. */
+    const countEl = document.querySelector('[data-map-count]');
+    const tvarSlova = (pocet, tvary) => {
+      if (pocet === 1) return tvary[0];
+      if (pocet >= 2 && pocet <= 4) return tvary[1];
+      return tvary[2];
+    };
+
+    const updateCount = (tiles) => {
+      if (!countEl) return;
+      const tvary = (window.NOX_SITE_MAP || {}).pocty || {};
+      const kluc = view === 'harmonogram' ? '_harmonogram' : (child || parent);
+      const tvar = tvary[kluc] || tvary._default || ['položka', 'položky', 'položiek'];
+      countEl.textContent = `${tiles.length} ${tvarSlova(tiles.length, tvar)} / Sídlisko Píly`;
+    };
+
     const syncMap = () => {
       let tiles = [];
       if (view === 'detail') {
@@ -630,6 +648,8 @@ function vyskaHlavicky() {
         if (!body.has(miesto)) body.set(miesto, []);
         body.get(miesto).push({ id: tile.id, cislo: tile.dataset.cislo || '', pin: tile.dataset.pin || '' });
       });
+
+      updateCount(tiles);
 
       window.dispatchEvent(new CustomEvent('nox:map-filter', {
         detail: { miesta: [...body.keys()], body: Object.fromEntries(body) },

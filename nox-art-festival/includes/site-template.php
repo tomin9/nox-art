@@ -194,6 +194,7 @@ function nox_art_site_enqueue_assets() {
             'diela' => nox_art_data_diela(),
             'farby' => nox_art_category_colors(),
             'cisla' => nox_art_site_map_numbers(),
+            'pocty' => nox_art_site_count_labels(),
             'mapboxJs' => 'https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js',
             'mapboxCss' => 'https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css',
         ]);
@@ -452,6 +453,27 @@ function nox_art_site_time_label($datum, $cas_od, $cas_do) {
     if ($cas) $parts[] = $cas;
 
     return implode(' · ', $parts);
+}
+
+/**
+ * Tvary slov pre počítadlo nad mapou – podľa toho, ktorá skupina je práve
+ * vybraná ("20 diel", "10 podujatí", "6 inštalácií"). Kľúč je slug kategórie,
+ * hodnoty sú tvary pre 1 / 2–4 / 5 a viac. Doplniť vlastnú kategóriu sa dá
+ * filtrom nox_art_pocitadlo_tvary.
+ */
+function nox_art_site_count_labels() {
+    $tvary = [
+        'diela' => ['dielo', 'diela', 'diel'],
+        'instalacie' => ['inštalácia', 'inštalácie', 'inštalácií'],
+        'nove-sgrafita' => ['nové sgrafito', 'nové sgrafitá', 'nových sgrafít'],
+        'zive-sgrafita' => ['živé sgrafito', 'živé sgrafitá', 'živých sgrafít'],
+        'galeria-ulice' => ['dielo', 'diela', 'diel'],
+        'sprievodny-program' => ['podujatie', 'podujatia', 'podujatí'],
+        'partnerske-podniky' => ['podnik', 'podniky', 'podnikov'],
+        '_harmonogram' => ['podujatie', 'podujatia', 'podujatí'],
+        '_default' => ['položka', 'položky', 'položiek'],
+    ];
+    return apply_filters('nox_art_pocitadlo_tvary', $tvary);
 }
 
 /**

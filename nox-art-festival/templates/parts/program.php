@@ -9,6 +9,17 @@
  */
 $polozky = nox_art_site_items();
 $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto', 'nox_podnik']);
+
+// Počítadlo nad mapou začína pri prvej skupine – rovnako, ako je nastavený
+// filter. Ďalej ho už prepisuje skript podľa toho, čo je práve vo výbere.
+$prvaSkupina = $filtre ? $filtre[0]['term']->slug : '';
+$prvyPocet = 0;
+foreach ($polozky as $polozka) {
+    if (!$prvaSkupina || in_array($prvaSkupina, $polozka['kategorie'], true)) $prvyPocet++;
+}
+$tvary = nox_art_site_count_labels();
+$tvar = $tvary[$prvaSkupina] ?? $tvary['_default'];
+$prvySlovo = $prvyPocet === 1 ? $tvar[0] : ($prvyPocet >= 2 && $prvyPocet <= 4 ? $tvar[1] : $tvar[2]);
 ?>
 <section class="section program" id="program" aria-labelledby="program-title">
   <div class="section-label section-label-light reveal"><span>01</span> Program a diela</div>
@@ -129,8 +140,10 @@ $filtre = nox_art_filter_tree(['nox_program', 'nox_dielo', 'nox_miesto', 'nox_po
   <aside class="program-layout-map reveal" id="mapa" aria-label="Mapa festivalových diel">
     <div class="route-map">
       <div class="route-map-head">
-        <p>Mapa diel</p>
-        <span><?php echo (int) count($miesta); ?> miest / Sídlisko Píly</span>
+        <p>Festivalová mapa</p>
+        <?php /* Počet sa prepisuje podľa toho, čo je práve vo výbere – skript
+                 doplní aj správny tvar slova ("20 diel", "6 inštalácií"). */ ?>
+        <span data-map-count><?php echo (int) $prvyPocet . ' ' . esc_html($prvySlovo); ?> / Sídlisko Píly</span>
       </div>
       <div class="route-map-stage">
         <div class="site-map-wrap"><div id="nox-site-map" class="site-map"></div></div>
