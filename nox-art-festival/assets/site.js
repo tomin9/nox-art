@@ -312,6 +312,14 @@ function vyskaHlavicky() {
 
     mapboxgl.accessToken = config.token;
     const pts = config.miesta.filter((m) => m.lat != null && m.lng != null);
+    /* Miesta označené v administrácii ako "mimo výrezu" (napr. dielo na druhom
+       konci mesta) sa do automatického výrezu nerátajú – inak by sa kvôli
+       jedinému bodu oddialila celá mapa. Značku na mape majú ako ostatné. */
+    const mimoVyrez = new Set(pts.filter((m) => m.mimoVyrez).map((m) => String(m.id)));
+    const preVyrez = (zoznam) => {
+      const vybrane = zoznam.filter((polozka) => !mimoVyrez.has(String(polozka.id)));
+      return vybrane.length ? vybrane : zoznam;   // keď ostal len vzdialený bod, výrez patrí jemu
+    };
     const center = pts.length ? [pts[0].lng, pts[0].lat] : [18.6045, 48.7715];
 
     map = new mapboxgl.Map({
@@ -375,10 +383,13 @@ function vyskaHlavicky() {
         });
       });
 
-      if (pts.length > 1) {
+      const vychodzie = preVyrez(pts);
+      if (vychodzie.length > 1) {
         const bounds = new mapboxgl.LngLatBounds();
-        pts.forEach((m) => bounds.extend([m.lng, m.lat]));
+        vychodzie.forEach((m) => bounds.extend([m.lng, m.lat]));
         map.fitBounds(bounds, { padding: 60, maxZoom: 16, duration: 0 });
+      } else if (vychodzie.length === 1) {
+        map.setCenter([vychodzie[0].lng, vychodzie[0].lat]);
       }
 
       // Filtrovacia časť stihla výber poslať skôr, než mapa dokončila načítanie –
@@ -390,12 +401,27 @@ function vyskaHlavicky() {
     /* Prejdenie kurzorom nad dlaždicou zvýrazní jej značku na mape – nie je
        na to treba klikať. Značku hľadáme až pri prejdení, lebo v čase, keď
        sa tieto poslucháče pripájajú, mapa ešte značky vytvorené nemá. */
+    let predHoverom = null;
+
     const hoverMarker = (miestoId, on, tile) => {
       const marker = markers[miestoId];
       if (!marker) return;
 
       const el = marker.getElement();
       el.classList.toggle('is-hovered', on);
+
+      /* Vzdialené miesto je síce na mape, ale mimo aktuálneho výrezu – pri
+         prejdení kurzorom ho mape ukážeme a po odídení sa vráti pôvodný
+         pohľad, nech sa výrez sám od seba nemení. */
+      if (mimoVyrez.has(String(miestoId))) {
+        if (on) {
+          if (!predHoverom) predHoverom = { center: map.getCenter(), zoom: map.getZoom() };
+          map.easeTo({ center: marker.getLngLat(), zoom: Math.max(map.getZoom(), 15), duration: 500 });
+        } else if (predHoverom) {
+          map.easeTo({ center: predHoverom.center, zoom: predHoverom.zoom, duration: 500 });
+          predHoverom = null;
+        }
+      }
 
       /* Keď značka zastupuje viac vecí, ukazuje tri bodky – pri prejdení
          kurzorom nad dlaždicou v nej ukážeme číslo a farbu práve tej položky,
@@ -488,7 +514,7 @@ function vyskaHlavicky() {
         const el = markers[id].getElement();
         el.classList.toggle('is-map-hidden', !show);
         if (!show) return;
-        viditelne.push(markers[id]);
+        viditelne.push({ id: String(id), marker: markers[id] });
 
         // Číslo a farba podľa položiek, ktoré značku do výberu dostali.
         const polozky = vyberBodov[id] || [];
@@ -503,12 +529,13 @@ function vyskaHlavicky() {
       if (!map || !prisposobVyrez || !viditelne.length) return;
 
       // Výrez prispôsobíme tomu, čo zostalo – pri jedinom bode naň priblížime.
-      if (viditelne.length === 1) {
-        map.flyTo({ center: viditelne[0].getLngLat(), zoom: Math.max(map.getZoom(), 16), duration: 600 });
+      const vyrez = preVyrez(viditelne);
+      if (vyrez.length === 1) {
+        map.flyTo({ center: vyrez[0].marker.getLngLat(), zoom: Math.max(map.getZoom(), 16), duration: 600 });
         return;
       }
       const bounds = new mapboxgl.LngLatBounds();
-      viditelne.forEach((marker) => bounds.extend(marker.getLngLat()));
+      vyrez.forEach((polozka) => bounds.extend(polozka.marker.getLngLat()));
       map.fitBounds(bounds, { padding: 60, maxZoom: 16, duration: 600 });
     };
 

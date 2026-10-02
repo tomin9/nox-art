@@ -28,6 +28,7 @@ function nox_art_render_miesto_metabox($post) {
     wp_nonce_field('nox_art_save_miesto', 'nox_art_miesto_nonce');
     $lat = get_post_meta($post->ID, '_nox_lat', true);
     $lng = get_post_meta($post->ID, '_nox_lng', true);
+    $mimo_vyrez = get_post_meta($post->ID, '_nox_mimo_vyrez', true);
     ?>
     <p class="description">Názov miesta je zároveň jeho adresa – zadávaj ju do nadpisu záznamu.</p>
     <p>
@@ -39,6 +40,15 @@ function nox_art_render_miesto_metabox($post) {
         <label style="flex:1">Lat<br><input type="text" id="nox_lat" name="nox_lat" class="widefat" value="<?php echo esc_attr($lat); ?>"></label>
         <label style="flex:1">Lng<br><input type="text" id="nox_lng" name="nox_lng" class="widefat" value="<?php echo esc_attr($lng); ?>"></label>
     </p>
+    <p>
+        <label>
+            <input type="checkbox" name="nox_mimo_vyrez" value="1" <?php checked($mimo_vyrez, '1'); ?>>
+            Nezahŕňať do automatického výrezu mapy
+        </label><br>
+        <span class="description">Pre vzdialené miesto – značka na mape zostane,
+        ale mapa sa kvôli nemu nebude oddiaľovať. Zobrazí sa, až keď na jeho
+        položku prejdeš kurzorom alebo ju otvoríš.</span>
+    </p>
     <?php
 }
 
@@ -47,6 +57,11 @@ function nox_art_save_miesto($post_id) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
     if (!current_user_can('edit_post', $post_id)) return;
 
+    if (!empty($_POST['nox_mimo_vyrez'])) {
+        update_post_meta($post_id, '_nox_mimo_vyrez', '1');
+    } else {
+        delete_post_meta($post_id, '_nox_mimo_vyrez');
+    }
     if (isset($_POST['nox_lat']) && $_POST['nox_lat'] !== '') {
         update_post_meta($post_id, '_nox_lat', (float) $_POST['nox_lat']);
     } else {

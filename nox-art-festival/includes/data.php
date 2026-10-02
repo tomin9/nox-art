@@ -29,6 +29,8 @@ function nox_art_data_miesta() {
             'adresa' => get_post_meta($p->ID, '_nox_adresa', true) ?: get_the_title($p),
             'lat' => $lat !== '' ? (float) $lat : null,
             'lng' => $lng !== '' ? (float) $lng : null,
+            // Vzdialené miesto, ktoré nemá naťahovať výrez mapy.
+            'mimoVyrez' => (bool) get_post_meta($p->ID, '_nox_mimo_vyrez', true),
         ];
     }, $posts);
 }

@@ -121,6 +121,9 @@ function nox_art_miesto_column_content($column, $post_id) {
         $lat = get_post_meta($post_id, '_nox_lat', true);
         $lng = get_post_meta($post_id, '_nox_lng', true);
         echo ($lat !== '' && $lng !== '') ? esc_html($lat . ', ' . $lng) : '<span style="color:#b32d2e">chýbajú</span>';
+        if (get_post_meta($post_id, '_nox_mimo_vyrez', true)) {
+            echo '<br><span style="color:#787c82">mimo výrezu mapy</span>';
+        }
     }
 }
 add_action('manage_nox_miesto_posts_custom_column', 'nox_art_miesto_column_content', 10, 2);
