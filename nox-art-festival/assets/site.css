@@ -3594,3 +3594,8 @@ body.nox-art-site,
   z-index: 2;
   margin-top: clamp(-16px, -1vw, -8px);
 }
+
+/* O festivale má o odtieň svetlejší podklad než zvyšok stránky. */
+.nox-art-site .about {
+  background: var(--cream);
+}
