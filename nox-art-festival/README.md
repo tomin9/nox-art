@@ -65,3 +65,32 @@ location ~* \.(css|js|png|jpe?g|gif|webp|avif|svg|ico|woff2?)$ {
 Čo ešte pomôže, ale je mimo pluginu: HTTP/2 alebo HTTP/3, CDN pred webom
 a obmedzenie pluginov, ktoré do hlavičky pridávajú vlastné skripty
 (analytika, SEO nástroje).
+
+## Festival na vlastnej doméne
+
+Plugin vie festival servírovať na samostatnej doméne (napr. `noxart.sk`) bez
+druhej inštalácie WordPressu – ide stále o ten istý web a tú istú
+administráciu.
+
+Postup:
+
+1. **Na hostingu** (WebSupport) pridaj doménu k tomu istému hostingu/webu ako
+   alias – teda nech ukazuje na rovnaký `document root` ako doterajšia doména.
+   Nastav DNS (A záznam, prípadne CNAME pre `www`) a daj vystaviť certifikát
+   Let's Encrypt, nech doména beží cez HTTPS.
+2. **V administrácii** choď do **NOX:ART → Nastavenia → Vlastná doména
+   festivalu**, zadaj `noxart.sk` a ulož. Zaškrtnutá voľba presmerovania
+   zároveň natrvalo (301) presmeruje pôvodnú adresu festivalovej stránky na
+   novú doménu, aby obsah nebol na dvoch miestach.
+
+Čo sa tým zapne:
+
+- na festivalovej doméne je festivalová stránka rovno na `/`, jednotlivé
+  pohľady na `/diela/`, `/sprievodny-program/`, `/harmonogram/` a detaily na
+  `/diela/<slug>/`,
+- odkazy aj adresy súborov sa prepisujú na festivalovú doménu,
+- WordPress na nej nepresmerováva späť na adresu webu z Nastavení,
+- stránka má kanonický odkaz na festivalovú doménu.
+
+Nastavenia → Všeobecné (adresa WordPressu a webu) sa nemenia – hlavný web aj
+administrácia zostávajú na pôvodnej doméne.

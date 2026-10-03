@@ -114,6 +114,10 @@ function nox_art_handle_save_map_settings() {
     $dolozky = isset($_POST['nox_art_support_notes']) ? sanitize_textarea_field($_POST['nox_art_support_notes']) : '';
     update_option(NOX_ART_SUPPORT_OPTION, $dolozky);
 
+    $domena = isset($_POST['nox_art_festival_domain']) ? sanitize_text_field($_POST['nox_art_festival_domain']) : '';
+    update_option(NOX_ART_DOMAIN_OPTION, $domena);
+    update_option('nox_art_festival_domain_redirect', empty($_POST['nox_art_festival_domain_redirect']) ? '' : '1');
+
     wp_safe_redirect(add_query_arg(['page' => 'nox-art-map-settings', 'nox_art_notice' => 'saved'], admin_url('admin.php')));
     exit;
 }
@@ -159,6 +163,28 @@ function nox_art_render_map_settings_page() {
                 </tr>
                 <?php endforeach; ?>
             </table>
+            <h2>Vlastná doména festivalu</h2>
+            <p>Keď je doména nasmerovaná na tento hosting, festival sa na nej zobrazí rovno na úvodnej strane
+            (napr. <code>noxart.sk/diela/</code>). Pôvodná adresa stránky sa potom natrvalo presmeruje sem.</p>
+            <table class="form-table" role="presentation">
+                <tr>
+                    <th scope="row"><label for="nox_art_festival_domain">Doména</label></th>
+                    <td>
+                        <input type="text" id="nox_art_festival_domain" name="nox_art_festival_domain" class="regular-text" style="width:480px" value="<?php echo esc_attr(get_option(NOX_ART_DOMAIN_OPTION, '')); ?>" placeholder="noxart.sk">
+                        <p class="description">Bez <code>https://</code> aj bez lomky. Prázdne pole = festival ostáva len na pôvodnej adrese.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Presmerovanie</th>
+                    <td>
+                        <label>
+                            <input type="checkbox" name="nox_art_festival_domain_redirect" value="1" <?php checked(get_option('nox_art_festival_domain_redirect', '1'), '1'); ?>>
+                            Pôvodnú adresu festivalovej stránky natrvalo (301) presmerovať na novú doménu
+                        </label>
+                    </td>
+                </tr>
+            </table>
+
             <h2>Doložky o podpore</h2>
             <p>Vypíšu sa pod logami partnerov, každý riadok ako samostatná veta. Prázdne pole znamená predvolený zoznam.</p>
             <table class="form-table" role="presentation">

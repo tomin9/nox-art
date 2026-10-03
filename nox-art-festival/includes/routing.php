@@ -77,5 +77,6 @@ function nox_art_route_current() {
 function nox_art_route_base() {
     $id = get_queried_object_id();
     $url = $id ? get_permalink($id) : home_url('/');
-    return user_trailingslashit(trailingslashit($url));
+    // Na vlastnej festivalovej doméne je základom jej koreň (includes/domain.php).
+    return apply_filters('nox_art_route_base', user_trailingslashit(trailingslashit($url)));
 }
