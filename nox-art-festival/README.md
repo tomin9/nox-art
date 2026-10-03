@@ -118,3 +118,13 @@ stránkou webu a adresy vyzerajú `noxart.sk/diela/`, `noxart.sk/diela/<slug>/`.
 6. Na pôvodnom webe nechaj plugin aktívny a v jeho nastaveniach vyplň
    **Vlastná doména festivalu** = `noxart.sk` so zapnutým presmerovaním –
    stará adresa festivalu sa tak natrvalo presmeruje na nový web.
+
+## Adresy sekcií a SEO
+
+Na stránke s celým festivalom majú položky menu vlastné adresy: `/program/`,
+`/o-festivale/`, `/partneri/` (spolu s `/diela/`, `/podniky/`, `/harmonogram/`
+a detailmi `/diela/the-moon/`). Kliknutie v menu stránku posunie na sekciu
+a adresu zapíše do adresného riadka; priamo otvorená adresa sa posunie na
+rovnakú sekciu. Každá adresa má vlastný titulok, popis, kanonický odkaz
+a Open Graph značky (`includes/seo.php`), stránka obsahuje zápis udalosti
+schema.org/Event a adresy sekcií sú vo `wp-sitemap.xml`.

@@ -187,6 +187,19 @@ function nox_art_site_link($section, $anchor = null) {
 function nox_art_site_nav_items() {
     $current = nox_art_site_sections();
     $items = [];
+    $anchors = nox_art_site_anchors();
+
+    // Na stránke so všetkými sekciami má každá položka menu vlastnú adresu
+    // (/program/, /o-festivale/, /partneri/) – vyhľadávač ju vidí ako odkaz
+    // a skript ju po kliknutí len zapíše do adresného riadka.
+    $podstranky = [];
+    if (in_array('program', $current, true) && count($current) >= 3) {
+        $base = nox_art_route_base();
+        foreach (nox_art_route_sections() as $slug => $def) {
+            $podstranky[$def['section']] = $base . $slug . '/';
+        }
+    }
+
     foreach ([
         'program' => 'Program a diela',
         'about' => 'O festivale',
@@ -194,7 +207,9 @@ function nox_art_site_nav_items() {
     ] as $section => $label) {
         $items[] = [
             'label' => $label,
-            'url' => nox_art_site_link($section),
+            'url' => isset($podstranky[$section]) ? esc_url($podstranky[$section]) : nox_art_site_link($section),
+            'anchor' => $anchors[$section] ?? '',
+            'podstranka' => isset($podstranky[$section]),
             // Za "aktuálnu" považujeme položku len na podstránke, ktorá danú
             // sekciu skutočne obsahuje – nie na stránke so všetkým naraz.
             'current' => in_array($section, $current, true) && count($current) <= 2,
@@ -230,6 +245,8 @@ function nox_art_site_enqueue_assets() {
             'base' => nox_art_route_base(),
             'view' => $route['view'],
             'item' => $route['item'],
+            'section' => $route['section'],
+            'sections' => array_map(function ($def) { return $def['anchor']; }, nox_art_route_sections()),
             'harmonogram' => 'harmonogram',
         ]);
     }

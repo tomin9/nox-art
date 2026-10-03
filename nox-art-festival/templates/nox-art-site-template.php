@@ -27,10 +27,12 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
 <?php /* viewport-fit=cover: stránka siaha až pod stavový riadok telefónu, takže
    fixná hlavička ho prekryje vlastným pozadím (výplň dopĺňa env(safe-area-inset-top)). */ ?>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="NOX:ART — medzinárodný festival súčasného umenia na sídlisku Píly v Prievidzi, 30.–31. októbra 2026.">
+<?php $seo = nox_art_site_seo(); ?>
+<meta name="description" content="<?php echo esc_attr($seo['description']); ?>">
 <meta name="theme-color" content="#efeedc">
-<title><?php echo esc_html(get_the_title() ?: 'NOX:ART — Sídlisko Píly, Prievidza'); ?></title>
+<title><?php echo esc_html($seo['title']); ?></title>
 <link rel="icon" href="<?php echo nox_art_site_asset('favicon.svg'); ?>" type="image/svg+xml">
+<?php nox_art_site_seo_head($seo); ?>
 <?php wp_head(); ?>
 </head>
 <body <?php body_class('nox-art-site'); ?>>
@@ -52,7 +54,7 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
   </button>
   <nav class="main-nav" id="main-nav" aria-label="Hlavná navigácia">
     <?php foreach (nox_art_site_nav_items() as $item): ?>
-    <a href="<?php echo $item['url']; ?>"<?php echo $item['current'] ? ' class="is-active" aria-current="page"' : ''; ?>><?php echo esc_html($item['label']); ?></a>
+    <a href="<?php echo $item['url']; ?>"<?php echo $item['anchor'] ? ' data-anchor="' . esc_attr($item['anchor']) . '"' : ''; ?><?php echo !empty($item['podstranka']) ? ' data-podstranka' : ''; ?><?php echo $item['current'] ? ' class="is-active" aria-current="page"' : ''; ?>><?php echo esc_html($item['label']); ?></a>
     <?php endforeach; ?>
     <a class="nav-pill" href="<?php echo nox_art_site_link('newsletter'); ?>">Newsletter <span aria-hidden="true">↗</span></a>
     <?php /* Ikony sietí sa spravujú v NOX:ART → Nastavenia; prázdny odkaz
@@ -88,7 +90,7 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
     </a>
     <div class="footer-links">
       <?php foreach (nox_art_site_nav_items() as $item): ?>
-      <a href="<?php echo $item['url']; ?>"><?php echo esc_html($item['label']); ?></a>
+      <a href="<?php echo $item['url']; ?>"<?php echo $item['anchor'] ? ' data-anchor="' . esc_attr($item['anchor']) . '"' : ''; ?><?php echo !empty($item['podstranka']) ? ' data-podstranka' : ''; ?>><?php echo esc_html($item['label']); ?></a>
       <?php endforeach; ?>
     </div>
     <?php if (array_filter($socialne)): ?>

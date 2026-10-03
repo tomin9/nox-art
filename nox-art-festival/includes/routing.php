@@ -56,8 +56,36 @@ function nox_art_route_aliases() {
     return apply_filters('nox_art_route_aliases', $aliasy);
 }
 
+/**
+ * Sekcie stránky, ktoré majú vlastnú adresu (noxart.sk/program/). Obsah je
+ * ten istý celý web, no každá adresa má vlastný titulok, popis a kanonický
+ * odkaz (nox_art_site_seo) a po otvorení sa stránka posunie na svoju sekciu.
+ */
+function nox_art_route_sections() {
+    return [
+        'program' => [
+            'section' => 'program',
+            'anchor' => 'program',
+            'title' => 'Program a diela',
+            'description' => 'Diela, sprievodný program a časový harmonogram festivalu NOX:ART na sídlisku Píly v Prievidzi, 30.–31. októbra 2026.',
+        ],
+        'o-festivale' => [
+            'section' => 'about',
+            'anchor' => 'festival',
+            'title' => 'O festivale',
+            'description' => 'NOX:ART: dve noci súčasného umenia vo verejnom priestore sídliska Píly v Prievidzi, 30.–31. októbra 2026.',
+        ],
+        'partneri' => [
+            'section' => 'partners',
+            'anchor' => 'partneri',
+            'title' => 'Partneri',
+            'description' => 'Organizátor, generálny partner, partneri a mediálni partneri festivalu NOX:ART v Prievidzi.',
+        ],
+    ];
+}
+
 function nox_art_route_view_slugs() {
-    $slugy = array_merge(['harmonogram'], array_keys(nox_art_route_aliases()));
+    $slugy = array_merge(['harmonogram'], array_keys(nox_art_route_sections()), array_keys(nox_art_route_aliases()));
     $terms = get_terms(['taxonomy' => 'nox_kategoria', 'hide_empty' => false]);
     if (!is_wp_error($terms)) {
         foreach ($terms as $term) $slugy[] = $term->slug;
@@ -113,9 +141,13 @@ add_action('wp_loaded', 'nox_art_route_maybe_flush', 20);
  */
 function nox_art_route_current() {
     $pohlad = sanitize_title(get_query_var('nox_view'));
+    if (isset(nox_art_route_sections()[$pohlad])) {
+        return ['view' => '', 'item' => '', 'section' => $pohlad];
+    }
     $aliasy = nox_art_route_aliases();
     if (isset($aliasy[$pohlad])) $pohlad = $aliasy[$pohlad];
     return [
+        'section' => '',
         'view' => $pohlad,
         'item' => sanitize_title(get_query_var('nox_item')),
     ];

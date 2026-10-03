@@ -134,7 +134,7 @@ function vyskaHlavicky() {
   });
 
   const observedSections = document.querySelectorAll('main section[id]');
-  const navigationLinks = document.querySelectorAll('.main-nav a[href^="#"]:not(.nav-pill)');
+  const navigationLinks = document.querySelectorAll('.main-nav a[data-anchor], .main-nav a[href^="#"]:not(.nav-pill)');
 
   if ('IntersectionObserver' in window) {
     const navObserver = new IntersectionObserver((entries) => {
@@ -144,7 +144,8 @@ function vyskaHlavicky() {
 
       if (!visible) return;
       navigationLinks.forEach((link) => {
-        link.classList.toggle('is-active', link.getAttribute('href') === `#${visible.target.id}`);
+        const kotva = link.dataset.anchor || (link.getAttribute('href') || '').replace(/^.*#/, '');
+        link.classList.toggle('is-active', kotva === visible.target.id);
       });
     }, { rootMargin: '-25% 0px -60% 0px', threshold: [0.01, 0.15, 0.35] });
 
@@ -663,8 +664,10 @@ function vyskaHlavicky() {
       return skupina;
     };
 
+    let potlacAdresu = false;
+
     function aktualizujAdresu() {
-      if (!route || !window.history?.replaceState) return;
+      if (!route || !window.history?.replaceState || potlacAdresu) return;
       // Kým človek nič neprepol, adresu nechávame tak, ako prišiel.
       if (!adresaPripravena && !route.view) return;
 
@@ -886,13 +889,16 @@ function vyskaHlavicky() {
       });
     });
 
-    document.querySelectorAll('.main-nav a[href*="#"], .footer-links a[href*="#"]').forEach((link) => {
+    document.querySelectorAll('.main-nav a[data-anchor], .main-nav a[href*="#"], .footer-links a[data-anchor], .footer-links a[href*="#"]').forEach((link) => {
       link.addEventListener('click', () => {
-        const hash = (link.getAttribute('href') || '').split('#')[1];
+        const hash = link.dataset.anchor || (link.getAttribute('href') || '').split('#')[1];
         if (!section || hash !== section.id || view !== 'detail') return;
         view = 'items';
         syncSubBars();
+        // Adresu pri skoku z menu zapíše handler menu (/program/), nie filter.
+        potlacAdresu = true;
         apply();
+        potlacAdresu = false;
       });
     });
 
@@ -935,25 +941,34 @@ function vyskaHlavicky() {
       aktualizujAdresu();
       adresaPripravena = true;
 
-      // Odkaz na pohľad (/diela, /podniky …) má otvoriť sekciu s programom,
-      // nie začiatok stránky.
-      if (route.view) {
-        const sekcia = document.getElementById('program');
-        if (sekcia) {
-          const posun = () => {
-            const y = sekcia.getBoundingClientRect().top + window.scrollY - vyskaHlavicky();
-            window.scrollTo(0, Math.max(0, y));
-          };
-          posun();
-          // Obrázky a písmo sa dotiahnu neskôr a posunú rozloženie.
-          window.addEventListener('load', () => setTimeout(posun, 80), { once: true });
-        }
+      // Adresa sekcie (/program, /o-festivale, /partneri) alebo pohľadu
+      // (/diela, /podniky …) má otvoriť príslušnú sekciu, nie začiatok stránky.
+      const cielovaKotva = route.section ? (route.sections || {})[route.section] : (route.view ? 'program' : '');
+      const cielovaSekcia = cielovaKotva ? document.getElementById(cielovaKotva) : null;
+      if (cielovaSekcia) {
+        const posun = () => {
+          const prekryv = parseFloat(getComputedStyle(cielovaSekcia).marginTop) || 0;
+          const y = cielovaSekcia.getBoundingClientRect().top + window.scrollY - prekryv - vyskaHlavicky();
+          window.scrollTo(0, Math.max(0, y));
+        };
+        posun();
+        // Obrázky a písmo sa dotiahnu neskôr a posunú rozloženie.
+        window.addEventListener('load', () => setTimeout(posun, 80), { once: true });
       }
 
       // Späť/dopredu v prehliadači: cestu prečítame z adresy.
       window.addEventListener('popstate', () => {
         const zvysok = window.location.pathname.replace(zakladCesty, '');
         const [pohlad, polozka] = zvysok.split('/').filter(Boolean);
+        const kotvaSekcie = pohlad && (route.sections || {})[pohlad];
+        if (kotvaSekcie || !pohlad) {
+          // Adresa sekcie len posunie stránku, filter ani detail nemení.
+          const cielSekcie = kotvaSekcie ? document.getElementById(kotvaSekcie) : null;
+          const prekryv = cielSekcie ? (parseFloat(getComputedStyle(cielSekcie).marginTop) || 0) : 0;
+          const y = cielSekcie ? cielSekcie.getBoundingClientRect().top + window.scrollY - prekryv - vyskaHlavicky() : 0;
+          window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+          return;
+        }
         adresaPripravena = false;
         if (!pohlad) chips[0]?.click();
         else pouziCestu(pohlad, polozka);
@@ -1011,7 +1026,7 @@ function vyskaHlavicky() {
    pruh predošlej sekcie. Počítame to preto sami, pre všetky sekcie rovnako.
    ========================================================================= */
 (() => {
-  const links = [...document.querySelectorAll('.main-nav a[href*="#"], .footer-links a[href*="#"]')];
+  const links = [...document.querySelectorAll('.main-nav a[data-anchor], .main-nav a[href*="#"], .footer-links a[data-anchor], .footer-links a[href*="#"]')];
   if (!links.length) return;
 
   const scrollToSection = (section) => {
@@ -1024,7 +1039,7 @@ function vyskaHlavicky() {
 
   links.forEach((link) => {
     link.addEventListener('click', (event) => {
-      const hash = (link.getAttribute('href') || '').split('#')[1];
+      const hash = link.dataset.anchor || (link.getAttribute('href') || '').split('#')[1];
       if (!hash) return;
       const section = document.getElementById(hash);
       if (!section) return;   // odkaz vedie na inú podstránku
@@ -1033,6 +1048,15 @@ function vyskaHlavicky() {
       if (section.hasAttribute('data-newsletter-dock')) return;
       event.preventDefault();
       scrollToSection(section);
+
+      // Odkaz s vlastnou adresou (/program/) ju po kliknutí zapíše do
+      // adresného riadka, nech sa dá skopírovať a zdieľať.
+      if (link.hasAttribute('data-podstranka') && window.history?.pushState) {
+        const ciel = new URL(link.href, window.location.href);
+        if (ciel.pathname !== window.location.pathname) {
+          window.history.pushState({ nox: ciel.pathname }, '', ciel.pathname + window.location.search);
+        }
+      }
     });
   });
 })();
