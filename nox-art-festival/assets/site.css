@@ -3744,3 +3744,10 @@ body.nox-art-site,
 .nox-art-site .filter-chip[data-view="harmonogram"] .chip-icon {
   color: #19c3d6;
 }
+
+/* Filtre sa len zobrazia (bez "vyjazdenia"): posunutý pruh by pri zarovnaní
+   stránky pod hlavičku ešte ~pol sekundy sedel o desiatky pixelov nižšie. */
+.nox-art-site .filter-bar.reveal,
+.nox-art-site .filter-bar.reveal.is-visible {
+  transform: none;
+}

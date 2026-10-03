@@ -852,9 +852,17 @@ function vyskaHlavicky() {
       for (let el = bar; el; el = el.offsetParent) y += el.offsetTop;
       return y;
     };
-    const filtreY = () => Math.max(hornaHranaPruhu() - vyskaHlavicky() - 20, 0);
+    const filtreY = () => Math.max(hornaHranaPruhu() - vyskaHlavicky() - 14, 0);
+    // Po doznení plynulého posunu skontrolujeme, kde pruh naozaj stojí – ak
+    // sa rozloženie medzitým pohlo (obrázky, mapa, zmena výšky zoznamu),
+    // dorovnáme to hneď.
+    const dorovnajFiltre = () => {
+      const chyba = bar.getBoundingClientRect().top - (vyskaHlavicky() + 14);
+      if (Math.abs(chyba) > 3) window.scrollBy(0, chyba);
+    };
     const scrollToFilters = () => {
       window.scrollTo({ top: filtreY(), behavior: 'smooth' });
+      [700, 1300].forEach((ms) => setTimeout(dorovnajFiltre, ms));
     };
 
     /* Detail položky. Je vykreslený na serveri pri každej dlaždici, takže sa
@@ -995,6 +1003,7 @@ function vyskaHlavicky() {
         posun();
         // Obrázky a písmo sa dotiahnu neskôr a posunú rozloženie.
         window.addEventListener('load', () => setTimeout(posun, 80), { once: true });
+        if (naFiltre) setTimeout(dorovnajFiltre, 600);
       }
 
       // Späť/dopredu v prehliadači: cestu prečítame z adresy.
