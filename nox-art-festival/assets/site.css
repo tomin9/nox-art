@@ -3782,3 +3782,12 @@ html:has(body.nox-art-site) {
     --hlavicka-presah: 0px;
   }
 }
+
+/* Počet diel stojí hneď za názvom, miesto vpravo. */
+.nox-art-site .schedule-count {
+  margin-left: 6px;
+  color: rgba(239, 238, 220, .6);
+  font-size: .86rem;
+  font-weight: 400;
+  white-space: nowrap;
+}

@@ -432,6 +432,9 @@ function nox_art_site_schedule() {
             $days[$t['datum']][$kluc] = [
                 'nazov' => $jednotlivo ? $item['nazov'] : $item['kategoriaNazov'],
                 'meta' => $jednotlivo ? $item['meta'] : '',
+                // Vpravo stojí miesto: pri jednotlivej položke jej adresa,
+                // pri zlúčenom riadku (viac diel) celé sídlisko.
+                'miesto' => $jednotlivo ? ($item['miestoNazov'] ?? '') : 'Sídlisko Píly',
                 'kategorie' => $item['kategorie'],
                 // Na čo riadok odkazuje: jednotlivá položka má detail,
                 // zlúčený riadok otvorí svoju kategóriu v zozname.

@@ -36,15 +36,14 @@ if ($datum) {
       <time class="schedule-time"><?php echo esc_html($p['casOd']); ?><?php echo $p['casDo'] ? '–' . esc_html($p['casDo']) : ''; ?></time>
       <?php $pinColor = nox_art_item_color($p['kategorie']); ?>
       <span class="schedule-dot" aria-hidden="true"<?php echo $pinColor ? ' style="--pin:' . esc_attr($pinColor) . '"' : ''; ?>></span>
-      <span class="schedule-name"><?php echo esc_html($p['nazov']); ?></span>
       <?php
-      // Pri zlúčenom riadku povie počet, koľko diel sa za ním skrýva.
-      $doplnok = $p['meta'];
-      if (!$p['jednotlivo'] && $p['pocet'] > 1) {
-          $doplnok = $p['pocet'] . ' ' . ($p['pocet'] < 5 ? 'diela' : 'diel');
-      }
+      // Počet diel za zlúčeným riadkom stojí hneď za názvom.
+      $pocetText = (!$p['jednotlivo'] && $p['pocet'] > 1)
+          ? $p['pocet'] . ' ' . ($p['pocet'] < 5 ? 'diela' : 'diel')
+          : '';
       ?>
-      <?php if ($doplnok): ?><span class="schedule-meta"><?php echo esc_html($doplnok); ?></span><?php endif; ?>
+      <span class="schedule-name"><?php echo esc_html($p['nazov']); ?><?php if ($pocetText): ?> <span class="schedule-count"><?php echo esc_html($pocetText); ?></span><?php endif; ?></span>
+      <?php if ($p['miesto']): ?><span class="schedule-meta"><?php echo esc_html($p['miesto']); ?></span><?php endif; ?>
     </li>
     <?php endforeach; ?>
   </ul>
