@@ -3760,3 +3760,14 @@ html,
 html:has(body.nox-art-site) {
   overflow-anchor: none;
 }
+
+/* Hlavička je plnofarebná (aj úplne hore). Safari na macOS podľa fixného
+   prvku pri hornom okraji tónuje svoj panel s adresou a kariet: pri
+   priesvitnej hlavičke cez ňu videl rozmazaný obsah stránky, pri plnej
+   farbe použije jej farbu. */
+.nox-art-site .site-header,
+.nox-art-site .site-header.is-scrolled {
+  background: #efeedc !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
