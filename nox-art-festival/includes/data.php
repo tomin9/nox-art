@@ -144,11 +144,23 @@ function nox_art_data_partneri() {
     foreach ($posts as $p) {
         $slug = get_post_meta($p->ID, '_nox_partner_skupina', true) ?: 'partner';
         if (!isset($skupiny[$slug])) $slug = 'partner';
+        // Pomer strán loga (šírka / výška) – podľa neho šablóna logá zväčší
+        // alebo zmenší tak, aby boli opticky rovnako veľké.
+        $pomer = 0;
+        $logo_id = get_post_thumbnail_id($p->ID);
+        if ($logo_id) {
+            $meta = wp_get_attachment_metadata($logo_id);
+            if (!empty($meta['width']) && !empty($meta['height'])) {
+                $pomer = round($meta['width'] / $meta['height'], 3);
+            }
+        }
+
         $skupiny[$slug]['polozky'][] = [
             'id' => $p->ID,
             'nazov' => get_the_title($p),
             'logo' => get_the_post_thumbnail_url($p->ID, 'large') ?: '',
             'url' => get_post_meta($p->ID, '_nox_partner_url', true) ?: '',
+            'pomer' => $pomer,
         ];
     }
 

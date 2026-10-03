@@ -31,7 +31,7 @@ $skupiny = nox_art_data_partneri();
       <h3 class="partner-group-title"><?php echo esc_html($skupina['nazov']); ?></h3>
       <ul class="partner-logos">
         <?php foreach ($skupina['polozky'] as $partner): ?>
-        <li class="partner-logo">
+        <li class="partner-logo"<?php echo $partner['pomer'] ? ' style="--pomer:' . esc_attr($partner['pomer']) . '"' : ''; ?>>
           <?php if ($partner['url']): ?><a href="<?php echo esc_url($partner['url']); ?>" target="_blank" rel="noopener"><?php endif; ?>
           <?php if ($partner['logo']): ?>
           <img src="<?php echo esc_url($partner['logo']); ?>" alt="<?php echo esc_attr($partner['nazov']); ?>" loading="lazy">
@@ -51,7 +51,7 @@ $skupiny = nox_art_data_partneri();
     <h3 class="partner-group-title"><?php echo esc_html($skupina['nazov']); ?></h3>
     <ul class="partner-logos">
       <?php foreach ($skupina['polozky'] as $partner): ?>
-      <li class="partner-logo">
+      <li class="partner-logo"<?php echo $partner['pomer'] ? ' style="--pomer:' . esc_attr($partner['pomer']) . '"' : ''; ?>>
         <?php if ($partner['url']): ?><a href="<?php echo esc_url($partner['url']); ?>" target="_blank" rel="noopener"><?php endif; ?>
         <?php if ($partner['logo']): ?>
         <img src="<?php echo esc_url($partner['logo']); ?>" alt="<?php echo esc_attr($partner['nazov']); ?>" loading="lazy">
