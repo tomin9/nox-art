@@ -3368,3 +3368,95 @@ body.nox-art-site,
     font-size: 1.95rem;
   }
 }
+
+/* =========================================================================
+   Čierne prvky (tlačidlá, ikony, obrysy, podčiarknutia) majú tú istú
+   tmavosivú ako text. Veľké tmavé plochy – sekcia Program, päta, otvorené
+   menu na mobile, dlaždice – ostávajú čierne.
+   ========================================================================= */
+.nox-art-site .nav-pill,
+.nox-art-site .button-dark {
+  border-color: var(--text);
+  background: var(--text);
+}
+
+.nox-art-site .button-outline {
+  color: var(--text);
+  border-color: var(--text);
+}
+
+.nox-art-site .button-outline:hover {
+  color: var(--paper);
+  background: var(--text);
+}
+
+.nox-art-site .button-dark:hover {
+  color: var(--text);
+}
+
+@media (min-width: 901px) {
+  .nox-art-site .main-nav > a:not(.nav-pill)::after {
+    background: var(--text);
+  }
+
+  .nox-art-site .nav-social a {
+    color: var(--text);
+  }
+
+  .nox-art-site .nav-social a:hover {
+    color: var(--cream);
+    border-color: var(--text);
+    background: var(--text);
+  }
+}
+
+.nox-art-site .menu-toggle {
+  color: var(--text) !important;
+}
+
+.nox-art-site.menu-open .menu-toggle {
+  color: var(--paper) !important;
+}
+
+.nox-art-site .hero-mark {
+  background: var(--text);
+  box-shadow: 0 0 0 4px var(--text);
+}
+
+.nox-art-site .hero-side-note,
+.nox-art-site .section-label {
+  color: inherit;
+}
+
+.nox-art-site .newsletter-panel {
+  color: var(--text);
+  border-color: var(--text);
+}
+
+.nox-art-site .newsletter-panel .newsletter-form {
+  border-bottom-color: var(--text);
+}
+
+.nox-art-site .newsletter-panel .newsletter-form input {
+  color: var(--text);
+}
+
+.nox-art-site .newsletter-close {
+  color: var(--text) !important;
+}
+
+.nox-art-site .newsletter-close:hover {
+  color: var(--cream) !important;
+  background: var(--text);
+}
+
+/* Logo Ars Preuge je čierny obrázok na priehľadnom podklade – jemným
+   invertovaním z neho spravíme rovnakú tmavosivú (#2d2d2d). Otvorené menu
+   a päta ho majú naďalej svetlé (invert 1). */
+.nox-art-site .site-header .brand-ars-logo {
+  filter: invert(.176);
+}
+
+.nox-art-site.menu-open .site-header .brand-ars-logo {
+  filter: invert(1);
+}
