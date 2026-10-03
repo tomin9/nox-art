@@ -331,6 +331,28 @@ function vyskaHlavicky() {
     map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'bottom-right');
     map.on('click', () => zlozit());
 
+    /* Keď Mapbox odmietne token alebo štýl, mapa ostane prázdna a človek
+       nevie prečo – chybu preto vypíšeme priamo do rámčeka. */
+    map.on('error', (event) => {
+      const chyba = event?.error;
+      const stav = chyba?.status ? ` (HTTP ${chyba.status})` : '';
+      const popis = chyba?.message || 'neznáma chyba';
+      let rada = '';
+      if (chyba?.status === 401) rada = ' Skontroluj Mapbox access token v NOX:ART → Nastavenia.';
+      if (chyba?.status === 403) rada = ' Token nemá práva na tento štýl, alebo je obmedzený na inú doménu.';
+      if (chyba?.status === 404) rada = ' Štýl mapy neexistuje – skontroluj Style URL v nastaveniach.';
+
+      let hlaska = mapEl.querySelector('[data-map-error]');
+      if (!hlaska) {
+        hlaska = document.createElement('div');
+        hlaska.setAttribute('data-map-error', '');
+        hlaska.style.cssText = 'position:absolute;inset:0;z-index:5;display:grid;place-items:center;padding:20px;text-align:center;font-family:monospace;font-size:12px;line-height:1.5;color:#efeedc;background:rgba(8,9,8,.82)';
+        mapEl.appendChild(hlaska);
+      }
+      hlaska.textContent = `Mapa sa nenačítala${stav}: ${popis}.${rada}`;
+      console.error('NOX:ART mapa', chyba || event);
+    });
+
     // Mapa má pružnú výšku (dopĺňa zvyšné miesto v karte), takže pri zmene
     // veľkosti okna jej treba povedať, nech si prepočíta plátno – inak by
     // ostalo roztiahnuté v pôvodnom pomere a rozmazané.
