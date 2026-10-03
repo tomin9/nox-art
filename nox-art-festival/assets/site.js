@@ -935,6 +935,21 @@ function vyskaHlavicky() {
       aktualizujAdresu();
       adresaPripravena = true;
 
+      // Odkaz na pohľad (/diela, /podniky …) má otvoriť sekciu s programom,
+      // nie začiatok stránky.
+      if (route.view) {
+        const sekcia = document.getElementById('program');
+        if (sekcia) {
+          const posun = () => {
+            const y = sekcia.getBoundingClientRect().top + window.scrollY - vyskaHlavicky();
+            window.scrollTo(0, Math.max(0, y));
+          };
+          posun();
+          // Obrázky a písmo sa dotiahnu neskôr a posunú rozloženie.
+          window.addEventListener('load', () => setTimeout(posun, 80), { once: true });
+        }
+      }
+
       // Späť/dopredu v prehliadači: cestu prečítame z adresy.
       window.addEventListener('popstate', () => {
         const zvysok = window.location.pathname.replace(zakladCesty, '');

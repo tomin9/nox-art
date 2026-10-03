@@ -48,8 +48,16 @@ add_filter('query_vars', 'nox_art_route_query_vars');
  * harmonogram. Potrebujeme ich, keď je festival úvodnou stránkou webu:
  * vtedy nesmieme zobrať každú adresu na prvej úrovni, len tieto.
  */
+function nox_art_route_aliases() {
+    $aliasy = get_option('nox_art_slug_aliases', []);
+    if (!is_array($aliasy)) $aliasy = [];
+    // Duplicitná kategória z importu zo starého webu.
+    $aliasy += ['partnerske-podniky' => 'podniky'];
+    return apply_filters('nox_art_route_aliases', $aliasy);
+}
+
 function nox_art_route_view_slugs() {
-    $slugy = ['harmonogram'];
+    $slugy = array_merge(['harmonogram'], array_keys(nox_art_route_aliases()));
     $terms = get_terms(['taxonomy' => 'nox_kategoria', 'hide_empty' => false]);
     if (!is_wp_error($terms)) {
         foreach ($terms as $term) $slugy[] = $term->slug;
@@ -104,8 +112,11 @@ add_action('wp_loaded', 'nox_art_route_maybe_flush', 20);
  * "harmonogram") a prípadne konkrétna položka.
  */
 function nox_art_route_current() {
+    $pohlad = sanitize_title(get_query_var('nox_view'));
+    $aliasy = nox_art_route_aliases();
+    if (isset($aliasy[$pohlad])) $pohlad = $aliasy[$pohlad];
     return [
-        'view' => sanitize_title(get_query_var('nox_view')),
+        'view' => $pohlad,
         'item' => sanitize_title(get_query_var('nox_item')),
     ];
 }

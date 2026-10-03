@@ -412,6 +412,12 @@ function nox_art_merge_duplicate_categories() {
                 wp_update_term($dieta->term_id, 'nox_kategoria', ['parent' => $hlavna->term_id]);
             }
 
+            // Starý slug si pamätáme, aby odkazy naň (napr. /partnerske-podniky/)
+            // ďalej viedli na pôvodnú kategóriu.
+            $aliasy = get_option('nox_art_slug_aliases', []);
+            $aliasy[$duplicat->slug] = $hlavna->slug;
+            update_option('nox_art_slug_aliases', $aliasy, false);
+
             wp_delete_term($duplicat->term_id, 'nox_kategoria');
             $zlucene++;
         }
