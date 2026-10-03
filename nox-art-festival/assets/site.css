@@ -3573,3 +3573,24 @@ body.nox-art-site,
   line-height: 1.08;
   letter-spacing: -.035em;
 }
+
+/* Čísla v rámčeku O festivale (02, PÍLY, ≈20, ’26) sú hrubé – rovnako ako
+   dátum v úvode: Bold zosilnený obrysom, trochu voľnejšie prestrkanie. */
+.nox-art-site .festival-facts strong {
+  font-weight: 700;
+  letter-spacing: -.04em;
+  -webkit-text-stroke: .04em currentColor;
+  paint-order: stroke fill;
+}
+
+/* Rámčeky a linky v O festivale v tej istej tmavosivej ako text. */
+.nox-art-site .festival-facts,
+.nox-art-site .festival-facts article {
+  border-color: var(--text);
+}
+
+/* Bežiaci pás ide vyššie a jemne prekrýva spodok rámčeka nad ním. */
+.nox-art-site .about .marquee {
+  z-index: 2;
+  margin-top: clamp(-34px, -2.2vw, -18px);
+}
