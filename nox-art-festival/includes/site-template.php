@@ -185,6 +185,18 @@ function nox_art_site_enqueue_assets() {
 
     wp_enqueue_script('nox-art-site-js', NOX_ART_URL . 'assets/site.js', [], file_exists($site_js_path) ? filemtime($site_js_path) : NOX_ART_VERSION, true);
 
+    // Adresa podstránky: čo si návštevník vypýtal a na aký základ si skript
+    // dopisuje ďalšie pohľady (/diela, /diela/the-moon …).
+    if (in_array('program', $sections, true)) {
+        $route = nox_art_route_current();
+        wp_localize_script('nox-art-site-js', 'NOX_SITE_ROUTE', [
+            'base' => nox_art_route_base(),
+            'view' => $route['view'],
+            'item' => $route['item'],
+            'harmonogram' => 'harmonogram',
+        ]);
+    }
+
     if ($has_map) {
         $map = nox_art_get_map_settings();
         wp_localize_script('nox-art-site-js', 'NOX_SITE_MAP', [
@@ -230,6 +242,7 @@ function nox_art_site_items() {
             'nazov' => $item['nazov'],
             'foto' => $item['foto'],
             'fotoId' => $item['fotoId'] ?? 0,
+            'slug' => $item['slug'] ?? '',
             'kategorie' => $item['kategorie'],
             'terminy' => $item['terminy'],
             'samostatne' => $item['samostatne'],
@@ -251,6 +264,7 @@ function nox_art_site_items() {
             'nazov' => $d['nazov'],
             'foto' => $d['foto'],
             'fotoId' => $d['fotoId'] ?? 0,
+            'slug' => $d['slug'] ?? '',
             'kategorie' => $d['kategorie'],
             'terminy' => $d['terminy'],
             'samostatne' => $d['samostatne'],
@@ -275,6 +289,7 @@ function nox_art_site_items() {
             'nazov' => $p['nazov'],
             'foto' => $p['foto'],
             'fotoId' => $p['fotoId'] ?? 0,
+            'slug' => $p['slug'] ?? '',
             'kategorie' => $kategorie,
             'terminy' => $p['terminy'],
             'samostatne' => $p['samostatne'],

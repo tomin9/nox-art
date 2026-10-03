@@ -57,7 +57,7 @@ $prvySlovo = $prvyPocet === 1 ? $tvar[0] : ($prvyPocet >= 2 && $prvyPocet <= 4 ?
     <p class="empty" style="color:var(--paper);opacity:.7">Program zatiaľ nie je zverejnený — pridaj ho v administrácii (NOX:ART &rsaquo; Program, Diela).</p>
     <?php endif; ?>
     <?php foreach ($polozky as $i => $p): $visual = $visualClasses[$i % count($visualClasses)]; $pinColorTile = nox_art_item_color($p['kategorie']); ?>
-    <article class="gallery-tile reveal" id="<?php echo esc_attr($p['id']); ?>"<?php echo $p['work'] ? ' data-work="' . esc_attr($p['work']) . '"' : ''; ?> data-miesto="<?php echo esc_attr($p['miestoId'] ?: ''); ?>"<?php echo $p['terminy'] ? ' data-cas="1"' : ''; ?> data-cislo="<?php echo (int) $p['cislo']; ?>"<?php echo $pinColorTile ? ' data-pin="' . esc_attr($pinColorTile) . '"' : ''; ?> data-cat="<?php echo esc_attr(implode(' ', $p['kategorie'])); ?>">
+    <article class="gallery-tile reveal" id="<?php echo esc_attr($p['id']); ?>"<?php echo $p['work'] ? ' data-work="' . esc_attr($p['work']) . '"' : ''; ?> data-miesto="<?php echo esc_attr($p['miestoId'] ?: ''); ?>"<?php echo $p['terminy'] ? ' data-cas="1"' : ''; ?> data-cislo="<?php echo (int) $p['cislo']; ?>"<?php echo $pinColorTile ? ' data-pin="' . esc_attr($pinColorTile) . '"' : ''; ?> data-cat="<?php echo esc_attr(implode(' ', $p['kategorie'])); ?>"<?php echo $p['slug'] ? ' data-slug="' . esc_attr($p['slug']) . '"' : ''; ?>>
       <?php if ($p['foto']): ?>
       <div class="tile-media" aria-hidden="true">
         <?php if ($p['fotoId']): ?>
@@ -95,7 +95,7 @@ $prvySlovo = $prvyPocet === 1 ? $tvar[0] : ($prvyPocet >= 2 && $prvyPocet <= 4 ?
   <div data-view-panel="detail" hidden>
     <button class="detail-back" type="button" data-detail-back>&larr; Späť na zoznam</button>
     <?php foreach ($polozky as $p): ?>
-    <article class="detail" data-detail="<?php echo esc_attr($p['id']); ?>" hidden>
+    <article class="detail" data-detail="<?php echo esc_attr($p['id']); ?>"<?php echo $p['slug'] ? ' data-slug="' . esc_attr($p['slug']) . '"' : ''; ?> hidden>
       <?php $pinColor = nox_art_item_color($p['kategorie']); ?>
       <h3 class="detail-title">
         <span class="detail-pin" aria-hidden="true"<?php echo $pinColor ? ' style="--pin:' . esc_attr($pinColor) . '"' : ''; ?>><b><?php echo (int) $p['cislo']; ?></b></span>

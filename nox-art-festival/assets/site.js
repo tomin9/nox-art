@@ -605,6 +605,70 @@ function vyskaHlavicky() {
     // aj miesto v zozname, kde človek pred otvorením bol.
     let viewBeforeDetail = 'items';
 
+    /* ---------------------------------------------------------------------
+       Adresa podstránky. Každý pohľad má vlastnú cestu – /diela,
+       /sprievodny-program, /harmonogram, a pri otvorenom detaile
+       /diela/the-moon. Server tieto adresy načíta ako tú istú stránku
+       (includes/routing.php) a tu z nich len poskladáme stav.
+       ------------------------------------------------------------------ */
+    const route = window.NOX_SITE_ROUTE;
+    // Z adresy stránky potrebujeme len cestu – porovnávame ju s location.
+    const zakladCesty = route ? new URL(route.base, window.location.href).pathname : '';
+    let adresaPripravena = false;
+
+    const cestaStavu = () => {
+      if (!route) return '';
+      if (view === 'harmonogram') return route.harmonogram || 'harmonogram';
+
+      const skupina = child || parent;
+      if (view === 'detail') {
+        const open = details.find((el) => !el.hidden);
+        const slug = open?.dataset.slug;
+        return slug ? `${skupina}/${slug}` : skupina;
+      }
+      return skupina;
+    };
+
+    function aktualizujAdresu() {
+      if (!route || !window.history?.replaceState) return;
+      // Kým človek nič neprepol, adresu nechávame tak, ako prišiel.
+      if (!adresaPripravena && !route.view) return;
+
+      const cesta = cestaStavu();
+      const url = (cesta ? zakladCesty + cesta + '/' : zakladCesty) + window.location.search;
+      if (url === window.location.pathname + window.location.search) return;
+
+      // Prvé nastavenie len opraví adresu, ďalšie pridávajú krok do histórie,
+      // nech funguje tlačidlo Späť v prehliadači.
+      if (adresaPripravena) window.history.pushState({ nox: cesta }, '', url);
+      else window.history.replaceState({ nox: cesta }, '', url);
+    }
+
+    /* Nastaví zoznam podľa adresy – klikaním na tlačidlá, nech sú filtre,
+       zvýraznenie aj mapa v súlade. */
+    const pouziCestu = (pohlad, polozka) => {
+      if (pohlad === (route?.harmonogram || 'harmonogram')) {
+        chips.find((chip) => chip.dataset.view === 'harmonogram')?.click();
+        return;
+      }
+
+      if (pohlad) {
+        const subChip = [...document.querySelectorAll('[data-filter-parent] .filter-chip')]
+          .find((chip) => chip.dataset.filter === pohlad);
+        if (subChip) {
+          const parentSlug = subChip.closest('[data-filter-sub]')?.dataset.filterSub;
+          (chips.find((chip) => chip.dataset.filter === parentSlug) || chips[0])?.click();
+          subChip.click();
+        } else {
+          (chips.find((chip) => chip.dataset.filter === pohlad) || chips[0])?.click();
+        }
+      }
+
+      if (!polozka) return;
+      const detail = details.find((el) => el.dataset.slug === polozka);
+      if (detail) openDetail(detail.dataset.detail);
+    };
+
     /* Mapa ukazuje len to, čo je práve v zozname: pri skupine jej položky,
        v detaile jediný bod, v harmonograme všetko, čo má čas. Zoznam miest
        posielame mape udalosťou, aby o sebe tie dve časti nemuseli vedieť. */
@@ -681,6 +745,7 @@ function vyskaHlavicky() {
       }
 
       syncMap();
+      aktualizujAdresu();
     };
 
     const syncSubBars = () => {
@@ -830,6 +895,22 @@ function vyskaHlavicky() {
 
     syncSubBars();
     apply();
+
+    if (route) {
+      if (route.view) pouziCestu(route.view, route.item);
+      aktualizujAdresu();
+      adresaPripravena = true;
+
+      // Späť/dopredu v prehliadači: cestu prečítame z adresy.
+      window.addEventListener('popstate', () => {
+        const zvysok = window.location.pathname.replace(zakladCesty, '');
+        const [pohlad, polozka] = zvysok.split('/').filter(Boolean);
+        adresaPripravena = false;
+        if (!pohlad) chips[0]?.click();
+        else pouziCestu(pohlad, polozka);
+        adresaPripravena = true;
+      });
+    }
   });
 })();
 
