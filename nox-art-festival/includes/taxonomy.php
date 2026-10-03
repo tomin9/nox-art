@@ -355,3 +355,82 @@ function nox_art_podnik_default_categories() {
     }
     return [];
 }
+
+/* -------------------------------------------------------------------------
+ * Zlúčenie duplicitných kategórií
+ *
+ * Po prenose obsahu z iného webu vzniknú dvojice kategórií s rovnakým
+ * názvom (importér pridá tej novej slug s koncovkou -2), takže vo filtri
+ * svieti napr. "Partnerské podniky" dvakrát. Toto ich spojí do jednej.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Kanonická kategória skupiny je tá s pôvodným slugom (bez -2), inak najstaršia.
+ */
+function nox_art_duplicate_category_groups() {
+    $terms = get_terms(['taxonomy' => 'nox_kategoria', 'hide_empty' => false]);
+    if (is_wp_error($terms)) return [];
+
+    $podla_nazvu = [];
+    foreach ($terms as $term) {
+        $kluc = mb_strtolower(trim($term->name));
+        $podla_nazvu[$kluc][] = $term;
+    }
+
+    $skupiny = [];
+    foreach ($podla_nazvu as $zoznam) {
+        if (count($zoznam) < 2) continue;
+        usort($zoznam, function ($a, $b) {
+            $a_cislovany = (bool) preg_match('/-\d+$/', $a->slug);
+            $b_cislovany = (bool) preg_match('/-\d+$/', $b->slug);
+            if ($a_cislovany !== $b_cislovany) return $a_cislovany ? 1 : -1;
+            return $a->term_id <=> $b->term_id;
+        });
+        $skupiny[] = $zoznam;
+    }
+    return $skupiny;
+}
+
+function nox_art_merge_duplicate_categories() {
+    $zlucene = 0;
+
+    foreach (nox_art_duplicate_category_groups() as $skupina) {
+        $hlavna = array_shift($skupina);
+
+        foreach ($skupina as $duplicat) {
+            // Položky priradené duplicitnej kategórii presunieme na hlavnú.
+            $posts = get_objects_in_term($duplicat->term_id, 'nox_kategoria');
+            if (!is_wp_error($posts)) {
+                foreach ($posts as $post_id) {
+                    wp_set_object_terms((int) $post_id, [(int) $hlavna->term_id], 'nox_kategoria', true);
+                    wp_remove_object_terms((int) $post_id, [(int) $duplicat->term_id], 'nox_kategoria');
+                }
+            }
+
+            // Podkategórie duplicitu prežijú – prevesíme ich pod hlavnú.
+            foreach (get_terms(['taxonomy' => 'nox_kategoria', 'hide_empty' => false, 'parent' => $duplicat->term_id]) as $dieta) {
+                wp_update_term($dieta->term_id, 'nox_kategoria', ['parent' => $hlavna->term_id]);
+            }
+
+            wp_delete_term($duplicat->term_id, 'nox_kategoria');
+            $zlucene++;
+        }
+    }
+
+    return $zlucene;
+}
+
+function nox_art_handle_merge_categories() {
+    if (!current_user_can('manage_options')) wp_die('Nemáš oprávnenie.');
+    check_admin_referer('nox_art_merge_categories');
+
+    $pocet = nox_art_merge_duplicate_categories();
+
+    wp_safe_redirect(add_query_arg([
+        'page' => 'nox-art-map-settings',
+        'nox_art_notice' => 'merged',
+        'nox_art_count' => $pocet,
+    ], admin_url('admin.php')));
+    exit;
+}
+add_action('admin_post_nox_art_merge_categories', 'nox_art_handle_merge_categories');

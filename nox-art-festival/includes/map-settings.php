@@ -141,6 +141,9 @@ function nox_art_render_map_settings_page() {
         <h1>Nastavenia NOX:ART</h1>
         <h2>Mapa</h2>
         <?php if ($notice === 'saved'): ?><div class="notice notice-success is-dismissible"><p>Uložené.</p></div><?php endif; ?>
+        <?php if ($notice === 'merged'): ?>
+        <div class="notice notice-success is-dismissible"><p>Zlúčených duplicitných kategórií: <?php echo (int) ($_GET['nox_art_count'] ?? 0); ?>.</p></div>
+        <?php endif; ?>
         <p>Mapa na podstránke festivalu (shortcode <code>[nox_art]</code>) beží na <a href="https://www.mapbox.com/" target="_blank" rel="noopener">Mapbox</a>. Bez access tokenu sa mapa nezobrazí.</p>
         <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
             <?php wp_nonce_field('nox_art_save_map_settings'); ?>
@@ -244,6 +247,21 @@ function nox_art_render_map_settings_page() {
         $template = NOX_ART_DIR . 'templates/parts/program.php';
         $time = file_exists($template) ? filemtime($template) : 0;
         ?>
+        <h2>Údržba</h2>
+        <?php $duplikaty = nox_art_duplicate_category_groups(); ?>
+        <?php if ($duplikaty): ?>
+        <p>Našli sa kategórie s rovnakým názvom (typicky po prenose obsahu z iného webu):
+            <strong><?php echo esc_html(implode(', ', array_map(function ($skupina) { return $skupina[0]->name; }, $duplikaty))); ?></strong>.
+            Zlúčením sa položky presunú pod pôvodnú kategóriu a duplicity sa zmažú.</p>
+        <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+            <?php wp_nonce_field('nox_art_merge_categories'); ?>
+            <input type="hidden" name="action" value="nox_art_merge_categories">
+            <?php submit_button('Zlúčiť duplicitné kategórie', 'secondary'); ?>
+        </form>
+        <?php else: ?>
+        <p class="description">Duplicitné kategórie sa nenašli.</p>
+        <?php endif; ?>
+
         <h2>Verzia pluginu</h2>
         <table class="widefat striped" style="max-width:640px">
             <tbody>
