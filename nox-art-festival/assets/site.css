@@ -3316,3 +3316,21 @@ body.nox-art-site,
     color: var(--text) !important;
   }
 }
+
+/* Dátum a miesto v úvode sú hrubšie než Bold. Helvetica ani Nimbus Sans
+   ťažší rez nemajú, preto písmená zosilníme obrysom v ich vlastnej farbe –
+   zhrubnú rovnomerne a tvar ostane helveticový. */
+.nox-art-site .hero-date,
+.nox-art-site .hero-location-title {
+  -webkit-text-stroke: .045em currentColor;
+  paint-order: stroke fill;
+}
+
+.nox-art-site .hero-location-title {
+  -webkit-text-stroke-width: .035em;
+}
+
+/* Obrys písmená rozširuje – o toľko ich odsunieme, nech sa neslievajú. */
+.nox-art-site .hero-date {
+  letter-spacing: -.05em;
+}
