@@ -162,3 +162,14 @@ function nox_art_route_base() {
     // Na vlastnej festivalovej doméne je základom jej koreň (includes/domain.php).
     return apply_filters('nox_art_route_base', user_trailingslashit(trailingslashit($url)));
 }
+
+/**
+ * Adresa pohľadu alebo sekcie (/program/, /diela/ …) sa načíta ako úvodná
+ * stránka (page_id). WordPress by ju kanonickým presmerovaním poslal späť na
+ * adresu stránky ("/"), preto pri našich adresách presmerovanie vypneme.
+ */
+function nox_art_route_keep_url($redirect, $requested) {
+    if (get_query_var('nox_view')) return false;
+    return $redirect;
+}
+add_filter('redirect_canonical', 'nox_art_route_keep_url', 10, 2);
