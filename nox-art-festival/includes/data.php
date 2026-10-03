@@ -68,6 +68,7 @@ function nox_art_data_umelci() {
         return [
             'id' => $p->ID,
             'meno' => get_the_title($p),
+            'slug' => $p->post_name,
             'popis' => apply_filters('the_content', $p->post_content),
             'foto' => get_the_post_thumbnail_url($p->ID, 'medium') ?: '',
             // ID prílohy: šablóna z neho vyskladá responzívny <img> so srcset.

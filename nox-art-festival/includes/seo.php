@@ -58,7 +58,7 @@ function nox_art_site_seo() {
         if ($route['item']) {
             $seo['path'] .= $route['item'] . '/';
             $posts = get_posts([
-                'post_type' => ['nox_dielo', 'nox_program', 'nox_podnik'],
+                'post_type' => $route['view'] === 'autori' ? ['nox_umelec'] : ['nox_dielo', 'nox_program', 'nox_podnik'],
                 'name' => $route['item'],
                 'posts_per_page' => 1,
                 'post_status' => 'publish',

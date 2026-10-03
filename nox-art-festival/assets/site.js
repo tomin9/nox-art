@@ -655,9 +655,10 @@ function vyskaHlavicky() {
       if (!route) return '';
       if (view !== 'items' && view !== 'detail') return view === 'harmonogram' ? (route.harmonogram || 'harmonogram') : view;
 
-      const skupina = child || parent;
+      let skupina = child || parent;
       if (view === 'detail') {
         const open = details.find((el) => !el.hidden);
+        if (open?.dataset.detail.startsWith('autor-')) skupina = 'autori';
         const slug = open?.dataset.slug;
         return slug ? `${skupina}/${slug}` : skupina;
       }
@@ -687,10 +688,10 @@ function vyskaHlavicky() {
       const pohladChip = chips.find((chip) => chip.dataset.view === pohlad);
       if (pohladChip) {
         pohladChip.click();
-        return;
+        if (!polozka) return;
       }
 
-      if (pohlad) {
+      if (pohlad && !pohladChip) {
         const subChip = [...document.querySelectorAll('[data-filter-parent] .filter-chip')]
           .find((chip) => chip.dataset.filter === pohlad);
         if (subChip) {
@@ -703,7 +704,9 @@ function vyskaHlavicky() {
       }
 
       if (!polozka) return;
-      const detail = details.find((el) => el.dataset.slug === polozka);
+      const zhody = details.filter((el) => el.dataset.slug === polozka);
+      const jeAutor = (el) => el.dataset.detail.startsWith('autor-');
+      const detail = zhody.find((el) => jeAutor(el) === (pohlad === 'autori')) || zhody[0];
       if (detail) openDetail(detail.dataset.detail);
     };
 
@@ -735,7 +738,11 @@ function vyskaHlavicky() {
       if (view === 'detail') {
         const open = details.find((el) => !el.hidden);
         const tile = open && document.getElementById(open.dataset.detail);
-        tiles = tile ? [tile] : [];
+        // Detail autora ukáže na mape všetky jeho diela.
+        const autorDiela = (open?.dataset.autorDiela || '').split(' ').filter(Boolean);
+        tiles = autorDiela.length
+          ? autorDiela.map((id) => document.getElementById(id)).filter(Boolean)
+          : (tile ? [tile] : []);
       } else if (view === 'harmonogram') {
         tiles = [...target.querySelectorAll('.gallery-tile[data-cas]')];
       } else if (view === 'autori') {
@@ -845,7 +852,7 @@ function vyskaHlavicky() {
       const detail = details.find((el) => el.dataset.detail === id);
       if (!detail) return;
       details.forEach((el) => { el.hidden = el !== detail; });
-      viewBeforeDetail = view;
+      if (view !== 'detail') viewBeforeDetail = view;
       view = 'detail';
       syncSubBars();
       apply();
@@ -855,6 +862,15 @@ function vyskaHlavicky() {
          miesto pod textom a tlačidlo späť by mal nad obrazovkou. */
       scrollToSection();
     };
+
+    // Dlaždice autorov otvárajú detail autora.
+    document.querySelectorAll('[data-open]').forEach((tile) => {
+      const otvor = () => openDetail(tile.dataset.open);
+      tile.addEventListener('click', (event) => { event.preventDefault(); otvor(); });
+      tile.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); otvor(); }
+      });
+    });
 
     // Klikacia je celá dlaždica, nielen odkaz na mapu – položka bez miesta
     // odkaz nemá, a detail má mať každá.

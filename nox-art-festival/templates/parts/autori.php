@@ -1,38 +1,39 @@
 <?php if (!defined('ABSPATH')) exit; ?>
 <?php
 /**
- * Autori – pohľad sekcie Program a diela. Autor a jeho diela; dielo vedie
- * na svoj detail rovnako ako dlaždica.
+ * Autori – pohľad sekcie Program a diela. Dlaždice vyzerajú ako dlaždice diel
+ * (fotka autora + meno), kliknutie otvorí detail autora (autori-detail.php).
  */
-$dielaAutorov = [];
-foreach (nox_art_data_diela() as $dielo) {
-    if ($dielo['umelecId']) $dielaAutorov[$dielo['umelecId']][] = $dielo;
-}
 $autori = nox_art_data_umelci();
+$dielaPodlaAutora = [];
+foreach (nox_art_data_diela() as $dielo) {
+    if ($dielo['umelecId']) $dielaPodlaAutora[$dielo['umelecId']][] = $dielo;
+}
 ?>
 <?php if (!$autori): ?>
 <p class="empty" style="color:var(--paper);opacity:.7">Autori zatiaľ nie sú zverejnení — pridaj ich v administrácii (NOX:ART &rsaquo; Umelci).</p>
 <?php endif; ?>
 
-<ul class="authors-list">
-  <?php foreach ($autori as $a): ?>
-  <li class="author" data-autor>
+<div class="gallery-grid authors-grid">
+  <?php foreach ($autori as $i => $a): $pocet = count($dielaPodlaAutora[$a['id']] ?? []); ?>
+  <article class="gallery-tile author-tile reveal" data-autor data-open="autor-<?php echo (int) $a['id']; ?>" tabindex="0" role="button" aria-label="<?php echo esc_attr($a['meno']); ?>">
     <?php if ($a['fotoId']): ?>
-    <?php echo wp_get_attachment_image($a['fotoId'], 'medium', false, ['class' => 'author-foto', 'alt' => esc_attr($a['meno']), 'loading' => 'lazy', 'decoding' => 'async', 'sizes' => '120px']); ?>
-    <?php endif; ?>
-    <div class="author-body">
-      <h3 class="author-name"><?php echo esc_html($a['meno']); ?></h3>
-      <?php if (trim(wp_strip_all_tags($a['popis']))): ?>
-      <div class="author-bio"><?php echo wp_kses_post($a['popis']); ?></div>
-      <?php endif; ?>
-      <?php if (!empty($dielaAutorov[$a['id']])): ?>
-      <ul class="author-works">
-        <?php foreach ($dielaAutorov[$a['id']] as $dielo): ?>
-        <li><button type="button" class="author-work" data-row-detail="work-<?php echo (int) $dielo['id']; ?>"><?php echo esc_html($dielo['nazov']); ?></button></li>
-        <?php endforeach; ?>
-      </ul>
-      <?php endif; ?>
+    <div class="tile-media" aria-hidden="true">
+      <?php echo wp_get_attachment_image($a['fotoId'], 'large', false, [
+          'class' => 'tile-media-img',
+          'alt' => '',
+          'loading' => 'lazy',
+          'decoding' => 'async',
+          'sizes' => '(max-width: 760px) 92vw, (max-width: 1180px) 44vw, 20vw',
+      ]); ?>
     </div>
-  </li>
+    <?php else: ?>
+    <div class="tile-media tile-media-empty <?php echo esc_attr($visualClasses[$i % count($visualClasses)]); ?>" aria-hidden="true"><span></span><i></i><b></b></div>
+    <?php endif; ?>
+    <div class="tile-caption">
+      <h3><?php echo esc_html($a['meno']); ?></h3>
+      <?php if ($pocet): ?><p><?php echo (int) $pocet; ?> <?php echo $pocet === 1 ? 'dielo' : ($pocet < 5 ? 'diela' : 'diel'); ?></p><?php endif; ?>
+    </div>
+  </article>
   <?php endforeach; ?>
-</ul>
+</div>

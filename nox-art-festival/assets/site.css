@@ -3720,3 +3720,17 @@ body.nox-art-site,
   background: var(--paper);
   color: var(--ink);
 }
+
+/* Dlaždice autorov: kliknuteľné, bez čísla ani odkazu na mapu. */
+.nox-art-site .author-tile {
+  cursor: pointer;
+}
+
+.nox-art-site .author-tile:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 3px;
+}
+
+.nox-art-site .detail .author-works {
+  margin-top: 22px;
+}
