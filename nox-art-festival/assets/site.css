@@ -3734,3 +3734,13 @@ body.nox-art-site,
 .nox-art-site .detail .author-works {
   margin-top: 22px;
 }
+
+/* Ikony pohľadov majú farbu ako značky kategórií: autori zelená,
+   časový harmonogram tyrkysová. */
+.nox-art-site .filter-chip[data-view="autori"] .chip-icon {
+  color: #2fc77a;
+}
+
+.nox-art-site .filter-chip[data-view="harmonogram"] .chip-icon {
+  color: #19c3d6;
+}
