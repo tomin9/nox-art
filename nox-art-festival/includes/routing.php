@@ -144,8 +144,14 @@ function nox_art_route_current() {
     if (isset(nox_art_route_sections()[$pohlad])) {
         return ['view' => '', 'item' => '', 'section' => $pohlad];
     }
+    // Alias platí len pre slug, ktorý už neexistuje a vedie na kategóriu,
+    // ktorá existuje – živá kategória sa nikdy nepreklápa inam.
     $aliasy = nox_art_route_aliases();
-    if (isset($aliasy[$pohlad])) $pohlad = $aliasy[$pohlad];
+    if (isset($aliasy[$pohlad])
+        && !get_term_by('slug', $pohlad, 'nox_kategoria')
+        && get_term_by('slug', $aliasy[$pohlad], 'nox_kategoria')) {
+        $pohlad = $aliasy[$pohlad];
+    }
     return [
         'section' => '',
         'view' => $pohlad,
