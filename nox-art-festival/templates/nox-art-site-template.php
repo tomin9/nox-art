@@ -55,7 +55,17 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
     <?php foreach (nox_art_site_nav_items() as $item): ?>
     <a href="<?php echo $item['url']; ?>"<?php echo $item['current'] ? ' class="is-active" aria-current="page"' : ''; ?>><?php echo esc_html($item['label']); ?></a>
     <?php endforeach; ?>
-    <a class="nav-pill" href="<?php echo nox_art_site_link('newsletter'); ?>">Sleduj nás <span aria-hidden="true">↗</span></a>
+    <a class="nav-pill" href="<?php echo nox_art_site_link('newsletter'); ?>">Newsletter <span aria-hidden="true">↗</span></a>
+    <?php /* Ikony sietí sa spravujú v NOX:ART → Nastavenia; prázdny odkaz
+             znamená, že sa ikona nezobrazí. */ ?>
+    <?php $socialne = nox_art_get_social_links(); ?>
+    <?php if (array_filter($socialne)): ?>
+    <span class="nav-social">
+      <?php foreach ($socialne as $siet => $url): if (!$url) continue; ?>
+      <a href="<?php echo esc_url($url); ?>" target="_blank" rel="noopener" aria-label="<?php echo esc_attr(nox_art_social_networks()[$siet]); ?>"><?php echo nox_art_social_icon($siet); ?></a>
+      <?php endforeach; ?>
+    </span>
+    <?php endif; ?>
   </nav>
 </header>
 
@@ -82,10 +92,13 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
       <a href="<?php echo $item['url']; ?>"><?php echo esc_html($item['label']); ?></a>
       <?php endforeach; ?>
     </div>
+    <?php if (array_filter($socialne)): ?>
     <div class="footer-social">
-      <a href="#" aria-label="Instagram">Instagram ↗</a>
-      <a href="#" aria-label="Facebook">Facebook ↗</a>
+      <?php foreach ($socialne as $siet => $url): if (!$url) continue; ?>
+      <a href="<?php echo esc_url($url); ?>" target="_blank" rel="noopener"><?php echo nox_art_social_icon($siet); ?><?php echo esc_html(nox_art_social_networks()[$siet]); ?> ↗</a>
+      <?php endforeach; ?>
     </div>
+    <?php endif; ?>
   </div>
   <div class="footer-wordmark" aria-hidden="true">NOX<span>:</span>ART&rsquo;26</div>
   <div class="footer-bottom">

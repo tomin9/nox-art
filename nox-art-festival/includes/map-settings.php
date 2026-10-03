@@ -25,9 +25,45 @@ function nox_art_mapbox_style() {
 }
 
 function nox_art_map_settings_menu() {
-    add_submenu_page('nox-art-festival', 'Nastavenia mapy', 'Nastavenia mapy', 'manage_options', 'nox-art-map-settings', 'nox_art_render_map_settings_page');
+    add_submenu_page('nox-art-festival', 'Nastavenia', 'Nastavenia', 'manage_options', 'nox-art-map-settings', 'nox_art_render_map_settings_page');
 }
 add_action('admin_menu', 'nox_art_map_settings_menu', 20);
+
+define('NOX_ART_SOCIAL_OPTION', 'nox_art_social_links');
+
+/**
+ * Odkazy na sociálne siete – používa ich hlavička aj päta. Prázdny odkaz
+ * znamená, že sa ikona nezobrazí.
+ */
+function nox_art_social_networks() {
+    return [
+        'facebook' => 'Facebook',
+        'instagram' => 'Instagram',
+        'youtube' => 'YouTube',
+    ];
+}
+
+function nox_art_get_social_links() {
+    $ulozene = get_option(NOX_ART_SOCIAL_OPTION, []);
+    $odkazy = [];
+    foreach (nox_art_social_networks() as $kluc => $label) {
+        $odkazy[$kluc] = is_array($ulozene) && !empty($ulozene[$kluc]) ? $ulozene[$kluc] : '';
+    }
+    return apply_filters('nox_art_social_links', $odkazy);
+}
+
+/**
+ * Ikony sietí – jednoduché jednofarebné SVG, ktoré preberá farbu textu.
+ */
+function nox_art_social_icon($siet) {
+    $ikony = [
+        'facebook' => '<path d="M13.5 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.5-1.5h1.6V3.9c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1V10H7.5v3h2.7v8h3.3Z"/>',
+        'instagram' => '<path d="M12 7.4a4.6 4.6 0 1 0 0 9.2 4.6 4.6 0 0 0 0-9.2Zm0 7.6a3 3 0 1 1 0-6 3 3 0 0 1 0 6Zm5.9-7.8a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0ZM12 3.6c2.3 0 2.6 0 3.5.1.9 0 1.5.2 2 .4.6.2 1 .5 1.5 1 .5.4.8.9 1 1.4.2.5.4 1.2.4 2 0 .9.1 1.2.1 3.5s0 2.6-.1 3.5c0 .9-.2 1.5-.4 2-.2.6-.5 1-1 1.5-.4.5-.9.8-1.4 1-.5.2-1.2.4-2 .4-.9 0-1.2.1-3.5.1s-2.6 0-3.5-.1c-.9 0-1.5-.2-2-.4-.6-.2-1-.5-1.5-1-.5-.4-.8-.9-1-1.4-.2-.5-.4-1.2-.4-2 0-.9-.1-1.2-.1-3.5s0-2.6.1-3.5c0-.9.2-1.5.4-2 .2-.6.5-1 1-1.5.4-.5.9-.8 1.4-1 .5-.2 1.2-.4 2-.4.9 0 1.2-.1 3.5-.1Zm0 1.8c-2.2 0-2.5 0-3.4.1-.8 0-1.2.2-1.5.3-.4.1-.7.3-1 .6-.3.3-.5.6-.6 1-.1.3-.3.7-.3 1.5 0 .9-.1 1.2-.1 3.4s0 2.5.1 3.4c0 .8.2 1.2.3 1.5.1.4.3.7.6 1 .3.3.6.5 1 .6.3.1.7.3 1.5.3.9 0 1.2.1 3.4.1s2.5 0 3.4-.1c.8 0 1.2-.2 1.5-.3.4-.1.7-.3 1-.6.3-.3.5-.6.6-1 .1-.3.3-.7.3-1.5 0-.9.1-1.2.1-3.4s0-2.5-.1-3.4c0-.8-.2-1.2-.3-1.5a2.6 2.6 0 0 0-.6-1 2.6 2.6 0 0 0-1-.6c-.3-.1-.7-.3-1.5-.3-.9 0-1.2-.1-3.4-.1Z"/>',
+        'youtube' => '<path d="M21.6 8.1c-.2-.9-.8-1.6-1.6-1.8C18.5 5.9 12 5.9 12 5.9s-6.5 0-8 .4c-.8.2-1.4.9-1.6 1.8C2 9.6 2 12 2 12s0 2.4.4 3.9c.2.9.8 1.6 1.6 1.8 1.5.4 8 .4 8 .4s6.5 0 8-.4c.8-.2 1.4-.9 1.6-1.8.4-1.5.4-3.9.4-3.9s0-2.4-.4-3.9ZM10 15V9l5.2 3L10 15Z"/>',
+    ];
+    if (empty($ikony[$siet])) return '';
+    return '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false">' . $ikony[$siet] . '</svg>';
+}
 
 function nox_art_handle_save_map_settings() {
     if (!current_user_can('manage_options')) wp_die('Nemáš oprávnenie.');
@@ -40,6 +76,13 @@ function nox_art_handle_save_map_settings() {
             : 'mapbox://styles/mapbox/dark-v11',
     ]);
 
+    $socialne = [];
+    foreach (nox_art_social_networks() as $kluc => $label) {
+        $hodnota = isset($_POST['nox_art_social_' . $kluc]) ? esc_url_raw($_POST['nox_art_social_' . $kluc]) : '';
+        if ($hodnota) $socialne[$kluc] = $hodnota;
+    }
+    update_option(NOX_ART_SOCIAL_OPTION, $socialne);
+
     wp_safe_redirect(add_query_arg(['page' => 'nox-art-map-settings', 'nox_art_notice' => 'saved'], admin_url('admin.php')));
     exit;
 }
@@ -51,7 +94,8 @@ function nox_art_render_map_settings_page() {
     $notice = isset($_GET['nox_art_notice']) ? sanitize_key($_GET['nox_art_notice']) : '';
     ?>
     <div class="wrap">
-        <h1>Nastavenia mapy</h1>
+        <h1>Nastavenia NOX:ART</h1>
+        <h2>Mapa</h2>
         <?php if ($notice === 'saved'): ?><div class="notice notice-success is-dismissible"><p>Uložené.</p></div><?php endif; ?>
         <p>Mapa na podstránke festivalu (shortcode <code>[nox_art]</code>) beží na <a href="https://www.mapbox.com/" target="_blank" rel="noopener">Mapbox</a>. Bez access tokenu sa mapa nezobrazí.</p>
         <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
@@ -72,6 +116,17 @@ function nox_art_render_map_settings_page() {
                         <p class="description">Napr. tvoj vlastný štýl z <a href="https://studio.mapbox.com/" target="_blank" rel="noopener">Mapbox Studio</a> (tvar <code>mapbox://styles/účet/id_štýlu</code>).</p>
                     </td>
                 </tr>
+            </table>
+            <h2>Sociálne siete</h2>
+            <p>Odkazy sa zobrazia ako ikony v hlavičke aj v päte. Prázdne pole znamená, že sa ikona nezobrazí.</p>
+            <table class="form-table" role="presentation">
+                <?php $socialne = nox_art_get_social_links(); ?>
+                <?php foreach (nox_art_social_networks() as $kluc => $label): ?>
+                <tr>
+                    <th scope="row"><label for="nox_art_social_<?php echo esc_attr($kluc); ?>"><?php echo esc_html($label); ?></label></th>
+                    <td><input type="url" id="nox_art_social_<?php echo esc_attr($kluc); ?>" name="nox_art_social_<?php echo esc_attr($kluc); ?>" class="regular-text" style="width:480px" value="<?php echo esc_attr($socialne[$kluc]); ?>" placeholder="https://"></td>
+                </tr>
+                <?php endforeach; ?>
             </table>
             <?php submit_button('Uložiť nastavenia'); ?>
         </form>

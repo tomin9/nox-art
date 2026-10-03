@@ -3070,3 +3070,61 @@ body.nox-art-site > *:not(.scroll-progress):not(#wpadminbar):not(script):not(sty
     padding-bottom: calc(clamp(28px, 4vw, 48px) + env(safe-area-inset-bottom, 0px));
   }
 }
+
+/* =========================================================================
+   Ikony sociálnych sietí v hlavičke (za tlačidlom Newsletter) a v päte.
+   ========================================================================= */
+.nav-social {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 4px;
+}
+
+.nav-social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1.5px solid var(--line);
+  border-radius: 50%;
+  color: inherit;
+  transition: color .2s ease, border-color .2s ease, background .2s ease;
+}
+
+.nav-social a:hover {
+  color: var(--cream);
+  border-color: var(--ink);
+  background: var(--ink);
+}
+
+.footer-social a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-social svg {
+  flex: 0 0 auto;
+}
+
+/* V rozbalenom menu na mobile idú ikony na vlastný riadok pod odkazy. */
+@media (max-width: 900px) {
+  .nav-social {
+    margin: 18px 0 0;
+    gap: 10px;
+  }
+
+  .nav-social a {
+    width: 44px;
+    height: 44px;
+    border-color: rgba(247, 245, 232, .4);
+  }
+
+  .nav-social a:hover {
+    color: var(--ink);
+    border-color: var(--paper);
+    background: var(--paper);
+  }
+}
