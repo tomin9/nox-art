@@ -9,9 +9,9 @@ $skupiny = nox_art_data_partneri();
 ?>
 <section class="section partners" id="partneri" aria-labelledby="partners-title">
   <div class="section-label reveal"><span>03</span> Partneri</div>
-  <div class="partners-head reveal">
-    <h2 id="partners-title">Festival vzniká vďaka ľuďom a organizáciám, ktoré veria verejnému priestoru.</h2>
-  </div>
+  <?php /* Veľký nadpis je preč – sekciu nesú samotné logá. Pre čítačky
+           obrazovky ostáva nadpis skrytý. */ ?>
+  <h2 id="partners-title" class="sr-only">Partneri festivalu NOX:ART</h2>
 
   <?php if (!$skupiny): ?>
   <?php if (current_user_can('edit_posts')): ?>

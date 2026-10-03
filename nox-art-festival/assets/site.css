@@ -3488,3 +3488,74 @@ body.nox-art-site,
   flex: 0 0 auto;
   display: block;
 }
+
+/* =========================================================================
+   Partneri – prerobené rozloženie. Bez veľkého nadpisu; hore vedľa seba
+   organizátor a generálny partner s najväčšími logami, pod nimi partneri
+   a mediálni partneri s polovičnými logami, na konci doložky o podpore.
+   ========================================================================= */
+.nox-art-site .partners {
+  padding-bottom: clamp(56px, 7vw, 110px);
+}
+
+.nox-art-site .partners .section-label {
+  margin-bottom: clamp(28px, 4vw, 56px);
+}
+
+.nox-art-site .partner-row-top {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(32px, 5vw, 96px);
+  align-items: end;
+}
+
+.nox-art-site .partner-row-top .partner-group,
+.nox-art-site .partners > .partner-group {
+  margin-top: 0;
+}
+
+.nox-art-site .partners > .partner-group {
+  margin-top: clamp(44px, 5vw, 80px);
+}
+
+.nox-art-site .partner-group-title {
+  margin: 0 0 18px;
+  color: var(--text);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  opacity: .7;
+}
+
+.nox-art-site .partner-logos {
+  align-items: center;
+  gap: clamp(26px, 3.5vw, 52px);
+}
+
+/* Najväčšie: organizátor a generálny partner. */
+.nox-art-site .partner-row-top .partner-logo {
+  --logo-h: clamp(84px, 9vw, 132px);
+}
+
+/* Polovičné: partneri a médiá. */
+.nox-art-site .partners > .partner-group .partner-logo {
+  --logo-h: clamp(40px, 4.4vw, 62px);
+}
+
+.nox-art-site .partner-row-top .partner-logo-text {
+  font-size: clamp(1.6rem, 2.6vw, 2.4rem);
+}
+
+.nox-art-site .partners > .partner-group .partner-logo-text {
+  font-size: clamp(1rem, 1.3vw, 1.2rem);
+}
+
+.nox-art-site .partner-support {
+  margin-top: clamp(56px, 6vw, 96px);
+}
+
+@media (max-width: 760px) {
+  .nox-art-site .partner-row-top {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+}
