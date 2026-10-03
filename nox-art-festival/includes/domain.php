@@ -53,8 +53,8 @@ function nox_art_festival_page_id() {
         if (in_array('program', $def['sections'], true)) $vhodne[] = $subor;
     }
 
-    foreach (get_pages(['meta_key' => '_wp_page_template', 'number' => 0]) as $page) {
-        if (!in_array(get_page_template_slug($page->ID), $vhodne, true)) continue;
+    foreach (get_pages(['number' => 0]) as $page) {
+        if (!in_array(nox_art_site_template_for_page($page->ID), $vhodne, true)) continue;
         $id = $page->ID;
         break;
     }

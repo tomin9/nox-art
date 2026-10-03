@@ -47,12 +47,41 @@ function nox_art_register_site_template($templates) {
 add_filter('theme_page_templates', 'nox_art_register_site_template');
 
 /**
+ * Priradenie stránky k šablóne cez nastavenia pluginu. Blokové témy
+ * (Twenty Twenty-Five a spol.) klasické šablóny v editore neponúkajú,
+ * takže sa festivalová stránka dá určiť aj tu – v NOX:ART → Nastavenia.
+ */
+define('NOX_ART_PAGE_OPTION', 'nox_art_festival_page');
+
+function nox_art_site_assigned_page() {
+    $ulozene = get_option(NOX_ART_PAGE_OPTION, []);
+    return [
+        'page' => (int) ($ulozene['page'] ?? 0),
+        'template' => (string) ($ulozene['template'] ?? 'nox-art-site-template.php'),
+    ];
+}
+
+/**
+ * Šablóna priradená konkrétnej stránke – buď z editora, alebo z nastavení.
+ */
+function nox_art_site_template_for_page($page_id) {
+    $slug = get_page_template_slug($page_id);
+    if (isset(nox_art_site_template_map()[$slug])) return $slug;
+
+    $priradene = nox_art_site_assigned_page();
+    if ($priradene['page'] && (int) $page_id === $priradene['page']
+        && isset(nox_art_site_template_map()[$priradene['template']])) {
+        return $priradene['template'];
+    }
+    return '';
+}
+
+/**
  * Ktorá z našich šablón je práve použitá (alebo '' ak žiadna).
  */
 function nox_art_site_current_template() {
     if (!is_page()) return '';
-    $slug = get_page_template_slug(get_queried_object_id());
-    return isset(nox_art_site_template_map()[$slug]) ? $slug : '';
+    return nox_art_site_template_for_page(get_queried_object_id());
 }
 
 /**
@@ -68,7 +97,7 @@ function nox_art_site_sections() {
  * Sekcie konkrétnej stránky (podľa šablóny, ktorú má nastavenú).
  */
 function nox_art_site_sections_for_page($page_id) {
-    $slug = get_page_template_slug($page_id);
+    $slug = nox_art_site_template_for_page($page_id);
     return nox_art_site_template_map()[$slug]['sections'] ?? [];
 }
 

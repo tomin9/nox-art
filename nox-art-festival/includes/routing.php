@@ -19,13 +19,21 @@ function nox_art_route_page_paths() {
 
     $cesty = [];
     $sablony = array_keys(nox_art_site_template_map());
-    $pages = get_pages(['meta_key' => '_wp_page_template', 'number' => 0]);
+    $pages = get_pages(['number' => 0]);
     foreach ($pages as $page) {
-        if (!in_array(get_page_template_slug($page->ID), $sablony, true)) continue;
+        if (!in_array(nox_art_site_template_for_page($page->ID), $sablony, true)) continue;
         $uri = get_page_uri($page->ID);
         if ($uri) $cesty[] = $uri;
     }
-    return $cesty;
+
+    // Stránka priradená v nastaveniach nemusí mať šablónu z editora.
+    $priradene = nox_art_site_assigned_page();
+    if ($priradene['page']) {
+        $uri = get_page_uri($priradene['page']);
+        if ($uri) $cesty[] = $uri;
+    }
+
+    return array_unique($cesty);
 }
 
 function nox_art_route_query_vars($vars) {

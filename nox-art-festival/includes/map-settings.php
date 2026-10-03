@@ -114,6 +114,15 @@ function nox_art_handle_save_map_settings() {
     $dolozky = isset($_POST['nox_art_support_notes']) ? sanitize_textarea_field($_POST['nox_art_support_notes']) : '';
     update_option(NOX_ART_SUPPORT_OPTION, $dolozky);
 
+    update_option(NOX_ART_PAGE_OPTION, [
+        'page' => isset($_POST['nox_art_festival_page']) ? absint($_POST['nox_art_festival_page']) : 0,
+        'template' => isset($_POST['nox_art_festival_template']) && isset(nox_art_site_template_map()[$_POST['nox_art_festival_template']])
+            ? sanitize_text_field($_POST['nox_art_festival_template'])
+            : 'nox-art-site-template.php',
+    ]);
+    // Adresy pohľadov sa odvíjajú od tejto stránky – pravidlá treba prepísať.
+    delete_option('nox_art_routes_hash');
+
     $domena = isset($_POST['nox_art_festival_domain']) ? sanitize_text_field($_POST['nox_art_festival_domain']) : '';
     update_option(NOX_ART_DOMAIN_OPTION, $domena);
     update_option('nox_art_festival_domain_redirect', empty($_POST['nox_art_festival_domain_redirect']) ? '' : '1');
@@ -163,6 +172,36 @@ function nox_art_render_map_settings_page() {
                 </tr>
                 <?php endforeach; ?>
             </table>
+            <h2>Festivalová stránka</h2>
+            <p>Ktorá stránka webu má vykresľovať festival. Pri blokových témach (napr. Twenty Twenty-Five)
+            sa šablóny pluginu v editore stránky neponúkajú, preto sa dá priradiť tu.</p>
+            <table class="form-table" role="presentation">
+                <?php $priradene = nox_art_site_assigned_page(); ?>
+                <tr>
+                    <th scope="row"><label for="nox_art_festival_page">Stránka</label></th>
+                    <td>
+                        <?php wp_dropdown_pages([
+                            'id' => 'nox_art_festival_page',
+                            'name' => 'nox_art_festival_page',
+                            'selected' => $priradene['page'],
+                            'show_option_none' => '— žiadna (použije sa šablóna zo stránky) —',
+                            'option_none_value' => 0,
+                        ]); ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="nox_art_festival_template">Sekcie</label></th>
+                    <td>
+                        <select id="nox_art_festival_template" name="nox_art_festival_template" style="min-width:380px">
+                            <?php foreach (nox_art_site_template_map() as $subor => $def): ?>
+                            <option value="<?php echo esc_attr($subor); ?>" <?php selected($priradene['template'], $subor); ?>><?php echo esc_html($def['label']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <p class="description">Pre samostatný festivalový web vyber „Celá stránka (všetky sekcie)“.</p>
+                    </td>
+                </tr>
+            </table>
+
             <h2>Vlastná doména festivalu</h2>
             <p>Keď je doména nasmerovaná na tento hosting, festival sa na nej zobrazí rovno na úvodnej strane
             (napr. <code>noxart.sk/diela/</code>). Pôvodná adresa stránky sa potom natrvalo presmeruje sem.</p>
