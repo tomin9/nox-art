@@ -814,7 +814,7 @@ function vyskaHlavicky() {
     };
 
     chips.forEach((chip) => {
-      chip.addEventListener('click', () => {
+      chip.addEventListener('click', (event) => {
         chips.forEach((other) => {
           const active = other === chip;
           other.classList.toggle('is-active', active);
@@ -825,6 +825,9 @@ function vyskaHlavicky() {
         child = '';
         syncSubBars();
         apply();
+        // Po kliknutí človekom zarovnáme filtre pod hlavičku, nech je zoznam
+        // hneď po ruke (programové kliknutie z adresy to robí samo).
+        if (event.isTrusted) requestAnimationFrame(() => requestAnimationFrame(scrollToFilters));
       });
     });
 
@@ -942,7 +945,7 @@ function vyskaHlavicky() {
     subBars.forEach((sub) => {
       const subChips = [...sub.querySelectorAll('.filter-chip')];
       subChips.forEach((chip) => {
-        chip.addEventListener('click', () => {
+        chip.addEventListener('click', (event) => {
           // Druhé kliknutie na to isté spresnenie ho zruší a vráti celú skupinu.
           const turnOff = chip.classList.contains('is-active');
           subChips.forEach((other) => {
@@ -952,6 +955,7 @@ function vyskaHlavicky() {
           });
           child = turnOff ? '' : (chip.dataset.filter || '');
           apply();
+          if (event.isTrusted) requestAnimationFrame(() => requestAnimationFrame(scrollToFilters));
         });
       });
     });
