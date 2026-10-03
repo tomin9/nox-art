@@ -11,7 +11,6 @@ $skupiny = nox_art_data_partneri();
   <div class="section-label reveal"><span>03</span> Partneri</div>
   <div class="partners-head reveal">
     <h2 id="partners-title">Festival vzniká vďaka ľuďom a organizáciám, ktoré veria verejnému priestoru.</h2>
-    <p>Ďakujeme všetkým, ktorí pomáhajú dostať súčasné umenie do verejného priestoru.</p>
   </div>
 
   <?php if (!$skupiny): ?>
