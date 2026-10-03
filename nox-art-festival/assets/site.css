@@ -3330,7 +3330,14 @@ body.nox-art-site,
   -webkit-text-stroke-width: .035em;
 }
 
-/* Obrys písmená rozširuje – o toľko ich odsunieme, nech sa neslievajú. */
+/* Obrys písmená rozširuje – o toľko ich odsunieme, nech sa neslievajú
+   (vodorovne aj medzi riadkami). */
 .nox-art-site .hero-date {
-  letter-spacing: -.05em;
+  letter-spacing: -.015em;
+  line-height: .94;
+  -webkit-text-stroke-width: .035em;
+}
+
+.nox-art-site .hero-location-title {
+  letter-spacing: .01em;
 }
