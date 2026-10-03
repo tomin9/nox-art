@@ -853,16 +853,39 @@ function vyskaHlavicky() {
       return y;
     };
     const filtreY = () => Math.max(hornaHranaPruhu() - vyskaHlavicky() - 14, 0);
-    // Po doznení plynulého posunu skontrolujeme, kde pruh naozaj stojí – ak
-    // sa rozloženie medzitým pohlo (obrázky, mapa, zmena výšky zoznamu),
-    // dorovnáme to hneď.
     const dorovnajFiltre = () => {
       const chyba = bar.getBoundingClientRect().top - (vyskaHlavicky() + 14);
       if (Math.abs(chyba) > 3) window.scrollBy(0, chyba);
     };
+
+    /* Vlastný plynulý posun. Vstavaný (behavior: 'smooth') si cieľ spočíta
+       raz na začiatku, ale zoznam sa pri prepnutí záložky skracuje či
+       predlžuje a stránka sa pod ním ešte dorovnáva – posun by skončil vedľa
+       a až dodatočná oprava by ho zarovnala. Tu sa cieľ počíta v každom
+       snímku, takže posun skončí presne na mieste. Zastaví ho aj kolieskom
+       alebo dotykom. */
+    let posunBezi = 0;
     const scrollToFilters = () => {
-      window.scrollTo({ top: filtreY(), behavior: 'smooth' });
-      [700, 1300].forEach((ms) => setTimeout(dorovnajFiltre, ms));
+      const id = ++posunBezi;
+      const start = window.scrollY;
+      const zaciatok = performance.now();
+      const trvanie = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 520;
+      const zastav = () => { posunBezi++; };
+      window.addEventListener('wheel', zastav, { once: true, passive: true });
+      window.addEventListener('touchstart', zastav, { once: true, passive: true });
+
+      const krok = (teraz) => {
+        if (id !== posunBezi) return;
+        const p = trvanie ? Math.min((teraz - zaciatok) / trvanie, 1) : 1;
+        const plynule = 1 - Math.pow(1 - p, 3);
+        const ciel = filtreY();
+        window.scrollTo(0, start + (ciel - start) * plynule);
+        if (p < 1) { requestAnimationFrame(krok); return; }
+        window.removeEventListener('wheel', zastav);
+        window.removeEventListener('touchstart', zastav);
+        dorovnajFiltre();
+      };
+      requestAnimationFrame(krok);
     };
 
     /* Detail položky. Je vykreslený na serveri pri každej dlaždici, takže sa
