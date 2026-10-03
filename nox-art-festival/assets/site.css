@@ -3136,3 +3136,27 @@ body.nox-art-site > *:not(.scroll-progress):not(#wpadminbar):not(script):not(sty
     background: var(--paper);
   }
 }
+
+/* Doložky o finančnej podpore pod logami partnerov – drobný text v dvoch
+   stĺpcoch na širokej obrazovke, pod sebou na úzkej. */
+.partner-support {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px clamp(28px, 4vw, 56px);
+  margin: clamp(48px, 6vw, 80px) 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: .78rem;
+  line-height: 1.45;
+}
+
+.partner-support li {
+  max-width: 54ch;
+}
+
+@media (max-width: 760px) {
+  .partner-support {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

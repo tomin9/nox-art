@@ -65,6 +65,34 @@ function nox_art_social_icon($siet) {
     return '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false">' . $ikony[$siet] . '</svg>';
 }
 
+define('NOX_ART_SUPPORT_OPTION', 'nox_art_support_notes');
+
+/**
+ * Doložky o finančnej podpore pod logami partnerov. Dajú sa prepísať
+ * v nastaveniach (jedna na riadok); prázdne nastavenie znamená predvolený
+ * zoznam nižšie.
+ */
+function nox_art_default_support_notes() {
+    return [
+        'S finančnou podporou Ministerstva cestovného ruchu a športu SR',
+        'Tento projekt je realizovaný vďaka podpore Európskeho hlavného mesta kultúry Trenčín 2026 a Trenčianskeho samosprávneho kraja',
+        'Podujatie z verejných zdrojov podporil Fond na podporu umenia',
+        'Projekt sa realizuje vďaka podpore Nadácie Slovenskej sporiteľne a Nadácie otvorenej spoločnosti v rámci Fondu pre regionálnu kultúru',
+        'Realizované s finančnou podporou Trenčianskeho samosprávneho kraja',
+        'Podujatie realizované s finančnou podporou mesta Prievidza',
+    ];
+}
+
+function nox_art_support_notes() {
+    $ulozene = get_option(NOX_ART_SUPPORT_OPTION, '');
+    if (is_string($ulozene) && trim($ulozene) !== '') {
+        $riadky = array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $ulozene)));
+    } else {
+        $riadky = nox_art_default_support_notes();
+    }
+    return apply_filters('nox_art_support_notes', array_values($riadky));
+}
+
 function nox_art_handle_save_map_settings() {
     if (!current_user_can('manage_options')) wp_die('Nemáš oprávnenie.');
     check_admin_referer('nox_art_save_map_settings');
@@ -82,6 +110,9 @@ function nox_art_handle_save_map_settings() {
         if ($hodnota) $socialne[$kluc] = $hodnota;
     }
     update_option(NOX_ART_SOCIAL_OPTION, $socialne);
+
+    $dolozky = isset($_POST['nox_art_support_notes']) ? sanitize_textarea_field($_POST['nox_art_support_notes']) : '';
+    update_option(NOX_ART_SUPPORT_OPTION, $dolozky);
 
     wp_safe_redirect(add_query_arg(['page' => 'nox-art-map-settings', 'nox_art_notice' => 'saved'], admin_url('admin.php')));
     exit;
@@ -127,6 +158,16 @@ function nox_art_render_map_settings_page() {
                     <td><input type="url" id="nox_art_social_<?php echo esc_attr($kluc); ?>" name="nox_art_social_<?php echo esc_attr($kluc); ?>" class="regular-text" style="width:480px" value="<?php echo esc_attr($socialne[$kluc]); ?>" placeholder="https://"></td>
                 </tr>
                 <?php endforeach; ?>
+            </table>
+            <h2>Doložky o podpore</h2>
+            <p>Vypíšu sa pod logami partnerov, každý riadok ako samostatná veta. Prázdne pole znamená predvolený zoznam.</p>
+            <table class="form-table" role="presentation">
+                <tr>
+                    <th scope="row"><label for="nox_art_support_notes">Texty (jeden na riadok)</label></th>
+                    <td>
+                        <textarea id="nox_art_support_notes" name="nox_art_support_notes" class="large-text code" rows="8" style="width:640px"><?php echo esc_textarea(get_option(NOX_ART_SUPPORT_OPTION, '') ?: implode("\n", nox_art_default_support_notes())); ?></textarea>
+                    </td>
+                </tr>
             </table>
             <?php submit_button('Uložiť nastavenia'); ?>
         </form>

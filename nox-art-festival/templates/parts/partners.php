@@ -38,4 +38,14 @@ $skupiny = nox_art_data_partneri();
   </div>
   <?php endforeach; ?>
   <?php endif; ?>
+
+  <?php /* Doložky o finančnej podpore – spravujú sa v NOX:ART → Nastavenia. */ ?>
+  <?php $dolozky = nox_art_support_notes(); ?>
+  <?php if ($dolozky): ?>
+  <ul class="partner-support reveal">
+    <?php foreach ($dolozky as $dolozka): ?>
+    <li><?php echo esc_html($dolozka); ?></li>
+    <?php endforeach; ?>
+  </ul>
+  <?php endif; ?>
 </section>
