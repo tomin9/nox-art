@@ -843,10 +843,18 @@ function vyskaHlavicky() {
     };
 
     /* Zarovnanie filtrovacieho pruhu tesne pod hlavičku – tak je zoznam hneď
-       použiteľný, bez nadpisu nad ním. */
+       použiteľný, bez nadpisu nad ním. Polohu pruhu čítame z rozloženia
+       (offsetTop), nie z getBoundingClientRect: pruh má pri načítaní
+       "vyjazdenie" (transform), ktoré by výsledok o desiatky pixelov
+       posunulo – raz áno, raz nie, podľa toho, či sa už zobrazil. */
+    const hornaHranaPruhu = () => {
+      let y = 0;
+      for (let el = bar; el; el = el.offsetParent) y += el.offsetTop;
+      return y;
+    };
+    const filtreY = () => Math.max(hornaHranaPruhu() - vyskaHlavicky() - 20, 0);
     const scrollToFilters = () => {
-      const top = bar.getBoundingClientRect().top + window.scrollY - vyskaHlavicky() - 56;
-      window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
+      window.scrollTo({ top: filtreY(), behavior: 'smooth' });
     };
 
     /* Detail položky. Je vykreslený na serveri pri každej dlaždici, takže sa
@@ -980,7 +988,7 @@ function vyskaHlavicky() {
         const posun = () => {
           const prekryv = parseFloat(getComputedStyle(cielovaSekcia).marginTop) || 0;
           const y = naFiltre
-            ? bar.getBoundingClientRect().top + window.scrollY - vyskaHlavicky() - 56
+            ? filtreY()
             : cielovaSekcia.getBoundingClientRect().top + window.scrollY - prekryv - vyskaHlavicky();
           window.scrollTo(0, Math.max(0, y));
         };
