@@ -852,9 +852,9 @@ function vyskaHlavicky() {
       for (let el = bar; el; el = el.offsetParent) y += el.offsetTop;
       return y;
     };
-    const filtreY = () => Math.max(hornaHranaPruhu() - vyskaHlavicky() - 14, 0);
+    const filtreY = () => Math.max(hornaHranaPruhu() - vyskaHlavicky() - 32, 0);
     const dorovnajFiltre = () => {
-      const chyba = bar.getBoundingClientRect().top - (vyskaHlavicky() + 14);
+      const chyba = bar.getBoundingClientRect().top - (vyskaHlavicky() + 32);
       if (Math.abs(chyba) > 3) window.scrollBy({ top: chyba, behavior: 'instant' });
     };
 
