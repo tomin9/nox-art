@@ -92,7 +92,7 @@ body.login.login #login h1 a::before {
   flex: 0 0 auto;
   /* Odstup namiesto gap: samotný text odkazu je nulová položka flexu a gap
      by názov odsunul od ľavého okraja. */
-  margin-left: clamp(10px, 3vw, 16px);
+  margin-left: clamp(18px, 5vw, 26px);
   width: clamp(54px, 15vw, 72px);
   aspect-ratio: 1200 / 812;
   background: url("site/ars-preuge-logo.webp") center / contain no-repeat;
