@@ -3161,3 +3161,22 @@ body.nox-art-site > *:not(.scroll-progress):not(#wpadminbar):not(script):not(sty
 .nox-art-site .partners {
   background: var(--paper);
 }
+
+/* Organizátor a generálny partner vedľa seba; zvyšné skupiny ostávajú
+   pod sebou cez celú šírku. */
+.partner-row-top {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(28px, 4vw, 64px);
+}
+
+.partner-row-top .partner-group {
+  margin-top: clamp(44px, 5vw, 72px);
+}
+
+@media (max-width: 760px) {
+  .partner-row-top {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}

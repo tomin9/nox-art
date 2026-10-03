@@ -19,7 +19,33 @@ $skupiny = nox_art_data_partneri();
   <p class="partners-empty">Partnerov aj ich logá pridáš v administrácii v sekcii NOX:ART → Partneri.</p>
   <?php endif; ?>
   <?php else: ?>
-  <?php foreach ($skupiny as $slug => $skupina): ?>
+  <?php /* Organizátor a generálny partner stoja vedľa seba v jednom rade,
+           ostatné skupiny pod nimi. */ ?>
+  <?php $hore = array_intersect_key($skupiny, array_flip(['organizator', 'generalny'])); ?>
+  <?php $dole = array_diff_key($skupiny, $hore); ?>
+  <?php if ($hore): ?>
+  <div class="partner-row-top">
+    <?php foreach ($hore as $slug => $skupina): ?>
+    <div class="partner-group reveal" data-skupina="<?php echo esc_attr($slug); ?>">
+      <h3 class="partner-group-title"><?php echo esc_html($skupina['nazov']); ?></h3>
+      <ul class="partner-logos">
+        <?php foreach ($skupina['polozky'] as $partner): ?>
+        <li class="partner-logo">
+          <?php if ($partner['url']): ?><a href="<?php echo esc_url($partner['url']); ?>" target="_blank" rel="noopener"><?php endif; ?>
+          <?php if ($partner['logo']): ?>
+          <img src="<?php echo esc_url($partner['logo']); ?>" alt="<?php echo esc_attr($partner['nazov']); ?>" loading="lazy">
+          <?php else: ?>
+          <span class="partner-logo-text"><?php echo esc_html($partner['nazov']); ?></span>
+          <?php endif; ?>
+          <?php if ($partner['url']): ?></a><?php endif; ?>
+        </li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
+    <?php endforeach; ?>
+  </div>
+  <?php endif; ?>
+  <?php foreach ($dole as $slug => $skupina): ?>
   <div class="partner-group reveal" data-skupina="<?php echo esc_attr($slug); ?>">
     <h3 class="partner-group-title"><?php echo esc_html($skupina['nazov']); ?></h3>
     <ul class="partner-logos">
