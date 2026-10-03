@@ -855,7 +855,7 @@ function vyskaHlavicky() {
     const filtreY = () => Math.max(hornaHranaPruhu() - vyskaHlavicky() - 14, 0);
     const dorovnajFiltre = () => {
       const chyba = bar.getBoundingClientRect().top - (vyskaHlavicky() + 14);
-      if (Math.abs(chyba) > 3) window.scrollBy(0, chyba);
+      if (Math.abs(chyba) > 3) window.scrollBy({ top: chyba, behavior: 'instant' });
     };
 
     /* Vlastný plynulý posun. Vstavaný (behavior: 'smooth') si cieľ spočíta
@@ -879,7 +879,9 @@ function vyskaHlavicky() {
         const p = trvanie ? Math.min((teraz - zaciatok) / trvanie, 1) : 1;
         const plynule = 1 - Math.pow(1 - p, 3);
         const ciel = filtreY();
-        window.scrollTo(0, start + (ciel - start) * plynule);
+        // 'instant': stránka má v CSS scroll-behavior: smooth, ktoré by každý
+        // snímok animovalo samo a bojovalo by s touto animáciou.
+        window.scrollTo({ top: start + (ciel - start) * plynule, behavior: 'instant' });
         if (p < 1) { requestAnimationFrame(krok); return; }
         window.removeEventListener('wheel', zastav);
         window.removeEventListener('touchstart', zastav);
@@ -1021,7 +1023,7 @@ function vyskaHlavicky() {
           const y = naFiltre
             ? filtreY()
             : cielovaSekcia.getBoundingClientRect().top + window.scrollY - prekryv - vyskaHlavicky();
-          window.scrollTo(0, Math.max(0, y));
+          window.scrollTo({ top: Math.max(0, y), behavior: 'instant' });
         };
         posun();
         // Obrázky a písmo sa dotiahnu neskôr a posunú rozloženie.
