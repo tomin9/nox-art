@@ -3771,3 +3771,14 @@ html:has(body.nox-art-site) {
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
 }
+
+/* Mobil: hlavička už nepresahuje nad okraj okna. Presah (-80 px) iOS Safari
+   orezal po okraj okna a nepomohol, no hlavička tým prestala ležať rovno na
+   hornom okraji – Safari 26 podľa takéhoto prvku tónuje stavový riadok.
+   Teraz je hlavička priamo na hornom okraji (top: 0) a plnofarebná; výplň
+   pre výrez/stavový riadok dopĺňa env(safe-area-inset-top). */
+@media (max-width: 900px) {
+  .nox-art-site .site-header {
+    --hlavicka-presah: 0px;
+  }
+}
