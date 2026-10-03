@@ -3645,3 +3645,11 @@ body.nox-art-site,
 .nox-art-site .partner-row-top .partner-group:first-child .partner-logo {
   --logo-zaklad: clamp(78px, 8vw, 116px);
 }
+
+/* WordPress dáva fotke atribút height – bez height:auto by sa pri zúžení
+   na šírku stĺpca natiahla do výšky. */
+.nox-art-site .detail-foto {
+  height: auto !important;
+  max-width: 100%;
+  object-fit: contain;
+}
