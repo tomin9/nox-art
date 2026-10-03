@@ -1,0 +1,291 @@
+/* Prihlásenie NOX:ART – pozadie z úvodnej strany a zaoblená karta. */
+@font-face {
+  font-family: "Nimbus Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/nimbus-sans-regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Nimbus Sans";
+  font-style: normal;
+  font-weight: 700 900;
+  font-display: swap;
+  src: url("fonts/nimbus-sans-bold.woff2") format("woff2");
+}
+
+body.login.login {
+  --nox-paper: #efeedc;
+  --nox-cream: #f7f5e8;
+  --nox-ink: #2d2d2d;
+  --nox-muted: #6b6b63;
+  --nox-line: rgba(45, 45, 45, .18);
+
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0;
+  padding: 28px 16px !important;
+  box-sizing: border-box;
+  font-family: "Helvetica Neue", Helvetica, "Nimbus Sans", Arial, sans-serif;
+  color: var(--nox-ink);
+  background-color: var(--nox-paper) !important;
+  background-image:
+    linear-gradient(rgba(239, 238, 220, .38), rgba(239, 238, 220, .2)),
+    url("site/pozadie-1-1600.webp") !important;
+  background-repeat: no-repeat !important;
+  background-position: center 75% !important;
+  background-size: cover !important;
+}
+
+@media (max-width: 760px) {
+  body.login.login {
+    background-image:
+      linear-gradient(rgba(239, 238, 220, .38), rgba(239, 238, 220, .2)),
+      url("site/pozadie-1-900.webp") !important;
+  }
+}
+
+/* Karta */
+body.login.login #login {
+  width: min(420px, 100%);
+  margin: 0;
+  padding: clamp(28px, 5vw, 42px) clamp(22px, 5vw, 38px) clamp(22px, 4vw, 30px);
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, .6);
+  border-radius: 32px;
+  background: rgba(247, 245, 232, .94);
+  box-shadow: 0 30px 80px rgba(45, 45, 45, .22), 0 2px 0 rgba(255, 255, 255, .6) inset;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+/* Názov festivalu namiesto loga WordPressu */
+body.login.login #login h1 {
+  margin: 0 0 6px;
+}
+
+body.login.login #login h1 a {
+  display: block;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 auto;
+  padding: 0 !important;
+  background: none !important;
+  overflow: visible;
+  text-indent: 0;
+  text-align: center;
+  text-decoration: none;
+  font-size: 0 !important;
+  line-height: 1;
+}
+
+body.login.login #login h1 a::after {
+  content: "NOX:ART";
+  display: block;
+  color: var(--nox-ink);
+  font-size: clamp(2.6rem, 11vw, 3.4rem);
+  font-weight: 700;
+  letter-spacing: -.06em;
+  -webkit-text-stroke: .02em var(--nox-ink);
+  paint-order: stroke fill;
+}
+
+body.login.login #login h1 a:focus {
+  box-shadow: none;
+  outline: 2px solid var(--nox-ink);
+  outline-offset: 6px;
+  border-radius: 8px;
+}
+
+.nox-login-sub {
+  margin: 0 0 22px;
+  text-align: center;
+  color: var(--nox-muted);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+/* Formulár bez vlastnej karty – karta je celý #login */
+body.login.login #login form {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  overflow: visible;
+}
+
+body.login.login #login label {
+  color: var(--nox-ink);
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+body.login.login #login form .input,
+body.login.login #login input[type="text"],
+body.login.login #login input[type="password"],
+body.login.login #login input[type="email"] {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 50px;
+  margin: 6px 0 16px;
+  padding: 0 18px;
+  border: 1.5px solid var(--nox-line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: none;
+  color: var(--nox-ink);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+body.login.login #login input[type="text"]:focus,
+body.login.login #login input[type="password"]:focus,
+body.login.login #login input[type="email"]:focus {
+  border-color: var(--nox-ink) !important;
+  box-shadow: 0 0 0 4px rgba(45, 45, 45, .1) !important;
+  outline: 0;
+}
+
+body.login.login #login .wp-pwd {
+  position: relative;
+}
+
+body.login.login #login .wp-pwd input[type="password"],
+body.login.login #login .wp-pwd input[type="text"] {
+  padding-right: 52px;
+}
+
+body.login.login #login .button.wp-hide-pw {
+  top: 6px;
+  height: 50px;
+  color: var(--nox-muted);
+}
+
+body.login.login #login input[type="checkbox"] {
+  border: 1.5px solid var(--nox-line);
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: none;
+}
+
+body.login.login #login input[type="checkbox"]:checked {
+  background: var(--nox-ink);
+  border-color: var(--nox-ink);
+}
+
+body.login.login #login input[type="checkbox"]:checked::before {
+  margin: -3px 0 0 -4px;
+  filter: invert(1) brightness(2);
+}
+
+body.login.login #login .forgetmenot {
+  float: none;
+  margin: 2px 0 18px;
+  font-size: .85rem;
+}
+
+body.login.login #login .forgetmenot input {
+  margin: 0 8px 0 0;
+  vertical-align: middle;
+}
+
+body.login.login #login .forgetmenot label {
+  font-size: .85rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Tlačidlo */
+body.login.login #login .submit {
+  margin: 0;
+}
+
+body.login.login #wp-submit {
+  float: none;
+  display: block;
+  width: 100%;
+  min-height: 52px;
+  margin: 0;
+  border: 0 !important;
+  border-radius: 999px;
+  background: var(--nox-ink) !important;
+  box-shadow: none !important;
+  color: #f7f5e8 !important;
+  font-family: inherit;
+  font-size: .9rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-shadow: none !important;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform .2s ease, opacity .2s ease;
+}
+
+body.login.login #wp-submit:hover,
+body.login.login #wp-submit:focus {
+  background: var(--nox-ink) !important;
+  opacity: .88;
+  transform: translateY(-1px);
+}
+
+/* Odkazy pod formulárom */
+body.login.login #login #nav,
+body.login.login #login #backtoblog {
+  margin: 18px 0 0;
+  padding: 0;
+  text-align: center;
+  font-size: .85rem;
+}
+
+body.login.login #login #nav a,
+body.login.login #login #backtoblog a,
+body.login.login .privacy-policy-page-link a {
+  color: var(--nox-muted) !important;
+  text-decoration: none;
+}
+
+body.login.login #login #nav a:hover,
+body.login.login #login #backtoblog a:hover {
+  color: var(--nox-ink) !important;
+  text-decoration: underline;
+}
+
+body.login.login .privacy-policy-page-link {
+  margin: 10px 0 0;
+  text-align: center;
+}
+
+/* Hlásenia (chyba, odhlásenie) */
+body.login.login #login .message,
+body.login.login #login .success,
+body.login.login #login #login_error {
+  margin: 0 0 18px;
+  padding: 12px 16px;
+  border: 0;
+  border-left: 4px solid var(--nox-ink) !important;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: none;
+  color: var(--nox-ink);
+  font-size: .88rem;
+}
+
+body.login.login #login #login_error {
+  border-left-color: #d63638 !important;
+}
+
+/* Prepínač jazyka mimo karty */
+body.login.login .language-switcher {
+  display: none;
+}
