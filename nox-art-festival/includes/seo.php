@@ -139,7 +139,7 @@ function nox_art_site_seo_sitemap($entries, $post_type) {
 
     $base = user_trailingslashit(get_permalink($id));
     $base = apply_filters('nox_art_route_base', $base);
-    foreach (array_keys(nox_art_route_sections()) as $slug) {
+    foreach (array_merge(array_keys(nox_art_route_sections()), ['harmonogram']) as $slug) {
         $entries[] = ['loc' => $base . $slug . '/'];
     }
     return $entries;
