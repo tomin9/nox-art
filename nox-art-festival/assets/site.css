@@ -3472,15 +3472,6 @@ body.nox-art-site,
   letter-spacing: -.04em;
 }
 
-/* Nadpis sekcie Partneri je výrazne menší než nadpisy hlavných sekcií
-   a má väčšie riadkovanie, aby sa dĺžne a mäkčene veľkých písmen
-   (Ď, Ľ, Á) nedotýkali predchádzajúceho riadku. */
-.nox-art-site .partners .partners-head h2,
-.nox-art-site .partners h2#partners-title {
-  max-width: 22ch;
-  font-size: clamp(1.9rem, 3.4vw, 3.6rem);
-  line-height: 1.02;
-}
 
 /* Ikonka hodín pred „Časový harmonogram“ – na mieste, kde majú ostatné
    tlačidlá farebný špendlík, a v aktuálnej farbe textu tlačidla. */
@@ -3558,4 +3549,27 @@ body.nox-art-site,
     grid-template-columns: minmax(0, 1fr);
     gap: 40px;
   }
+}
+
+/* Hlavička sekcie Partneri: veľké „Ďakujeme.“ a pod ním veta o tom, komu
+   ďakujeme – menšia, ale stále výrazná. Pod tým nasledujú logá. */
+.nox-art-site .partners .partners-head {
+  display: block;
+  margin-bottom: clamp(48px, 6vw, 96px);
+}
+
+.nox-art-site .partners .partners-head h2 {
+  margin: 0;
+  font-size: clamp(3.2rem, 9vw, 9.5rem);
+  line-height: 1.05;   /* priestor pre dĺžeň nad Ď */
+}
+
+.nox-art-site .partners .partners-lead {
+  max-width: 26ch;
+  margin: clamp(14px, 1.6vw, 24px) 0 0;
+  color: var(--text);
+  font-size: clamp(1.4rem, 2.6vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -.035em;
 }
