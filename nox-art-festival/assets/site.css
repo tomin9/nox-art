@@ -3481,3 +3481,10 @@ body.nox-art-site,
   font-size: clamp(1.9rem, 3.4vw, 3.6rem);
   line-height: 1.02;
 }
+
+/* Ikonka hodín pred „Časový harmonogram“ – na mieste, kde majú ostatné
+   tlačidlá farebný špendlík, a v aktuálnej farbe textu tlačidla. */
+.filter-chip .chip-icon {
+  flex: 0 0 auto;
+  display: block;
+}
