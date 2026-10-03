@@ -614,7 +614,9 @@ function nox_art_site_resource_hints() {
     }
 
     if (in_array('program', $sections, true)) {
-        echo '<link rel="preconnect" href="https://api.mapbox.com" crossorigin>' . "\n";
+        // Mapa sa načíta až pri rolovaní k nej, preto len lacné DNS – plné
+        // preconnect PageSpeed hlásil ako nepoužité.
+        echo '<link rel="dns-prefetch" href="https://api.mapbox.com">' . "\n";
     }
 }
 add_action('wp_head', 'nox_art_site_resource_hints', 2);
