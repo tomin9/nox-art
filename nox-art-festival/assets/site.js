@@ -224,14 +224,21 @@ function vyskaHlavicky() {
   const nacitajMapbox = () => new Promise((resolve, reject) => {
     if (typeof mapboxgl !== 'undefined') { resolve(); return; }
 
+    // Mapu spúšťame až keď je tu skript aj jeho štýly – bez štýlov by sa
+    // plátno vykreslilo v nesprávnej veľkosti.
+    let hotovo = 0;
+    const jeden = () => { hotovo += 1; if (hotovo === 2) resolve(); };
+
     const css = document.createElement('link');
     css.rel = 'stylesheet';
     css.href = config.mapboxCss || 'https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css';
+    css.onload = jeden;
+    css.onerror = jeden;   // aj bez štýlov radšej mapu skúsime ukázať
     document.head.appendChild(css);
 
     const script = document.createElement('script');
     script.src = config.mapboxJs || 'https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js';
-    script.onload = () => resolve();
+    script.onload = jeden;
     script.onerror = reject;
     document.head.appendChild(script);
   });
@@ -356,6 +363,11 @@ function vyskaHlavicky() {
     // Mapa má pružnú výšku (dopĺňa zvyšné miesto v karte), takže pri zmene
     // veľkosti okna jej treba povedať, nech si prepočíta plátno – inak by
     // ostalo roztiahnuté v pôvodnom pomere a rozmazané.
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(() => map.resize()).observe(mapEl);
+    }
+    map.once('load', () => map.resize());
+
     let mapResizeTimer = null;
     window.addEventListener('resize', () => {
       clearTimeout(mapResizeTimer);

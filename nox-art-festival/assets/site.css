@@ -3244,3 +3244,15 @@ body.nox-art-site {
 .nox-art-site h3 {
   letter-spacing: -.03em;
 }
+
+/* Štýly Mapboxu sa načítavajú až keď sa mapa blíži do zorného poľa, teda
+   po našich – a ich .mapboxgl-map { position: relative } by prebilo naše
+   absolútne roztiahnutie, takže by mal kontajner mapy výšku 0. Preto
+   silnejší selektor. */
+.site-map-wrap #nox-site-map,
+.site-map-wrap .site-map.mapboxgl-map {
+  position: absolute !important;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
