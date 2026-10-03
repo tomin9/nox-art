@@ -3460,3 +3460,14 @@ body.nox-art-site,
 .nox-art-site.menu-open .site-header .brand-ars-logo {
   filter: invert(1);
 }
+
+/* Bežiaci pás v sekcii O festivale: biele, hrubé písmo na čiernom pruhu.
+   Pravidlo pre tmavosivý text sekcie O festivale ho nesmie prefarbiť a
+   Helvetica Bold dostane rovnaké zosilnenie obrysom ako dátum v úvode. */
+.nox-art-site .about .marquee span {
+  color: var(--paper);
+  font-weight: 700;
+  -webkit-text-stroke: .035em currentColor;
+  paint-order: stroke fill;
+  letter-spacing: -.04em;
+}
