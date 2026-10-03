@@ -3751,3 +3751,12 @@ body.nox-art-site,
 .nox-art-site .filter-bar.reveal.is-visible {
   transform: none;
 }
+
+/* Posúvaný je celý dokument (html), nie <body> – vlastnosť overflow-anchor
+   sa pritom nededí a na body sa pre posúvaný dokument neuplatní. Bez toho
+   si prehliadač pri každej zmene výšky zoznamu (prepnutie záložky, načítanie
+   obrázkov) sám dorovnáva polohu a bojuje s našim zarovnaním pod hlavičku. */
+html,
+html:has(body.nox-art-site) {
+  overflow-anchor: none;
+}

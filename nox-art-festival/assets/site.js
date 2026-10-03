@@ -885,7 +885,9 @@ function vyskaHlavicky() {
         if (p < 1) { requestAnimationFrame(krok); return; }
         window.removeEventListener('wheel', zastav);
         window.removeEventListener('touchstart', zastav);
-        dorovnajFiltre();
+        // Obrázky a mapa ešte chvíľu menia výšku stránky – polohu preto po
+        // doznení ešte pár krát skontrolujeme.
+        [0, 150, 400, 900].forEach((ms) => setTimeout(() => { if (id === posunBezi) dorovnajFiltre(); }, ms));
       };
       requestAnimationFrame(krok);
     };
