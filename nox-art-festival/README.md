@@ -94,3 +94,27 @@ Postup:
 
 Nastavenia → Všeobecné (adresa WordPressu a webu) sa nemenia – hlavný web aj
 administrácia zostávajú na pôvodnej doméne.
+
+## Samostatný web na vlastnej doméne
+
+Druhá možnosť (okrem aliasu vyššie) je samostatná inštalácia WordPressu na
+doméne festivalu s vlastnou administráciou. Vtedy je festival rovno úvodnou
+stránkou webu a adresy vyzerajú `noxart.sk/diela/`, `noxart.sk/diela/<slug>/`.
+
+1. Na hostingu nechaj doméne jej vlastný priečinok (napr. `/noxart.sk/web`),
+   nainštaluj do nej WordPress a vystav SSL certifikát.
+2. Nainštaluj tento plugin (cez GitHub Plugin Sync alebo nahraním priečinka
+   do `wp-content/plugins/`) a aktivuj ho.
+3. Vytvor stránku so šablónou **NOX:ART — Celá stránka** a v
+   *Nastavenia → Zobrazovanie* ju nastav ako **úvodnú stránku webu**.
+   Plugin si pre ňu pridá adresy pohľadov na prvej úrovni; ak by niektorá
+   hádzala 404, raz ulož *Nastavenia → Trvalé odkazy*.
+4. Obsah buď zadaj nanovo, alebo ho prenes z pôvodného webu: tam
+   *Nástroje → Exportovať* (typy Miesta, Umelci, Diela, Program, Podniky,
+   Partneri + Médiá), na novom webe *Nástroje → Importovať → WordPress*
+   so zaškrtnutým sťahovaním príloh.
+5. Nastavenia (Mapbox token, sociálne siete, doložky o podpore) zadaj
+   v **NOX:ART → Nastavenia** na novom webe.
+6. Na pôvodnom webe nechaj plugin aktívny a v jeho nastaveniach vyplň
+   **Vlastná doména festivalu** = `noxart.sk` so zapnutým presmerovaním –
+   stará adresa festivalu sa tak natrvalo presmeruje na nový web.

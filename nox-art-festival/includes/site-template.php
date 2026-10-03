@@ -65,6 +65,14 @@ function nox_art_site_sections() {
 }
 
 /**
+ * Sekcie konkrétnej stránky (podľa šablóny, ktorú má nastavenú).
+ */
+function nox_art_site_sections_for_page($page_id) {
+    $slug = get_page_template_slug($page_id);
+    return nox_art_site_template_map()[$slug]['sections'] ?? [];
+}
+
+/**
  * Všetky naše šablóny vykresľuje ten istý súbor – líšia sa len zoznamom sekcií.
  */
 function nox_art_load_site_template($template) {

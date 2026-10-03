@@ -35,7 +35,34 @@ function nox_art_route_query_vars($vars) {
 }
 add_filter('query_vars', 'nox_art_route_query_vars');
 
+/**
+ * Slugy, ktoré môžu stáť v adrese ako pohľad – kategórie z filtra plus
+ * harmonogram. Potrebujeme ich, keď je festival úvodnou stránkou webu:
+ * vtedy nesmieme zobrať každú adresu na prvej úrovni, len tieto.
+ */
+function nox_art_route_view_slugs() {
+    $slugy = ['harmonogram'];
+    $terms = get_terms(['taxonomy' => 'nox_kategoria', 'hide_empty' => false]);
+    if (!is_wp_error($terms)) {
+        foreach ($terms as $term) $slugy[] = $term->slug;
+    }
+    return array_unique(array_filter($slugy));
+}
+
 function nox_art_route_rules() {
+    // Festival ako úvodná stránka samostatného webu (noxart.sk/diela/).
+    $front = (int) get_option('page_on_front');
+    if ($front && in_array('program', nox_art_site_sections_for_page($front), true)) {
+        $slugy = implode('|', array_map(function ($slug) { return preg_quote($slug, '#'); }, nox_art_route_view_slugs()));
+        if ($slugy) {
+            add_rewrite_rule(
+                '^(' . $slugy . ')(?:/([^/]+))?/?$',
+                'index.php?page_id=' . $front . '&nox_view=$matches[1]&nox_item=$matches[2]',
+                'top'
+            );
+        }
+    }
+
     foreach (nox_art_route_page_paths() as $cesta) {
         $regex = '^' . preg_quote($cesta, '#') . '/([^/]+)(?:/([^/]+))?/?$';
         add_rewrite_rule(
@@ -53,7 +80,11 @@ add_action('init', 'nox_art_route_rules', 20);
  * vyrobené – a prepíšeme ich, len keď sa to zmení.
  */
 function nox_art_route_maybe_flush() {
-    $odtlacok = md5(implode('|', nox_art_route_page_paths()) . '|' . NOX_ART_VERSION);
+    $odtlacok = md5(
+        implode('|', nox_art_route_page_paths()) . '|' .
+        implode('|', nox_art_route_view_slugs()) . '|' .
+        get_option('page_on_front') . '|' . NOX_ART_VERSION
+    );
     if (get_option('nox_art_routes_hash') === $odtlacok) return;
     flush_rewrite_rules(false);
     update_option('nox_art_routes_hash', $odtlacok);
