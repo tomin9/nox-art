@@ -2839,14 +2839,25 @@ body.menu-open .site-header .brand-nox-logo {
   text-transform: uppercase;
 }
 
-/* Organizátor a generálny partner dostanú väčší priestor, mediálni menší. */
+/* Organizátor a generálny partner sú rovnako veľkí, zvyšné skupiny polovičné. */
 .partner-group[data-skupina="organizator"] .partner-logo,
 .partner-group[data-skupina="generalny"] .partner-logo {
-  --logo-h: 96px;
+  --logo-h: 110px;
 }
 
+.partner-group[data-skupina="organizator"] .partner-logo-text,
+.partner-group[data-skupina="generalny"] .partner-logo-text {
+  font-size: 1.7rem;
+}
+
+.partner-group[data-skupina="partner"] .partner-logo,
 .partner-group[data-skupina="medialny"] .partner-logo {
-  --logo-h: 48px;
+  --logo-h: 55px;
+}
+
+.partner-group[data-skupina="partner"] .partner-logo-text,
+.partner-group[data-skupina="medialny"] .partner-logo-text {
+  font-size: 1rem;
 }
 
 .partners-empty {
@@ -2860,15 +2871,12 @@ body.menu-open .site-header .brand-nox-logo {
     gap: 26px;
   }
 
-  .partner-logo {
-    --logo-h: 48px;
-  }
-
   .partner-group[data-skupina="organizator"] .partner-logo,
   .partner-group[data-skupina="generalny"] .partner-logo {
-    --logo-h: 66px;
+    --logo-h: 76px;
   }
 
+  .partner-group[data-skupina="partner"] .partner-logo,
   .partner-group[data-skupina="medialny"] .partner-logo {
     --logo-h: 38px;
   }}
