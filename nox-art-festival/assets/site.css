@@ -3292,7 +3292,7 @@ body.nox-art-site,
    tlačidlá a tmavú sekciu Program.
    ========================================================================= */
 .nox-art-site {
-  --text: #3d3d3d;
+  --text: #2d2d2d;
 }
 
 body.nox-art-site,
@@ -3451,10 +3451,10 @@ body.nox-art-site,
 }
 
 /* Logo Ars Preuge je čierny obrázok na priehľadnom podklade – jemným
-   invertovaním z neho spravíme rovnakú tmavosivú ako text. Otvorené menu
-   a päta ho majú naďalej svetlé (invert 1). Hodnota = 61/255 → #3d3d3d. */
+   invertovaním z neho spravíme rovnakú tmavosivú (#2d2d2d). Otvorené menu
+   a päta ho majú naďalej svetlé (invert 1). */
 .nox-art-site .site-header .brand-ars-logo {
-  filter: invert(.239);
+  filter: invert(.176);
 }
 
 .nox-art-site.menu-open .site-header .brand-ars-logo {
