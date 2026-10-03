@@ -969,9 +969,15 @@ function vyskaHlavicky() {
       const cielovaKotva = route.section ? (route.sections || {})[route.section] : (route.view ? 'program' : '');
       const cielovaSekcia = cielovaKotva ? document.getElementById(cielovaKotva) : null;
       if (cielovaSekcia) {
+        // Adresa pohľadu (/diela, /autori, /harmonogram) zarovná filtre pod
+        // hlavičku – rovnako ako návrat zo detailu; ostatné adresy (sekcie,
+        // detail) začínajú na hrane sekcie.
+        const naFiltre = route.view && !route.item && !route.section;
         const posun = () => {
           const prekryv = parseFloat(getComputedStyle(cielovaSekcia).marginTop) || 0;
-          const y = cielovaSekcia.getBoundingClientRect().top + window.scrollY - prekryv - vyskaHlavicky();
+          const y = naFiltre
+            ? bar.getBoundingClientRect().top + window.scrollY - vyskaHlavicky() - 56
+            : cielovaSekcia.getBoundingClientRect().top + window.scrollY - prekryv - vyskaHlavicky();
           window.scrollTo(0, Math.max(0, y));
         };
         posun();
