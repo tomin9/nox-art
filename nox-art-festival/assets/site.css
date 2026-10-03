@@ -3205,3 +3205,42 @@ body.nox-art-site {
   line-height: 1.35;
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Globálne štýly blokových tém používajú selektory :root :where(h2), ktoré
+   majú vyššiu váhu než naše h1,h2,h3 – prebíjali nám písmo aj odstupy.
+   Rovnaké pravidlá preto zopakujeme so silnejším selektorom. */
+.nox-art-site h1,
+.nox-art-site h2,
+.nox-art-site h3,
+.nox-art-site .footer-wordmark,
+.nox-art-site .hero-date,
+.nox-art-site .partner-logo-text {
+  font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 900;
+  letter-spacing: -.06em;
+}
+
+.nox-art-site p,
+.nox-art-site a,
+.nox-art-site li,
+.nox-art-site span,
+.nox-art-site small,
+.nox-art-site strong,
+.nox-art-site button,
+.nox-art-site input,
+.nox-art-site label,
+.nox-art-site .section-label,
+.nox-art-site .filter-chip {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Nadpisy si držia vlastné proporcie aj proti globálnym štýlom témy. */
+.nox-art-site .section h2 {
+  font-size: clamp(2.65rem, 6.4vw, 7rem);
+  line-height: .91;
+  text-transform: uppercase;
+}
+
+.nox-art-site h3 {
+  letter-spacing: -.03em;
+}
