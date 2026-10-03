@@ -3188,3 +3188,20 @@ html:has(body.nox-art-site),
 body.nox-art-site {
   background: var(--paper) !important;
 }
+
+/* =========================================================================
+   Základ sadzby. Blokové témy (napr. Twenty Twenty-Five) si cez globálne
+   štýly nastavujú vlastnú veľkosť písma a tá sa prenášala do našich clamp()
+   výpočtov – stránka potom vyzerala väčšia než na pôvodnom webe. Pre
+   festivalovú stránku si preto základ držíme sami.
+   ========================================================================= */
+html:has(body.nox-art-site) {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body.nox-art-site {
+  font-size: 16px !important;
+  line-height: 1.35;
+  font-family: Arial, Helvetica, sans-serif;
+}
