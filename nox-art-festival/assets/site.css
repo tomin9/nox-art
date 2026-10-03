@@ -1,68 +1,100 @@
-/* Roboto je súčasťou pluginu (bez Google Fonts) – web tak vyzerá rovnako
-   bez ohľadu na tému a nič sa nesťahuje z cudzích serverov. Slovenská
-   diakritika je v podmnožine latin-ext. */
+/* Písmo Montserrat je súčasťou pluginu (bez Google Fonts) – web tak
+   vyzerá rovnako bez ohľadu na tému a nič sa nesťahuje z cudzích serverov.
+   Slovenská diakritika je v podmnožine latin-ext. */
 @font-face {
-  font-family: "Roboto";
+  font-family: "Montserrat";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("fonts/roboto-latin-ext-400-normal.woff2") format("woff2");
+  src: url("fonts/montserrat-latin-ext-400-normal.woff2") format("woff2");
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 @font-face {
-  font-family: "Roboto";
+  font-family: "Montserrat";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("fonts/roboto-latin-400-normal.woff2") format("woff2");
+  src: url("fonts/montserrat-latin-400-normal.woff2") format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
-  font-family: "Roboto";
+  font-family: "Montserrat";
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url("fonts/roboto-latin-ext-500-normal.woff2") format("woff2");
+  src: url("fonts/montserrat-latin-ext-500-normal.woff2") format("woff2");
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 @font-face {
-  font-family: "Roboto";
+  font-family: "Montserrat";
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url("fonts/roboto-latin-500-normal.woff2") format("woff2");
+  src: url("fonts/montserrat-latin-500-normal.woff2") format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
-  font-family: "Roboto";
+  font-family: "Montserrat";
   font-style: normal;
-  font-weight: 700;
+  font-weight: 600;
   font-display: swap;
-  src: url("fonts/roboto-latin-ext-700-normal.woff2") format("woff2");
+  src: url("fonts/montserrat-latin-ext-600-normal.woff2") format("woff2");
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 @font-face {
-  font-family: "Roboto";
+  font-family: "Montserrat";
   font-style: normal;
-  font-weight: 700;
+  font-weight: 600;
   font-display: swap;
-  src: url("fonts/roboto-latin-700-normal.woff2") format("woff2");
+  src: url("fonts/montserrat-latin-600-normal.woff2") format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
-  font-family: "Roboto";
+  font-family: "Montserrat";
   font-style: normal;
-  font-weight: 800 900;
+  font-weight: 700;
   font-display: swap;
-  src: url("fonts/roboto-latin-ext-900-normal.woff2") format("woff2");
+  src: url("fonts/montserrat-latin-ext-700-normal.woff2") format("woff2");
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 @font-face {
-  font-family: "Roboto";
+  font-family: "Montserrat";
   font-style: normal;
-  font-weight: 800 900;
+  font-weight: 700;
   font-display: swap;
-  src: url("fonts/roboto-latin-900-normal.woff2") format("woff2");
+  src: url("fonts/montserrat-latin-700-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("fonts/montserrat-latin-ext-800-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("fonts/montserrat-latin-800-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("fonts/montserrat-latin-ext-900-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("fonts/montserrat-latin-900-normal.woff2") format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
@@ -99,7 +131,7 @@ body {
   overflow-x: hidden;
   color: var(--ink);
   background: var(--paper);
-  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  font-family: "Montserrat", Arial, Helvetica, sans-serif;
   font-size: 16px;
   line-height: 1.35;
   -webkit-font-smoothing: antialiased;
@@ -157,7 +189,7 @@ h1,
 h2,
 h3,
 .footer-wordmark {
-  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  font-family: "Montserrat", Arial, Helvetica, sans-serif;
   font-weight: 900;
   letter-spacing: -.06em;
 }
@@ -383,7 +415,7 @@ body.menu-open .menu-toggle span:last-child {
 }
 
 .hero-date strong {
-  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  font-family: "Montserrat", Arial, Helvetica, sans-serif;
   font-size: 1.08em;
 }
 
@@ -576,7 +608,7 @@ body.menu-open .menu-toggle span:last-child {
 .festival-facts strong {
   display: block;
   margin-bottom: 58px;
-  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  font-family: "Montserrat", Arial, Helvetica, sans-serif;
   font-size: clamp(2.2rem, 4.1vw, 4.8rem);
   line-height: .85;
   letter-spacing: -.07em;
@@ -609,7 +641,7 @@ body.menu-open .menu-toggle span:last-child {
 }
 
 .marquee span {
-  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  font-family: "Montserrat", Arial, Helvetica, sans-serif;
   font-size: clamp(2rem, 5.2vw, 5.4rem);
   line-height: .9;
   white-space: nowrap;
@@ -921,7 +953,7 @@ body.menu-open .menu-toggle span:last-child {
 }
 
 .partner strong {
-  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  font-family: "Montserrat", Arial, Helvetica, sans-serif;
   font-size: clamp(1.7rem, 3vw, 3.2rem);
   line-height: .9;
   letter-spacing: -.06em;
@@ -1131,7 +1163,7 @@ body.menu-open .menu-toggle span:last-child {
   }
 
   .main-nav > a:not(.nav-pill) {
-    font-family: "Roboto", Arial, Helvetica, sans-serif;
+    font-family: "Montserrat", Arial, Helvetica, sans-serif;
     font-size: clamp(2.2rem, 9vw, 5.2rem);
     line-height: .95;
     letter-spacing: -.06em;
@@ -2900,7 +2932,7 @@ body.menu-open .site-header .brand-nox-logo {
 }
 
 .partner-logo-text {
-  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  font-family: "Montserrat", Arial, Helvetica, sans-serif;
   font-size: 1.1rem;
   line-height: 1;
   letter-spacing: -.04em;
@@ -3271,13 +3303,13 @@ html:has(body.nox-art-site) {
 body.nox-art-site {
   font-size: 16px !important;
   line-height: 1.35;
-  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  font-family: "Montserrat", Arial, Helvetica, sans-serif;
 }
 
-/* Písmo stránky: Roboto. Selektory začínajú .nox-art-site, lebo globálne
+/* Písmo stránky: Montserrat. Selektory začínajú .nox-art-site, lebo globálne
    štýly blokových tém (:root :where(h2)) majú vyššiu váhu než holé h1–h3
    a prebíjali by nám písmo. Nadpisy sú v reze Black (900) s tesným
-   prestrkaním – rovnako ako ich sadzal Elementor na pôvodnom webe. */
+   prestrkaním – rovnako ako na pôvodnom webe. */
 body.nox-art-site,
 .nox-art-site p,
 .nox-art-site a,
@@ -3290,7 +3322,7 @@ body.nox-art-site,
 .nox-art-site label,
 .nox-art-site .section-label,
 .nox-art-site .filter-chip {
-  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  font-family: "Montserrat", Arial, Helvetica, sans-serif;
 }
 
 .nox-art-site h1,
@@ -3299,7 +3331,7 @@ body.nox-art-site,
 .nox-art-site .partner-logo-text,
 .nox-art-site .tile-caption h3,
 .nox-art-site .detail-title {
-  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  font-family: "Montserrat", Arial, Helvetica, sans-serif;
   font-weight: 900;
   letter-spacing: -.06em;
 }
@@ -3308,7 +3340,7 @@ body.nox-art-site,
    (−0,075 em, resp. −0,095 em) – tu im meníme len písmo a hrúbku. */
 .nox-art-site .hero-date,
 .nox-art-site .footer-wordmark {
-  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  font-family: "Montserrat", Arial, Helvetica, sans-serif;
   font-weight: 900;
 }
 
