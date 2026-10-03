@@ -3143,14 +3143,13 @@ body.nox-art-site > *:not(.scroll-progress):not(#wpadminbar):not(script):not(sty
   margin: clamp(48px, 6vw, 80px) 0 0;
   padding-left: 1.2em;
   list-style: disc;
-  color: var(--muted);
-  font-size: .78rem;
-  line-height: 1.45;
+  color: var(--ink);
+  font-size: clamp(.82rem, 1.1vw, .95rem);
+  line-height: 1.6;
 }
 
 .partner-support li {
-  max-width: 74ch;
-  margin-bottom: 8px;
+  margin-bottom: 2px;
 }
 
 .partner-support li:last-child {
