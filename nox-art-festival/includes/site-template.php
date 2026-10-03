@@ -586,7 +586,7 @@ function nox_art_site_resource_hints() {
     }
 
     // Písmo nadpisov predsunieme – inak by úvod chvíľu blikal v náhradnom písme.
-    foreach (['roboto-latin-700-normal.woff2', 'roboto-latin-ext-700-normal.woff2'] as $font) {
+    foreach (['roboto-latin-900-normal.woff2', 'roboto-latin-ext-900-normal.woff2'] as $font) {
         printf(
             '<link rel="preload" as="font" type="font/woff2" href="%s" crossorigin>' . "\n",
             esc_url(NOX_ART_URL . 'assets/fonts/' . $font)
