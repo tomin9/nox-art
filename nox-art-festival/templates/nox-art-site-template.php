@@ -39,10 +39,9 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
 
 <header class="site-header" data-header>
   <a class="brand" href="<?php echo nox_art_site_link('hero'); ?>" aria-label="NOX:ART a Ars Preuge — späť na začiatok">
-    <picture>
-      <source srcset="<?php echo nox_art_site_asset('noxart-official-wordmark.webp'); ?>" type="image/webp">
-      <img class="brand-nox-logo" src="<?php echo nox_art_site_asset('noxart-official-wordmark.png'); ?>" width="561" height="111" alt="NOX:ART" fetchpriority="high" decoding="async">
-    </picture>
+    <?php /* Názov festivalu je živý text v písme stránky (Helvetica), nie
+             obrázok – sadne k nadpisom a je ostrý v každej veľkosti. */ ?>
+    <span class="brand-nox-text">NOX:ART</span>
     <picture>
       <source srcset="<?php echo nox_art_site_asset('ars-preuge-logo.webp'); ?>" type="image/webp">
       <img class="brand-ars-logo" src="<?php echo nox_art_site_asset('ars-preuge-logo.png'); ?>" width="1200" height="812" alt="Ars Preuge" decoding="async">

@@ -3341,3 +3341,30 @@ body.nox-art-site,
 .nox-art-site .hero-location-title {
   letter-spacing: .01em;
 }
+
+/* Názov NOX:ART v hlavičke – text namiesto obrázka loga. Veľkosť je
+   zvolená tak, aby zaberal rovnakú šírku ako pôvodné logo. */
+.nox-art-site .brand-nox-text {
+  display: block;
+  flex: 0 0 auto;
+  color: var(--text);
+  font-family: "Helvetica Neue", Helvetica, "Nimbus Sans", Arial, sans-serif;
+  font-size: clamp(2.2rem, 3.1vw, 2.95rem);
+  font-weight: 700;
+  line-height: .9;
+  letter-spacing: -.06em;
+  white-space: nowrap;
+  -webkit-text-stroke: .02em currentColor;
+  paint-order: stroke fill;
+}
+
+/* Otvorené menu na mobile má tmavé pozadie – názov sa prefarbí na svetlo. */
+.nox-art-site.menu-open .site-header .brand-nox-text {
+  color: var(--paper);
+}
+
+@media (max-width: 760px) {
+  .nox-art-site .brand-nox-text {
+    font-size: 1.95rem;
+  }
+}
