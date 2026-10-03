@@ -3181,3 +3181,10 @@ body.nox-art-site > *:not(.scroll-progress):not(#wpadminbar):not(script):not(sty
     gap: 0;
   }
 }
+
+/* Podklad celej stránky (teda aj plocha okolo tmavej päty a pod ňou) má byť
+   papierový ako úvodná strana – téma webu inak presadí biele pozadie. */
+html:has(body.nox-art-site),
+body.nox-art-site {
+  background: var(--paper) !important;
+}
