@@ -149,3 +149,63 @@ function nox_art_partner_column_content($column, $post_id) {
     }
 }
 add_action('manage_nox_partner_posts_custom_column', 'nox_art_partner_column_content', 10, 2);
+
+/**
+ * Umelci: fotka a diela, ktoré majú priradené.
+ */
+function nox_art_umelec_columns($columns) {
+    $nove = [];
+    foreach ($columns as $kluc => $label) {
+        if ($kluc === 'title') $nove['nox_foto'] = 'Fotka';
+        $nove[$kluc] = $label;
+        if ($kluc === 'title') $nove['nox_diela'] = 'Diela';
+    }
+    return $nove;
+}
+add_filter('manage_nox_umelec_posts_columns', 'nox_art_umelec_columns');
+
+/**
+ * Diela podľa umelca načítame naraz, nie dopytom pri každom riadku.
+ */
+function nox_art_umelec_assignments() {
+    static $mapa = null;
+    if ($mapa !== null) return $mapa;
+
+    $mapa = [];
+    $diela = get_posts([
+        'post_type' => 'nox_dielo',
+        'post_status' => ['publish', 'draft', 'pending', 'future', 'private'],
+        'numberposts' => -1,
+        'orderby' => 'title',
+        'order' => 'ASC',
+    ]);
+    foreach ($diela as $dielo) {
+        $umelec_id = (int) get_post_meta($dielo->ID, '_nox_umelec_id', true);
+        if (!$umelec_id) continue;
+        $mapa[$umelec_id][] = ['id' => $dielo->ID, 'nazov' => get_the_title($dielo) ?: '(bez názvu)'];
+    }
+    return $mapa;
+}
+
+function nox_art_umelec_column_content($column, $post_id) {
+    if ($column === 'nox_foto') {
+        echo has_post_thumbnail($post_id)
+            ? get_the_post_thumbnail($post_id, [48, 48], ['style' => 'width:48px;height:48px;object-fit:cover;border-radius:50%'])
+            : '<span style="color:#b32d2e">chýba</span>';
+    }
+    if ($column === 'nox_diela') {
+        $polozky = nox_art_umelec_assignments()[(int) $post_id] ?? [];
+        if (!$polozky) { echo '<span style="color:#787c82">—</span>'; return; }
+
+        echo '<ul style="margin:0;list-style:none">';
+        foreach ($polozky as $polozka) {
+            printf(
+                '<li style="margin:0 0 2px"><a href="%s">%s</a></li>',
+                esc_url(get_edit_post_link($polozka['id'])),
+                esc_html($polozka['nazov'])
+            );
+        }
+        echo '</ul>';
+    }
+}
+add_action('manage_nox_umelec_posts_custom_column', 'nox_art_umelec_column_content', 10, 2);
