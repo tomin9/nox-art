@@ -3156,8 +3156,9 @@ body.nox-art-site > *:not(.scroll-progress):not(#wpadminbar):not(script):not(sty
   margin-bottom: 0;
 }
 
-/* Sekcia Partneri stojí na rovnakom papierovom podklade ako úvodná strana –
-   inak presvitalo biele pozadie témy. */
+/* Sekcie O festivale a Partneri stoja na rovnakom papierovom podklade ako
+   úvodná strana – inak cez ne presvitalo biele pozadie témy. */
+.nox-art-site .about,
 .nox-art-site .partners {
   background: var(--paper);
 }
