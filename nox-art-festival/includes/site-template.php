@@ -434,7 +434,7 @@ function nox_art_site_schedule() {
                 'meta' => $jednotlivo ? $item['meta'] : '',
                 // Vpravo stojí miesto: pri jednotlivej položke jej adresa,
                 // pri zlúčenom riadku (viac diel) celé sídlisko.
-                'miesto' => $jednotlivo ? ($item['miestoNazov'] ?? '') : 'Sídlisko Píly',
+                'miesto' => $jednotlivo ? trim(preg_replace('/[,\s]*Prievidza\s*$/u', '', $item['miestoNazov'] ?? '')) : 'Sídlisko Píly',
                 'kategorie' => $item['kategorie'],
                 // Na čo riadok odkazuje: jednotlivá položka má detail,
                 // zlúčený riadok otvorí svoju kategóriu v zozname.
