@@ -371,7 +371,9 @@ function nox_art_site_items() {
         return $best;
     };
     foreach ($items as $i => &$item) {
-        $item['_rank'] = [$rank($item['kategorie']), $i];
+        // V rámci kategórie idú najprv položky s ručne zadaným číslom (podľa
+        // čísla), potom ostatné v pôvodnom poradí.
+        $item['_rank'] = [$rank($item['kategorie']), $item['cislo'] > 0 ? 0 : 1, (int) $item['cislo'], $i];
     }
     unset($item);
     usort($items, function($a, $b) {
