@@ -3628,3 +3628,20 @@ body.nox-art-site,
 .nox-art-site .partner-logos .partner-logo {
   width: auto;
 }
+
+/* Generálny partner tesne vedľa organizátora; nadpisy oboch skupín v jednej línii. */
+.nox-art-site .partner-row-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: clamp(36px, 4.5vw, 72px) clamp(72px, 9vw, 150px);
+}
+
+.nox-art-site .partner-row-top .partner-logos {
+  min-height: calc(var(--logo-zaklad, 110px) * 1.15);
+  align-items: center;
+}
+
+.nox-art-site .partner-row-top .partner-group:first-child .partner-logo {
+  --logo-zaklad: clamp(78px, 8vw, 116px);
+}
