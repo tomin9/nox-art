@@ -85,7 +85,7 @@ function nox_art_route_sections() {
 }
 
 function nox_art_route_view_slugs() {
-    $slugy = array_merge(['harmonogram'], array_keys(nox_art_route_sections()), array_keys(nox_art_route_aliases()));
+    $slugy = array_merge(['harmonogram', 'autori'], array_keys(nox_art_route_sections()), array_keys(nox_art_route_aliases()));
     $terms = get_terms(['taxonomy' => 'nox_kategoria', 'hide_empty' => false]);
     if (!is_wp_error($terms)) {
         foreach ($terms as $term) $slugy[] = $term->slug;
@@ -173,3 +173,32 @@ function nox_art_route_keep_url($redirect, $requested) {
     return $redirect;
 }
 add_filter('redirect_canonical', 'nox_art_route_keep_url', 10, 2);
+
+/**
+ * Poistka k prepisovacím pravidlám: ak sa pravidlá z nejakého dôvodu
+ * neprepísali (keš, hosting, zmena nastavení), adresu pohľadu či sekcie
+ * rozpoznáme sami podľa cesty a načítame úvodnú festivalovú stránku.
+ */
+function nox_art_route_parse_request($wp) {
+    if (!empty($wp->query_vars['nox_view']) || is_admin()) return;
+
+    $front = (int) get_option('page_on_front');
+    if (!$front || !in_array('program', nox_art_site_sections_for_page($front), true)) return;
+
+    $cesta = wp_parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+    $domov = trim((string) wp_parse_url(home_url('/'), PHP_URL_PATH), '/');
+    $cesta = trim($cesta, '/');
+    if ($domov !== '' && strpos($cesta, $domov) === 0) $cesta = trim(substr($cesta, strlen($domov)), '/');
+
+    $casti = $cesta === '' ? [] : explode('/', $cesta);
+    if (!$casti || count($casti) > 2) return;
+    if (!in_array($casti[0], nox_art_route_view_slugs(), true)) return;
+
+    $wp->query_vars = [
+        'page_id' => $front,
+        'nox_view' => $casti[0],
+        'nox_item' => $casti[1] ?? '',
+    ];
+    unset($wp->query_vars['error']);
+}
+add_action('parse_request', 'nox_art_route_parse_request', 20);

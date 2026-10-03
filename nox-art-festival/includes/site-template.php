@@ -540,6 +540,7 @@ function nox_art_site_count_labels() {
         'sprievodny-program' => ['podujatie', 'podujatia', 'podujatí'],
         'partnerske-podniky' => ['podnik', 'podniky', 'podnikov'],
         '_harmonogram' => ['podujatie', 'podujatia', 'podujatí'],
+        '_autori' => ['autor', 'autori', 'autorov'],
         '_default' => ['položka', 'položky', 'položiek'],
     ];
     return apply_filters('nox_art_pocitadlo_tvary', $tvary);

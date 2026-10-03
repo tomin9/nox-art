@@ -653,7 +653,7 @@ function vyskaHlavicky() {
 
     const cestaStavu = () => {
       if (!route) return '';
-      if (view === 'harmonogram') return route.harmonogram || 'harmonogram';
+      if (view !== 'items' && view !== 'detail') return view === 'harmonogram' ? (route.harmonogram || 'harmonogram') : view;
 
       const skupina = child || parent;
       if (view === 'detail') {
@@ -684,8 +684,9 @@ function vyskaHlavicky() {
     /* Nastaví zoznam podľa adresy – klikaním na tlačidlá, nech sú filtre,
        zvýraznenie aj mapa v súlade. */
     const pouziCestu = (pohlad, polozka) => {
-      if (pohlad === (route?.harmonogram || 'harmonogram')) {
-        chips.find((chip) => chip.dataset.view === 'harmonogram')?.click();
+      const pohladChip = chips.find((chip) => chip.dataset.view === pohlad);
+      if (pohladChip) {
+        pohladChip.click();
         return;
       }
 
@@ -722,9 +723,11 @@ function vyskaHlavicky() {
     const updateCount = (tiles) => {
       if (!countEl) return;
       const tvary = (window.NOX_SITE_MAP || {}).pocty || {};
-      const kluc = view === 'harmonogram' ? '_harmonogram' : (child || parent);
+      const kluc = view === 'harmonogram' ? '_harmonogram' : (view === 'autori' ? '_autori' : (child || parent));
       const tvar = tvary[kluc] || tvary._default || ['položka', 'položky', 'položiek'];
-      countEl.textContent = `${tiles.length} ${tvarSlova(tiles.length, tvar)} / Sídlisko Píly`;
+      // Pri autoroch počítame autorov, nie diela na mape.
+      const pocet = view === 'autori' ? document.querySelectorAll('[data-autor]').length : tiles.length;
+      countEl.textContent = `${pocet} ${tvarSlova(pocet, tvar)} / Sídlisko Píly`;
     };
 
     const syncMap = () => {
@@ -735,6 +738,8 @@ function vyskaHlavicky() {
         tiles = tile ? [tile] : [];
       } else if (view === 'harmonogram') {
         tiles = [...target.querySelectorAll('.gallery-tile[data-cas]')];
+      } else if (view === 'autori') {
+        tiles = [...target.querySelectorAll('.gallery-tile[data-work]')];
       } else {
         tiles = [...target.querySelectorAll('.gallery-tile')].filter((tile) => !tile.classList.contains('is-filtered-out'));
       }
@@ -765,6 +770,8 @@ function vyskaHlavicky() {
       if (view !== 'items') {
         if (emptyNote) emptyNote.hidden = true;
         syncMap();
+        // Pohľady (harmonogram, autori) aj detail položky zapíšu svoju adresu.
+        aktualizujAdresu();
         return;
       }
 

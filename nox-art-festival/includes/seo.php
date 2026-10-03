@@ -42,7 +42,10 @@ function nox_art_site_seo() {
 
     if ($route['view']) {
         $seo['path'] = $route['view'] . '/';
-        if ($route['view'] === 'harmonogram') {
+        if ($route['view'] === 'autori') {
+            $seo['title'] = 'Autori — ' . NOX_ART_SEO_NAZOV . ', Prievidza';
+            $seo['description'] = 'Autori a autorky diel festivalu NOX:ART na sídlisku Píly v Prievidzi, 30.–31. októbra 2026.';
+        } elseif ($route['view'] === 'harmonogram') {
             $seo['title'] = 'Časový harmonogram — ' . NOX_ART_SEO_NAZOV . ', Prievidza';
             $seo['description'] = 'Časový harmonogram festivalu NOX:ART na sídlisku Píly v Prievidzi, 30.–31. októbra 2026.';
         } elseif ($term = get_term_by('slug', $route['view'], 'nox_kategoria')) {
@@ -139,7 +142,7 @@ function nox_art_site_seo_sitemap($entries, $post_type) {
 
     $base = user_trailingslashit(get_permalink($id));
     $base = apply_filters('nox_art_route_base', $base);
-    foreach (array_merge(array_keys(nox_art_route_sections()), ['harmonogram']) as $slug) {
+    foreach (array_merge(array_keys(nox_art_route_sections()), ['harmonogram', 'autori']) as $slug) {
         $entries[] = ['loc' => $base . $slug . '/'];
     }
     return $entries;

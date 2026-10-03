@@ -3653,3 +3653,70 @@ body.nox-art-site,
   max-width: 100%;
   object-fit: contain;
 }
+
+/* Autori – pohľad sekcie Program a diela. */
+.nox-art-site .authors-list {
+  display: grid;
+  gap: clamp(22px, 3vw, 40px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nox-art-site .author {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: clamp(16px, 2vw, 28px);
+  align-items: start;
+  padding-bottom: clamp(20px, 2.6vw, 34px);
+  border-bottom: 1px solid rgba(239, 238, 220, .16);
+}
+
+.nox-art-site .author:not(:has(.author-foto)) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.nox-art-site .author-foto {
+  width: clamp(84px, 9vw, 120px);
+  height: clamp(84px, 9vw, 120px);
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.nox-art-site .author-name {
+  margin: 0 0 8px;
+  font-size: clamp(1.4rem, 2.2vw, 2rem);
+}
+
+.nox-art-site .author-bio {
+  max-width: 62ch;
+  color: rgba(239, 238, 220, .72);
+  font-size: .95rem;
+  line-height: 1.6;
+}
+
+.nox-art-site .author-works {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nox-art-site .author-work {
+  padding: 7px 14px;
+  border: 1px solid rgba(239, 238, 220, .3);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--paper);
+  font: inherit;
+  font-size: .85rem;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+}
+
+.nox-art-site .author-work:hover {
+  background: var(--paper);
+  color: var(--ink);
+}
