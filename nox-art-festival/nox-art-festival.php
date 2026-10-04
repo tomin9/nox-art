@@ -32,6 +32,7 @@ require_once NOX_ART_DIR . 'includes/shortcode.php';
 require_once NOX_ART_DIR . 'includes/hero.php';
 require_once NOX_ART_DIR . 'includes/site-template.php';
 require_once NOX_ART_DIR . 'includes/seo.php';
+require_once NOX_ART_DIR . 'includes/analytics.php';
 require_once NOX_ART_DIR . 'includes/routing.php';
 require_once NOX_ART_DIR . 'includes/domain.php';
 require_once NOX_ART_DIR . 'includes/login.php';

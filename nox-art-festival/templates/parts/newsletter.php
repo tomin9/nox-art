@@ -16,8 +16,14 @@
       <label class="sr-only" for="email">E-mailová adresa</label>
       <input type="email" id="email" name="email" placeholder="tvoj@email.sk" autocomplete="email" required>
       <button type="submit">Prihlásiť sa <span aria-hidden="true">↗</span></button>
+      <?php /* Pasca pre roboty – človek ju nevidí, vyplní ju len bot. */ ?>
+      <input class="newsletter-hp" type="text" name="web" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <label class="newsletter-consent">
+        <input type="checkbox" name="suhlas" value="1" required>
+        <span>Súhlasím so zasielaním noviniek o festivale na môj e-mail.</span>
+      </label>
     </form>
     <p class="form-status" data-form-status role="status" aria-live="polite"></p>
-    <p class="newsletter-note">Prihlásením súhlasíte so zasielaním noviniek o festivale. Z odberu sa môžete kedykoľvek odhlásiť.</p>
+    <p class="newsletter-note">E-mail použijeme len na správy o festivale NOX:ART (Ars Preuge). Z odberu sa môžeš kedykoľvek odhlásiť odkazom v každom e-maile.</p>
   </div>
 </aside>

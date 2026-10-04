@@ -3791,3 +3791,90 @@ html:has(body.nox-art-site) {
   font-weight: 400;
   white-space: nowrap;
 }
+
+/* Lišta so súhlasom s meraním (zobrazí sa len pri zadanom ID merania). */
+.nox-art-site .consent {
+  position: fixed;
+  z-index: 960;
+  left: clamp(12px, 2vw, 24px);
+  bottom: calc(clamp(12px, 2vw, 24px) + env(safe-area-inset-bottom, 0px));
+  width: min(360px, calc(100vw - 24px));
+  padding: 18px 20px 16px;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, .6);
+  border-radius: 24px;
+  background: rgba(247, 245, 232, .96);
+  box-shadow: 0 18px 50px rgba(45, 45, 45, .28);
+  color: #2d2d2d;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.nox-art-site .consent[hidden] {
+  display: none;
+}
+
+.nox-art-site .consent-title {
+  margin: 0 0 6px;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.nox-art-site .consent-text {
+  margin: 0 0 14px;
+  font-size: .88rem;
+  line-height: 1.5;
+}
+
+.nox-art-site .consent-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.nox-art-site .consent-btn {
+  flex: 1;
+  min-height: 42px;
+  border: 1.5px solid #2d2d2d;
+  border-radius: 999px;
+  background: transparent;
+  color: #2d2d2d;
+  font: inherit;
+  font-size: .85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.nox-art-site .consent-btn-main {
+  background: #2d2d2d;
+  color: #f7f5e8;
+}
+
+/* Pole newslettera: pasca pre roboty (neviditeľná) a súhlas. */
+.nox-art-site .newsletter-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.nox-art-site .newsletter-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  grid-column: 1 / -1;
+  margin-top: 6px;
+  font-size: .8rem;
+  line-height: 1.45;
+  cursor: pointer;
+}
+
+.nox-art-site .newsletter-consent input {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin: 1px 0 0;
+  padding: 0;
+}

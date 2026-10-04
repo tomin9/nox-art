@@ -113,6 +113,7 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
     <?php endif; ?>
     <span>© <?php echo esc_html(date('Y')); ?> Ars Preuge</span>
     <span>Prievidza / Slovensko</span>
+    <?php if (nox_art_ga_id()): ?><a href="#" data-consent-open>Cookies</a><?php endif; ?>
     <a href="#top">Hore ↑</a>
   </div>
 </footer>

@@ -189,18 +189,121 @@ function vyskaHlavicky() {
   const newsletterForm = document.querySelector('[data-newsletter-form]');
   const formStatus = document.querySelector('[data-form-status]');
 
-  newsletterForm?.addEventListener('submit', (event) => {
+  newsletterForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
-    const email = new FormData(newsletterForm).get('email');
+    const cfg = window.NOX_SITE_TRACK || {};
+    const data = new FormData(newsletterForm);
+    const email = data.get('email');
+    const stav = (text) => { if (formStatus) formStatus.textContent = text; };
 
     if (typeof email !== 'string' || !email.includes('@')) {
-      if (formStatus) formStatus.textContent = 'Skontroluj, prosím, e-mailovú adresu.';
+      stav('Skontroluj, prosím, e-mailovú adresu.');
+      return;
+    }
+    if (!data.get('suhlas')) {
+      stav('Pre prihlásenie potvrď súhlas so zasielaním noviniek.');
+      return;
+    }
+    if (!cfg.newsletter || !cfg.ajaxUrl) {
+      stav('Prihlásenie zatiaľ nie je dostupné. Skús to prosím neskôr.');
       return;
     }
 
-    if (formStatus) {
-      formStatus.textContent = 'Formulár funguje ako ukážka. Pri nasadení ho prepojíme s newsletterovým nástrojom.';
+    const tlacidlo = newsletterForm.querySelector('button[type="submit"]');
+    if (tlacidlo) tlacidlo.disabled = true;
+    stav('Odosielam…');
+    data.append('action', 'nox_art_newsletter');
+
+    try {
+      const odpoved = await fetch(cfg.ajaxUrl, { method: 'POST', body: data, credentials: 'same-origin' });
+      const vysledok = await odpoved.json().catch(() => null);
+      stav(vysledok?.message || 'Prihlásenie sa nepodarilo. Skús to prosím neskôr.');
+      if (vysledok?.ok) {
+        newsletterForm.reset();
+        window.noxTrack?.('generate_lead', { form: 'newsletter' });
+      }
+    } catch (chyba) {
+      stav('Prihlásenie sa nepodarilo. Skontroluj pripojenie a skús to znova.');
+    } finally {
+      if (tlacidlo) tlacidlo.disabled = false;
     }
+  });
+})();
+
+
+/* =========================================================================
+   Meranie (Google Analytics 4) so súhlasom. Skript GA sa nenačíta, kým
+   návštevník nepovolí meranie; voľba sa pamätá v prehliadači. Udalosti
+   posielame cez window.noxTrack(názov, parametre) – bez súhlasu nerobí nič.
+   ========================================================================= */
+(() => {
+  const cfg = window.NOX_SITE_TRACK || {};
+  const KLUC = 'nox_consent';
+  const banner = document.querySelector('[data-consent]');
+  let povolene = false;
+  let nacitane = false;
+
+  const citaj = () => { try { return window.localStorage.getItem(KLUC); } catch (e) { return null; } };
+  const zapis = (hodnota) => { try { window.localStorage.setItem(KLUC, hodnota); } catch (e) { /* bez pamäte sa lišta zobrazí znova */ } };
+
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { window.dataLayer.push(arguments); }
+
+  const nacitaj = () => {
+    if (nacitane || !cfg.gaId) return;
+    nacitane = true;
+    const skript = document.createElement('script');
+    skript.async = true;
+    skript.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(cfg.gaId)}`;
+    document.head.appendChild(skript);
+
+    gtag('js', new Date());
+    gtag('consent', 'default', {
+      analytics_storage: 'granted',
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+    });
+    // Zobrazenia stránok posielame sami (aj pri zmene adresy bez načítania).
+    gtag('config', cfg.gaId, { send_page_view: false });
+    gtag('event', 'page_view', { page_location: window.location.href, page_path: window.location.pathname, page_title: document.title });
+  };
+
+  window.noxTrack = (nazov, parametre) => {
+    if (!povolene || !cfg.gaId) return;
+    gtag('event', nazov, parametre || {});
+  };
+
+  const zobraz = (viditelne) => { if (banner) banner.hidden = !viditelne; };
+
+  if (cfg.gaId) {
+    const ulozene = citaj();
+    if (ulozene === 'granted') { povolene = true; nacitaj(); }
+    else if (ulozene !== 'denied') zobraz(true);
+
+    document.querySelector('[data-consent-accept]')?.addEventListener('click', () => {
+      zapis('granted'); povolene = true; nacitaj(); zobraz(false);
+    });
+    document.querySelector('[data-consent-deny]')?.addEventListener('click', () => {
+      zapis('denied'); povolene = false; zobraz(false);
+    });
+    document.addEventListener('click', (event) => {
+      const otvor = event.target.closest('[data-consent-open]');
+      if (!otvor) return;
+      event.preventDefault();
+      zobraz(true);
+    });
+  }
+
+  // Kliky na sociálne siete a partnerov.
+  document.addEventListener('click', (event) => {
+    const odkaz = event.target.closest('a[href^="http"]');
+    if (!odkaz) return;
+    let hostitel = '';
+    try { hostitel = new URL(odkaz.href).hostname; } catch (e) { return; }
+    if (hostitel === window.location.hostname) return;
+    if (odkaz.closest('.nav-social, .footer-social')) window.noxTrack('social_click', { network: hostitel });
+    else if (odkaz.closest('.partners')) window.noxTrack('partner_click', { partner: hostitel });
   });
 })();
 
@@ -678,7 +781,10 @@ function vyskaHlavicky() {
 
       // Prvé nastavenie len opraví adresu, ďalšie pridávajú krok do histórie,
       // nech funguje tlačidlo Späť v prehliadači.
-      if (adresaPripravena) window.history.pushState({ nox: cesta }, '', url);
+      if (adresaPripravena) {
+        window.history.pushState({ nox: cesta }, '', url);
+        window.noxTrack?.('page_view', { page_location: window.location.href, page_path: window.location.pathname, page_title: document.title });
+      }
       else window.history.replaceState({ nox: cesta }, '', url);
     }
 
@@ -822,6 +928,7 @@ function vyskaHlavicky() {
         });
         view = chip.dataset.view || 'items';
         parent = chip.dataset.filter || parent;
+        if (event.isTrusted) window.noxTrack?.('tab_view', { tab: chip.dataset.view || chip.dataset.filter || 'items' });
         child = '';
         syncSubBars();
         apply();
@@ -899,6 +1006,10 @@ function vyskaHlavicky() {
       if (!detail) return;
       details.forEach((el) => { el.hidden = el !== detail; });
       if (view !== 'detail') viewBeforeDetail = view;
+      window.noxTrack?.('select_content', {
+        content_type: id.startsWith('autor-') ? 'autor' : 'polozka',
+        item_id: detail.dataset.slug || id,
+      });
       view = 'detail';
       syncSubBars();
       apply();
@@ -1132,6 +1243,7 @@ function vyskaHlavicky() {
         const ciel = new URL(link.href, window.location.href);
         if (ciel.pathname !== window.location.pathname) {
           window.history.pushState({ nox: ciel.pathname }, '', ciel.pathname + window.location.search);
+          window.noxTrack?.('page_view', { page_location: window.location.href, page_path: window.location.pathname, page_title: document.title });
         }
       }
     });
