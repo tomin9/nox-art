@@ -126,7 +126,23 @@ function nox_art_site_seo_head($seo) {
             'name' => 'Ars Preuge',
             'url' => $base,
         ],
+        // Vstup je voľný – Google chce ponuku aj pri bezplatnej udalosti.
+        'offers' => [
+            '@type' => 'Offer',
+            'url' => $base,
+            'price' => '0',
+            'priceCurrency' => 'EUR',
+            'availability' => 'https://schema.org/InStock',
+            'validFrom' => '2026-01-01',
+        ],
     ];
+
+    // Účinkujúci: autori diel z administrácie; ak žiadni nie sú, organizátor.
+    $ucinkujuci = [];
+    foreach (nox_art_data_umelci() as $umelec) {
+        if ($umelec['meno']) $ucinkujuci[] = ['@type' => 'Person', 'name' => $umelec['meno']];
+    }
+    $udalost['performer'] = $ucinkujuci ?: [['@type' => 'Organization', 'name' => 'Ars Preuge']];
     echo '<script type="application/ld+json">' . wp_json_encode($udalost, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>' . "\n";
 }
 
