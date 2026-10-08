@@ -33,11 +33,8 @@ $prvySlovo = $prvyPocet === 1 ? $tvar[0] : ($prvyPocet >= 2 && $prvyPocet <= 4 ?
            načítaní stránky. Podkategórie sa odkryjú až po zvolení skupiny,
            ktorá ich má. */ ?>
   <div class="filter-bar filter-bar-light reveal" data-filter-group="program" role="group" aria-label="Filtrovanie programu">
-    <?php $autoriVlozene = false; foreach ($filtre as $i => $uzol): $term = $uzol['term']; ?>
+    <?php foreach ($filtre as $i => $uzol): $term = $uzol['term']; ?>
     <button class="filter-chip<?php echo $i === 0 ? ' is-active' : ''; ?>" type="button" data-filter="<?php echo esc_attr($term->slug); ?>" aria-pressed="<?php echo $i === 0 ? 'true' : 'false'; ?>"><i class="chip-pin" aria-hidden="true" style="--pin:<?php echo esc_attr(nox_art_term_color($term)); ?>"></i><?php echo esc_html($term->name); ?></button>
-    <?php if ($term->slug === 'diela' || (!$autoriVlozene && $i === 0 && !in_array('diela', array_map(function ($u) { return $u['term']->slug; }, $filtre), true))): $autoriVlozene = true; ?>
-    <button class="filter-chip" type="button" data-view="autori" aria-pressed="false"><svg class="chip-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Autori</button>
-    <?php endif; ?>
     <?php endforeach; ?>
     <?php /* Posledné tlačidlo neprepína kategóriu, ale celý pohľad – namiesto
              dlaždíc ukáže ten istý obsah zoradený podľa času. */ ?>
@@ -131,16 +128,12 @@ $prvySlovo = $prvyPocet === 1 ? $tvar[0] : ($prvyPocet >= 2 && $prvyPocet <= 4 ?
       <?php endif; ?>
     </article>
     <?php endforeach; ?>
-    <?php include NOX_ART_DIR . 'templates/parts/autori-detail.php'; ?>
   </div>
 
   <div class="schedule" data-view-panel="harmonogram" hidden>
     <?php include NOX_ART_DIR . 'templates/parts/harmonogram.php'; ?>
   </div>
 
-  <div class="authors" data-view-panel="autori" hidden>
-    <?php include NOX_ART_DIR . 'templates/parts/autori.php'; ?>
-  </div>
   </div>
 
   <?php /* Mapa drží krok so zoznamom – na veľkej obrazovke je prilepená

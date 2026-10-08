@@ -52,7 +52,7 @@ function nox_art_route_aliases() {
     $aliasy = get_option('nox_art_slug_aliases', []);
     if (!is_array($aliasy)) $aliasy = [];
     // Duplicitná kategória z importu zo starého webu.
-    $aliasy += ['partnerske-podniky' => 'podniky'];
+    $aliasy += ['partnerske-podniky' => 'podniky', 'autori' => 'diela'];
     return apply_filters('nox_art_route_aliases', $aliasy);
 }
 
@@ -85,7 +85,7 @@ function nox_art_route_sections() {
 }
 
 function nox_art_route_view_slugs() {
-    $slugy = array_merge(['harmonogram', 'autori'], array_keys(nox_art_route_sections()), array_keys(nox_art_route_aliases()));
+    $slugy = array_merge(['harmonogram'], array_keys(nox_art_route_sections()), array_keys(nox_art_route_aliases()));
     $terms = get_terms(['taxonomy' => 'nox_kategoria', 'hide_empty' => false]);
     if (!is_wp_error($terms)) {
         foreach ($terms as $term) $slugy[] = $term->slug;

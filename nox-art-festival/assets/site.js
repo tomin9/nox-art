@@ -761,7 +761,6 @@ function vyskaHlavicky() {
       let skupina = child || parent;
       if (view === 'detail') {
         const open = details.find((el) => !el.hidden);
-        if (open?.dataset.detail.startsWith('autor-')) skupina = 'autori';
         const slug = open?.dataset.slug;
         return slug ? `${skupina}/${slug}` : skupina;
       }
@@ -811,8 +810,7 @@ function vyskaHlavicky() {
 
       if (!polozka) return;
       const zhody = details.filter((el) => el.dataset.slug === polozka);
-      const jeAutor = (el) => el.dataset.detail.startsWith('autor-');
-      const detail = zhody.find((el) => jeAutor(el) === (pohlad === 'autori')) || zhody[0];
+      const detail = zhody[0];
       if (detail) openDetail(detail.dataset.detail);
     };
 
@@ -832,11 +830,9 @@ function vyskaHlavicky() {
     const updateCount = (tiles) => {
       if (!countEl) return;
       const tvary = (window.NOX_SITE_MAP || {}).pocty || {};
-      const kluc = view === 'harmonogram' ? '_harmonogram' : (view === 'autori' ? '_autori' : (child || parent));
+      const kluc = view === 'harmonogram' ? '_harmonogram' : (child || parent);
       const tvar = tvary[kluc] || tvary._default || ['položka', 'položky', 'položiek'];
-      // Pri autoroch počítame autorov, nie diela na mape.
-      const pocet = view === 'autori' ? document.querySelectorAll('[data-autor]').length : tiles.length;
-      countEl.textContent = `${pocet} ${tvarSlova(pocet, tvar)} / Sídlisko Píly`;
+      countEl.textContent = `${tiles.length} ${tvarSlova(tiles.length, tvar)} / Sídlisko Píly`;
     };
 
     const syncMap = () => {
@@ -844,15 +840,9 @@ function vyskaHlavicky() {
       if (view === 'detail') {
         const open = details.find((el) => !el.hidden);
         const tile = open && document.getElementById(open.dataset.detail);
-        // Detail autora ukáže na mape všetky jeho diela.
-        const autorDiela = (open?.dataset.autorDiela || '').split(' ').filter(Boolean);
-        tiles = autorDiela.length
-          ? autorDiela.map((id) => document.getElementById(id)).filter(Boolean)
-          : (tile ? [tile] : []);
+        tiles = tile ? [tile] : [];
       } else if (view === 'harmonogram') {
         tiles = [...target.querySelectorAll('.gallery-tile[data-cas]')];
-      } else if (view === 'autori') {
-        tiles = [...target.querySelectorAll('.gallery-tile[data-work]')];
       } else {
         tiles = [...target.querySelectorAll('.gallery-tile')].filter((tile) => !tile.classList.contains('is-filtered-out'));
       }
@@ -883,7 +873,7 @@ function vyskaHlavicky() {
       if (view !== 'items') {
         if (emptyNote) emptyNote.hidden = true;
         syncMap();
-        // Pohľady (harmonogram, autori) aj detail položky zapíšu svoju adresu.
+        // Pohľady (harmonogram) aj detail položky zapíšu svoju adresu.
         aktualizujAdresu();
         return;
       }
@@ -1007,7 +997,7 @@ function vyskaHlavicky() {
       details.forEach((el) => { el.hidden = el !== detail; });
       if (view !== 'detail') viewBeforeDetail = view;
       window.noxTrack?.('select_content', {
-        content_type: id.startsWith('autor-') ? 'autor' : 'polozka',
+        content_type: 'polozka',
         item_id: detail.dataset.slug || id,
       });
       view = 'detail';
@@ -1019,15 +1009,6 @@ function vyskaHlavicky() {
          miesto pod textom a tlačidlo späť by mal nad obrazovkou. */
       scrollToSection();
     };
-
-    // Dlaždice autorov otvárajú detail autora.
-    document.querySelectorAll('[data-open]').forEach((tile) => {
-      const otvor = () => openDetail(tile.dataset.open);
-      tile.addEventListener('click', (event) => { event.preventDefault(); otvor(); });
-      tile.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); otvor(); }
-      });
-    });
 
     // Klikacia je celá dlaždica, nielen odkaz na mapu – položka bez miesta
     // odkaz nemá, a detail má mať každá.
@@ -1127,7 +1108,7 @@ function vyskaHlavicky() {
       const cielovaKotva = route.section ? (route.sections || {})[route.section] : (route.view ? 'program' : '');
       const cielovaSekcia = cielovaKotva ? document.getElementById(cielovaKotva) : null;
       if (cielovaSekcia) {
-        // Adresa pohľadu (/diela, /autori, /harmonogram) zarovná filtre pod
+        // Adresa pohľadu (/diela, /harmonogram) zarovná filtre pod
         // hlavičku – rovnako ako návrat zo detailu; ostatné adresy (sekcie,
         // detail) začínajú na hrane sekcie.
         const naFiltre = route.view && !route.item && !route.section;
