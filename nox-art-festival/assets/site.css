@@ -3913,3 +3913,13 @@ html:has(body.nox-art-site) {
 .nox-art-site .schedule-main {
   margin-bottom: 0;
 }
+
+/* Dátumy v harmonograme v ružovej farbe stránky. */
+.nox-art-site .schedule-day-title span,
+.nox-art-site .schedule-pre-label .schedule-date {
+  color: var(--pink);
+}
+
+.nox-art-site .schedule-pre-label .schedule-date {
+  font-weight: 800;
+}

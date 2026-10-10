@@ -73,7 +73,7 @@ if ($datum) {
 <?php endif; ?>
 <?php if ($hlavne): ?>
 <div class="schedule-pre schedule-main">
-  <p class="schedule-pre-label">Festival <span>30.–31. 10. · Sídlisko Píly</span></p>
+  <p class="schedule-pre-label">Festival <span><b class="schedule-date">30.–31. 10.</b> · Sídlisko Píly</span></p>
   <?php $vykresli($hlavne); ?>
 </div>
 <?php endif; ?>
