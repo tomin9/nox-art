@@ -70,6 +70,10 @@ if ($datum) {
   <p class="schedule-pre-label">Pred festivalom <span>mimo festivalových dní</span></p>
   <?php $vykresli($pred); ?>
 </div>
-<div class="schedule-divider" role="separator"><span>Festival · 30.–31. 10.</span></div>
 <?php endif; ?>
-<?php $vykresli($hlavne); ?>
+<?php if ($hlavne): ?>
+<div class="schedule-pre schedule-main">
+  <p class="schedule-pre-label">Festival <span>30.–31. 10. · Sídlisko Píly</span></p>
+  <?php $vykresli($hlavne); ?>
+</div>
+<?php endif; ?>
