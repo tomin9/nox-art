@@ -123,15 +123,9 @@ function nox_art_handle_save_map_settings() {
     // Adresy pohľadov sa odvíjajú od tejto stránky – pravidlá treba prepísať.
     delete_option('nox_art_routes_hash');
 
-    $stare = nox_art_tracking();
-    $kluc = isset($_POST['nox_art_brevo_key']) ? trim(sanitize_text_field(wp_unslash($_POST['nox_art_brevo_key']))) : '';
-    if (!empty($_POST['nox_art_brevo_key_clear'])) $kluc = '';
-    elseif ($kluc === '') $kluc = $stare['brevo_key'];
+    // Ukladá sa len ID merania (prípadný starý kľúč Brevo sa tým z databázy odstráni).
     update_option(NOX_ART_TRACKING_OPTION, [
         'ga_id' => isset($_POST['nox_art_ga_id']) ? strtoupper(sanitize_text_field(wp_unslash($_POST['nox_art_ga_id']))) : '',
-        'brevo_key' => $kluc,
-        'brevo_list' => isset($_POST['nox_art_brevo_list']) ? absint($_POST['nox_art_brevo_list']) : 0,
-        'brevo_template' => isset($_POST['nox_art_brevo_template']) ? absint($_POST['nox_art_brevo_template']) : 0,
     ], false);
 
     $domena = isset($_POST['nox_art_festival_domain']) ? sanitize_text_field($_POST['nox_art_festival_domain']) : '';
@@ -248,39 +242,15 @@ function nox_art_render_map_settings_page() {
                     </td>
                 </tr>
             </table>
-            <h2>Meranie a newsletter</h2>
+            <h2>Meranie</h2>
             <?php $mer = nox_art_tracking(); ?>
-            <p>Google Analytics sa zapne až po súhlase návštevníka (zobrazí sa lišta). Prihlásenia na newsletter odchádzajú do Brevo.</p>
+            <p>Google Analytics sa zapne až po súhlase návštevníka (zobrazí sa lišta).</p>
             <table class="form-table" role="presentation">
                 <tr>
                     <th scope="row"><label for="nox_art_ga_id">ID merania Google Analytics</label></th>
                     <td>
                         <input type="text" id="nox_art_ga_id" name="nox_art_ga_id" class="regular-text" value="<?php echo esc_attr($mer['ga_id']); ?>" placeholder="G-XXXXXXXXXX">
                         <p class="description">Nájdeš ho v Analytics: Správca → Dátové toky → webový tok. Prázdne = meranie aj lišta sú vypnuté.</p>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row"><label for="nox_art_brevo_key">Brevo API kľúč</label></th>
-                    <td>
-                        <input type="password" id="nox_art_brevo_key" name="nox_art_brevo_key" class="regular-text" value="" autocomplete="new-password" placeholder="<?php echo $mer['brevo_key'] !== '' ? '•••••••• (uložený – nechaj prázdne, ak ho nemeníš)' : 'xkeysib-…'; ?>">
-                        <?php if ($mer['brevo_key'] !== ''): ?>
-                        <label style="display:block;margin-top:6px"><input type="checkbox" name="nox_art_brevo_key_clear" value="1"> Odstrániť uložený kľúč</label>
-                        <?php endif; ?>
-                        <p class="description">Brevo → profil → SMTP &amp; API → API kľúče. Kľúč sa ukladá len v databáze tohto webu.</p>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row"><label for="nox_art_brevo_list">ID zoznamu Brevo</label></th>
-                    <td>
-                        <input type="number" min="0" id="nox_art_brevo_list" name="nox_art_brevo_list" class="small-text" value="<?php echo (int) $mer['brevo_list'] ?: ''; ?>">
-                        <p class="description">Brevo → Kontakty → Zoznamy; ID je číslo pri zozname.</p>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row"><label for="nox_art_brevo_template">ID šablóny pre dvojité potvrdenie</label></th>
-                    <td>
-                        <input type="number" min="0" id="nox_art_brevo_template" name="nox_art_brevo_template" class="small-text" value="<?php echo (int) $mer['brevo_template'] ?: ''; ?>">
-                        <p class="description">Nepovinné. Ak je vyplnené, Brevo pošle potvrdzovací e-mail (double opt-in) – šablóna musí obsahovať odkaz <code>{{ params.DOIurl }}</code>. Prázdne = prihlásenie bez potvrdenia.</p>
                     </td>
                 </tr>
             </table>

@@ -56,7 +56,6 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
     <?php foreach (nox_art_site_nav_items() as $item): ?>
     <a href="<?php echo $item['url']; ?>"<?php echo $item['anchor'] ? ' data-anchor="' . esc_attr($item['anchor']) . '"' : ''; ?><?php echo !empty($item['podstranka']) ? ' data-podstranka' : ''; ?><?php echo $item['current'] ? ' class="is-active" aria-current="page"' : ''; ?>><?php echo esc_html($item['label']); ?></a>
     <?php endforeach; ?>
-    <a class="nav-pill" href="<?php echo nox_art_site_link('newsletter'); ?>">Newsletter <span aria-hidden="true">↗</span></a>
     <?php /* Ikony sietí sa spravujú v NOX:ART → Nastavenia; prázdny odkaz
              znamená, že sa ikona nezobrazí. */ ?>
     <?php $socialne = nox_art_get_social_links(); ?>
@@ -72,6 +71,7 @@ foreach ($umelci as $u) $umelecById[$u['id']] = $u;
 
 <main>
 <?php foreach ($sections as $section): ?>
+<?php if ($section === 'newsletter') continue; // newsletter sa na stránke nezobrazuje ?>
 <?php include NOX_ART_DIR . 'templates/parts/' . $section . '.php'; ?>
 <?php endforeach; ?>
 </main>
