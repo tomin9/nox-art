@@ -3878,3 +3878,53 @@ html:has(body.nox-art-site) {
   margin: 1px 0 0;
   padding: 0;
 }
+
+/* Harmonogram: dni pred festivalom (napr. warm-up v inom meste) sú oddelené
+   od programu na sídlisku – vlastný blok a deliaca čiara s názvom festivalu. */
+.nox-art-site .schedule-pre {
+  margin-bottom: clamp(26px, 4vw, 44px);
+  padding: clamp(14px, 2vw, 22px) clamp(16px, 2.4vw, 26px) 4px;
+  border: 1.5px dashed rgba(239, 238, 220, .28);
+  border-radius: 22px;
+  background: rgba(239, 238, 220, .04);
+}
+
+.nox-art-site .schedule-pre-label {
+  margin: 0 0 14px;
+  color: rgba(239, 238, 220, .75);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.nox-art-site .schedule-pre-label span {
+  margin-left: 8px;
+  color: rgba(239, 238, 220, .45);
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+.nox-art-site .schedule-pre .schedule-day:last-child .schedule-row:last-child {
+  border-bottom: 0;
+}
+
+.nox-art-site .schedule-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 clamp(22px, 3vw, 34px);
+  color: rgba(239, 238, 220, .8);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.nox-art-site .schedule-divider::before,
+.nox-art-site .schedule-divider::after {
+  flex: 1;
+  height: 2px;
+  background: rgba(239, 238, 220, .5);
+  content: "";
+}

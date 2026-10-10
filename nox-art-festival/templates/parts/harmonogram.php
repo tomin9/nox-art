@@ -12,7 +12,20 @@ $dni = nox_art_site_schedule();
 <p class="empty" style="color:var(--paper);opacity:.7">Harmonogram zatiaľ nie je vyplnený — pridaj dielam a bodom programu čas v administrácii.</p>
 <?php endif; ?>
 
-<?php foreach ($dni as $datum => $polozky): ?>
+<?php
+// Dni pred začiatkom festivalu (napr. warm-up v inom meste) sa zobrazia
+// oddelene, nech sa nezamiešajú s programom na sídlisku.
+$zaciatok = apply_filters('nox_art_festival_start', '2026-10-30');
+$pred = [];
+$hlavne = [];
+foreach ($dni as $datum => $polozky) {
+    if ($datum !== '' && $datum < $zaciatok) $pred[$datum] = $polozky;
+    else $hlavne[$datum] = $polozky;
+}
+
+$vykresli = function ($dni) {
+foreach ($dni as $datum => $polozky) {
+?>
 <?php
 if ($datum) {
     list($dayName, $dayDate) = nox_art_site_day_label($datum);
@@ -48,4 +61,15 @@ if ($datum) {
     <?php endforeach; ?>
   </ul>
 </div>
-<?php endforeach; ?>
+<?php
+}
+};
+?>
+<?php if ($pred): ?>
+<div class="schedule-pre">
+  <p class="schedule-pre-label">Pred festivalom <span>mimo festivalových dní</span></p>
+  <?php $vykresli($pred); ?>
+</div>
+<div class="schedule-divider" role="separator"><span>Festival · 30.–31. 10.</span></div>
+<?php endif; ?>
+<?php $vykresli($hlavne); ?>
