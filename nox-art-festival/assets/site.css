@@ -3923,3 +3923,11 @@ html:has(body.nox-art-site) {
 .nox-art-site .schedule-pre-label .schedule-date {
   font-weight: 800;
 }
+
+/* Žiara za sekciou Program musí ležať ZA obsahom. Absolútne polohovaný prvok
+   sa inak kreslí nad obyčajným obsahom (fotky, texty), čo bolo na telefóne
+   vidieť ako červený závoj pred fotkou. Sekcia má vlastnú vrstvu (z-index),
+   takže záporný z-index ostane vnútri nej a nad jej pozadím. */
+.nox-art-site .program::before {
+  z-index: -1;
+}
