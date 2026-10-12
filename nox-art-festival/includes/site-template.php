@@ -476,9 +476,9 @@ function nox_art_site_category_order() {
         'galeria-ulice',
         'zive-sgrafita',
         'diela',              // dielo bez podkategórie
-        'sprievodny-program',
         'partnerske-podniky',
         'podniky',            // starší slug tej istej skupiny
+        'sprievodny-program',
     ]);
 }
 

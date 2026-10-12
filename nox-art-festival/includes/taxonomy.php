@@ -16,8 +16,8 @@ if (!defined('ABSPATH')) exit;
 function nox_art_default_categories() {
     return [
         'Diela' => ['Inštalácie', 'Nové sgrafitá', 'Živé sgrafitá', 'Galéria ulice'],
-        'Sprievodný program' => [],
         'Partnerské podniky' => [],
+        'Sprievodný program' => [],
     ];
 }
 
