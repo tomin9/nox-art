@@ -189,6 +189,109 @@ function vyskaHlavicky() {
 
 
 /* =========================================================================
+   Registrácia na body programu. Tlačidlo v detaile rozbalí formulár; voľné
+   miesta sa pri prvom otvorení načítajú zo servera (stránka môže byť v keši),
+   odoslanie overí kapacitu ešte raz na serveri.
+   ========================================================================= */
+(() => {
+  const cfg = window.NOX_SITE_TRACK || {};
+  const bloky = document.querySelectorAll('[data-reg]');
+  if (!bloky.length || !cfg.ajaxUrl) return;
+
+  bloky.forEach((blok) => {
+    const postId = blok.dataset.reg;
+    const tlacidlo = blok.querySelector('[data-reg-open]');
+    const formular = blok.querySelector('[data-reg-form]');
+    const stav = blok.querySelector('[data-reg-status]');
+    const vyberTerminu = blok.querySelector('[data-reg-termin]');
+    const obalTerminu = blok.querySelector('[data-reg-termin-wrap]');
+    if (!tlacidlo || !formular) return;
+
+    let nacitane = false;
+    const sprava = (text) => { if (stav) stav.textContent = text; };
+
+    const nacitajTerminy = async () => {
+      sprava('Načítavam termíny…');
+      try {
+        const odpoved = await fetch(`${cfg.ajaxUrl}?action=nox_art_reg_info&post_id=${encodeURIComponent(postId)}`, { credentials: 'same-origin' });
+        const data = await odpoved.json();
+        if (!data.ok) throw new Error('nok');
+
+        vyberTerminu.innerHTML = '';
+        let volnyTermin = false;
+        data.terminy.forEach((t) => {
+          const moznost = document.createElement('option');
+          moznost.value = t.kluc;
+          let popis = t.label;
+          if (t.uzavrete) popis += ' · registrácia uzavretá';
+          else if (t.volne === 0) popis += ' · obsadené';
+          else if (t.volne !== null) popis += ` · voľné miesta: ${t.volne}`;
+          moznost.textContent = popis;
+          moznost.disabled = t.uzavrete || t.volne === 0;
+          if (!moznost.disabled) volnyTermin = true;
+          vyberTerminu.appendChild(moznost);
+        });
+        // Pri jedinom termíne výber neukazujeme, len ho zapíšeme do formulára.
+        obalTerminu.hidden = data.terminy.length === 1;
+        const prvyVolny = [...vyberTerminu.options].find((o) => !o.disabled);
+        if (prvyVolny) vyberTerminu.value = prvyVolny.value;
+
+        if (!volnyTermin) {
+          formular.hidden = true;
+          sprava('Registrácia je momentálne zatvorená alebo je podujatie obsadené.');
+        } else {
+          sprava('');
+        }
+        nacitane = true;
+      } catch (chyba) {
+        sprava('Termíny sa nepodarilo načítať. Skús to prosím znova.');
+      }
+    };
+
+    tlacidlo.addEventListener('click', async () => {
+      const otvorit = formular.hidden;
+      formular.hidden = !otvorit;
+      tlacidlo.setAttribute('aria-expanded', String(otvorit));
+      if (otvorit && !nacitane) await nacitajTerminy();
+    });
+
+    formular.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const data = new FormData(formular);
+      if (!data.get('first_name') || !data.get('last_name')) { sprava('Vyplň meno a priezvisko.'); return; }
+      if (!String(data.get('email') || '').includes('@')) { sprava('Skontroluj, prosím, e-mailovú adresu.'); return; }
+      if (!data.get('suhlas')) { sprava('Pre registráciu potvrď súhlas so spracovaním údajov.'); return; }
+      if (data.get('termin') === null) { sprava('Vyber termín.'); return; }
+
+      const odoslat = formular.querySelector('[type="submit"]');
+      if (odoslat) odoslat.disabled = true;
+      sprava('Odosielam…');
+      data.append('action', 'nox_art_reg_submit');
+
+      try {
+        const odpoved = await fetch(cfg.ajaxUrl, { method: 'POST', body: data, credentials: 'same-origin' });
+        const vysledok = await odpoved.json().catch(() => null);
+        sprava(vysledok?.message || 'Registrácia sa nepodarila. Skús to prosím znova.');
+        if (vysledok?.ok) {
+          formular.hidden = true;
+          formular.reset();
+          nacitane = false;
+          window.noxTrack?.('generate_lead', { form: 'registracia', item_id: postId });
+        } else if (odpoved.status === 409) {
+          nacitane = false;
+          nacitajTerminy().then(() => { sprava(vysledok?.message || ''); });
+        }
+      } catch (chyba) {
+        sprava('Registrácia sa nepodarila. Skontroluj pripojenie a skús to znova.');
+      } finally {
+        if (odoslat) odoslat.disabled = false;
+      }
+    });
+  });
+})();
+
+
+/* =========================================================================
    Meranie (Google Analytics 4) so súhlasom. Skript GA sa nenačíta, kým
    návštevník nepovolí meranie; voľba sa pamätá v prehliadači. Udalosti
    posielame cez window.noxTrack(názov, parametre) – bez súhlasu nerobí nič.

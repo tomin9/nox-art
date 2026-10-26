@@ -27,6 +27,7 @@ function nox_art_tracking_localize() {
     if (!wp_script_is('nox-art-site-js', 'enqueued')) return;
     wp_localize_script('nox-art-site-js', 'NOX_SITE_TRACK', [
         'gaId' => nox_art_ga_id(),
+        'ajaxUrl' => admin_url('admin-ajax.php'),
     ]);
 }
 add_action('wp_enqueue_scripts', 'nox_art_tracking_localize', 30);

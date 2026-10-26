@@ -126,6 +126,42 @@ $prvySlovo = $prvyPocet === 1 ? $tvar[0] : ($prvyPocet >= 2 && $prvyPocet <= 4 ?
       <?php if ($p['popis']): ?>
       <div class="detail-text"><?php echo wp_kses_post($p['popis']); ?></div>
       <?php endif; ?>
+      <?php
+      // Registrácia je len pri bodoch programu, kde je v administrácii zapnutá.
+      $regId = strpos($p['id'], 'program-') === 0 ? (int) substr($p['id'], 8) : 0;
+      if ($regId && nox_art_reg_enabled($regId)): ?>
+      <div class="reg" data-reg="<?php echo $regId; ?>">
+        <button class="reg-open" type="button" data-reg-open aria-expanded="false">Registrovať sa <span aria-hidden="true">↗</span></button>
+        <form class="reg-form" data-reg-form hidden novalidate>
+          <input type="hidden" name="post_id" value="<?php echo $regId; ?>">
+          <div class="reg-field" data-reg-termin-wrap>
+            <label for="reg-termin-<?php echo $regId; ?>">Termín</label>
+            <select id="reg-termin-<?php echo $regId; ?>" name="termin" data-reg-termin></select>
+          </div>
+          <div class="reg-row">
+            <div class="reg-field"><label for="reg-meno-<?php echo $regId; ?>">Meno</label><input type="text" id="reg-meno-<?php echo $regId; ?>" name="first_name" autocomplete="given-name" required></div>
+            <div class="reg-field"><label for="reg-priezvisko-<?php echo $regId; ?>">Priezvisko</label><input type="text" id="reg-priezvisko-<?php echo $regId; ?>" name="last_name" autocomplete="family-name" required></div>
+          </div>
+          <div class="reg-row">
+            <div class="reg-field"><label for="reg-email-<?php echo $regId; ?>">E-mail</label><input type="email" id="reg-email-<?php echo $regId; ?>" name="email" autocomplete="email" required></div>
+            <div class="reg-field"><label for="reg-tel-<?php echo $regId; ?>">Telefón</label><input type="tel" id="reg-tel-<?php echo $regId; ?>" name="phone" autocomplete="tel" placeholder="+421 900 000 000" required></div>
+          </div>
+          <div class="reg-field reg-field-narrow">
+            <label for="reg-osoby-<?php echo $regId; ?>">Počet osôb</label>
+            <select id="reg-osoby-<?php echo $regId; ?>" name="num_people">
+              <?php for ($i = 1; $i <= 10; $i++): ?><option value="<?php echo $i; ?>"><?php echo $i; ?></option><?php endfor; ?>
+            </select>
+          </div>
+          <input class="reg-hp" type="text" name="web" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <label class="reg-consent">
+            <input type="checkbox" name="suhlas" value="1" required>
+            <span>Súhlasím so spracovaním osobných údajov na účely organizácie podujatia (Ars Preuge).</span>
+          </label>
+          <button class="reg-submit" type="submit">Odoslať registráciu</button>
+        </form>
+        <p class="reg-status" data-reg-status role="status" aria-live="polite"></p>
+      </div>
+      <?php endif; ?>
     </article>
     <?php endforeach; ?>
   </div>

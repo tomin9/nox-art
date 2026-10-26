@@ -128,6 +128,9 @@ function nox_art_handle_save_map_settings() {
         'ga_id' => isset($_POST['nox_art_ga_id']) ? strtoupper(sanitize_text_field(wp_unslash($_POST['nox_art_ga_id']))) : '',
     ], false);
 
+    update_option(NOX_ART_REG_EMAIL_OPTION, isset($_POST['nox_art_reg_email']) ? sanitize_email(wp_unslash($_POST['nox_art_reg_email'])) : '');
+    update_option(NOX_ART_REG_FROM_OPTION, isset($_POST['nox_art_reg_from_name']) ? sanitize_text_field(wp_unslash($_POST['nox_art_reg_from_name'])) : '');
+
     $domena = isset($_POST['nox_art_festival_domain']) ? sanitize_text_field($_POST['nox_art_festival_domain']) : '';
     update_option(NOX_ART_DOMAIN_OPTION, $domena);
     update_option('nox_art_festival_domain_redirect', empty($_POST['nox_art_festival_domain_redirect']) ? '' : '1');
@@ -252,6 +255,21 @@ function nox_art_render_map_settings_page() {
                         <input type="text" id="nox_art_ga_id" name="nox_art_ga_id" class="regular-text" value="<?php echo esc_attr($mer['ga_id']); ?>" placeholder="G-XXXXXXXXXX">
                         <p class="description">Nájdeš ho v Analytics: Správca → Dátové toky → webový tok. Prázdne = meranie aj lišta sú vypnuté.</p>
                     </td>
+                </tr>
+            </table>
+            <h2>Registrácie na program</h2>
+            <p>Registrácia sa zapína pri každom bode sprievodného programu. Tu je len adresa pre upozornenia.</p>
+            <table class="form-table" role="presentation">
+                <tr>
+                    <th scope="row"><label for="nox_art_reg_email">E-mail pre registrácie</label></th>
+                    <td>
+                        <input type="email" id="nox_art_reg_email" name="nox_art_reg_email" class="regular-text" value="<?php echo esc_attr(get_option(NOX_ART_REG_EMAIL_OPTION, '')); ?>" placeholder="<?php echo esc_attr(get_option('admin_email')); ?>">
+                        <p class="description">Sem chodia upozornenia na nové registrácie a odtiaľto odchádzajú aj potvrdenia. Prázdne = e-mail správcu webu.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="nox_art_reg_from_name">Meno odosielateľa</label></th>
+                    <td><input type="text" id="nox_art_reg_from_name" name="nox_art_reg_from_name" class="regular-text" value="<?php echo esc_attr(get_option(NOX_ART_REG_FROM_OPTION, '')); ?>" placeholder="NOX:ART"></td>
                 </tr>
             </table>
             <?php submit_button('Uložiť nastavenia'); ?>
